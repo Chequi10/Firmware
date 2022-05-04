@@ -1,0 +1,5 @@
+../Core/API/Src/decode.c:43:8:decodeInit	16	static
+../Core/API/Src/decode.c:57:8:getData	24	static
+../Core/API/Src/decode.c:83:9:isStartFrame	24	static
+../Core/API/Src/decode.c:136:9:isEndFrame	24	static
+../Core/API/Src/decode.c:147:11:filter	64	static

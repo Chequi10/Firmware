@@ -1,0 +1,3 @@
+../Core/API/Src/API_uart.c:11:8:uartInit	104	static
+../Core/API/Src/API_uart.c:37:6:uartSendString	24	static
+../Core/API/Src/API_uart.c:46:8:uartRecvString	16	static
