@@ -55,9 +55,10 @@ CAN_TxHeaderTypeDef pTxHeader;
 CAN_RxHeaderTypeDef pRxHeader;
 CAN_FilterTypeDef sFilterConfig;
 
-uint32_t pTxMailbox;
-uint8_t  txData[9]="hola\n\r";
-uint8_t tamaño = 8;
+uint32_t pTxMailbox = 4;
+uint8_t  txData[4]="CAN";
+uint8_t  paraCAN[4];
+uint8_t tamaño = 4;
 
 /* USER CODE END PV */
 
@@ -153,13 +154,12 @@ int main(void)
 				//  BSP_LED_Toggle(LED1);                   /* Led enciende cada vez que la trama es valida*/
 			  }
 		  }
-       uartSendString(txData);
+
        HAL_CAN_AddTxMessage(&hcan1, &pTxHeader, txData, &pTxMailbox);
-       HAL_CAN_AddTxMessage(&hcan2, &pTxHeader, txData, &pTxMailbox);
-
-       //HAL_CAN_GetState(&hcan1);
-       HAL_CAN_GetRxMessage(&hcan1, tamaño, &pRxHeader, txData);
-
+       HAL_Delay(500);
+       HAL_CAN_GetRxMessage(&hcan2, tamaño, &pRxHeader,paraCAN);
+       HAL_Delay(500);
+       uartSendString(paraCAN);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
