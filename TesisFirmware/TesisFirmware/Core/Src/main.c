@@ -43,8 +43,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
-CAN_HandleTypeDef hcan1;
+ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 UART_HandleTypeDef huart3;
@@ -155,10 +154,18 @@ int main(void)
 			  }
 		  }
 
+		  HAL_CAN_RxFifo0MsgPendingCallback(&hcan2);
+for(int i=0;i<5;i++)
+{
        HAL_CAN_AddTxMessage(&hcan1, &pTxHeader, txData, &pTxMailbox);
        HAL_Delay(500);
+if(HAL_CAN_GetState(&hcan2) == true)
+		{
+HAL_CAN_RxFifo0FullCallback(&hcan1);
+
        HAL_CAN_GetRxMessage(&hcan2, tamaño, &pRxHeader,paraCAN);
-       HAL_Delay(500);
+       HAL_Delay(500);}
+}
        uartSendString(paraCAN);
     /* USER CODE END WHILE */
 
