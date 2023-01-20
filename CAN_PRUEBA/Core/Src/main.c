@@ -76,26 +76,28 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 	if( GPIO_Button_Pin == GPIO_PIN_13)
 		{
 			 HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-		 	 TxData[0]=1;
-		 	 TxData[1]=2;
-		     TxData[2]=3;
-		 	 TxData[3]=4;
-		 	 TxData[4]=5;
-	         TxData[5]=6;
-			 TxData[6]=7;
-		 	 TxData[7]=8;
-
+//		 	 TxData[0]=1;
+//		 	 TxData[1]=2;
+//		     TxData[2]=3;
+//		 	 TxData[3]=4;
+//		 	 TxData[4]=5;
+//	         TxData[5]=6;
+//			 TxData[6]=7;
+//		 	 TxData[7]=8;
+		     TxData[7] = TxData[7] + 1;
 		 	 if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 		 		{
 		 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 		 			Error_Handler ();
 		 		}
 
-		 	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
+
+/*		 	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 		 		{
 		 		    HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
 		 		    Error_Handler();
 		 		}
+*/
 		}
   }
 
@@ -219,7 +221,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  TxData[7] = TxData[7] + 1;
+	/*  TxData[7] = TxData[7] + 1;
 
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	  		 	{
@@ -236,7 +238,7 @@ int main(void)
 				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
-
+     */
 	  if (datacheck)
 	  {
 		 for(int i=0; i< RxData[1]; i++ )
