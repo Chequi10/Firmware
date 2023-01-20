@@ -12,4 +12,11 @@
 		<item key="size.width" value="497"/>
 		<item key="size.height" value="180"/>
 	</section>
+	<section name="org.eclipse.cdt.ui.OPEN_ACTION_SELECTION_DIALOG_SECTION">
+		<item key="DIALOG_X_ORIGIN" value="425"/>
+		<item key="DIALOG_Y_ORIGIN" value="52"/>
+		<item key="DIALOG_WIDTH" value="444"/>
+		<item key="DIALOG_HEIGHT" value="478"/>
+		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
+	</section>
 </section>

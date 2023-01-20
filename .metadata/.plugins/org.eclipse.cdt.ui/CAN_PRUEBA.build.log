@@ -1,4 +1,4 @@
-11:41:28 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+02:15:20 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
 make -j2 all 
 arm-none-eabi-gcc "../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.d" -MT"Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o"
 arm-none-eabi-gcc "../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.d" -MT"Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o"
@@ -26,11 +26,11 @@ Finished building target: CAN_PRUEBA.elf
 arm-none-eabi-size   CAN_PRUEBA.elf 
 arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
    text	   data	    bss	    dec	    hex	filename
-   9800	     20	   1732	  11552	   2d20	CAN_PRUEBA.elf
+  10124	     20	   1780	  11924	   2e94	CAN_PRUEBA.elf
 Finished building: default.size.stdout
  
 Finished building: CAN_PRUEBA.list
  
 
-11:41:37 Build Finished. 0 errors, 0 warnings. (took 8s.995ms)
+02:15:24 Build Finished. 0 errors, 0 warnings. (took 3s.391ms)
 
