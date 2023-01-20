@@ -187,24 +187,24 @@ int main(void)
 
 
   TxHeader.IDE = CAN_ID_STD;
-  TxHeader.StdId = 0x446;
+  TxHeader.StdId = 23;
   TxHeader.RTR = CAN_RTR_DATA;
   TxHeader.DLC = 8;
   TxHeader.TransmitGlobalTime = DISABLE;
 
   RxHeader.IDE = CAN_ID_STD;
-  RxHeader.StdId = 0x446;
+  RxHeader.StdId = 23;
   RxHeader.RTR = CAN_RTR_DATA;
   RxHeader.DLC = 8;
 
   TxHeader2.IDE = CAN_ID_STD;
-  TxHeader2.StdId = 0x445;
+  TxHeader2.StdId = 12;
   TxHeader2.RTR = CAN_RTR_DATA;
   TxHeader2.DLC = 8;
   TxHeader2.TransmitGlobalTime = DISABLE;
 
   RxHeader2.IDE = CAN_ID_STD;
-  RxHeader2.StdId = 0x445;
+  RxHeader2.StdId = 12;
   RxHeader2.RTR = CAN_RTR_DATA;
   RxHeader2.DLC = 8;
 
@@ -225,15 +225,16 @@ int main(void)
 				   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
+
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	  HAL_Delay(500);
-/*
+	        HAL_Delay(500);
+
 			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 	  		 	{
 				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
-*/
+
 	  if (datacheck)
 	  {
 		 for(int i=0; i< RxData[1]; i++ )
