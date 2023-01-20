@@ -12569,3 +12569,43 @@
 2023-01-20 18:18:27,817 [INFO] Can:66 - Can Add PropertyChangeListener com.st.microxplorer.plugins.ip.can.Can@312096b0
 2023-01-20 18:18:27,818 [INFO] Can:66 - Can Add PropertyChangeListener com.st.microxplorer.plugins.ip.can.Can@580fd868
 2023-01-20 18:18:27,866 [INFO] OpenFileManager:323 - Restore cursor
+2023-01-20 18:40:15,886 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2023-01-20 18:42:59,882 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 661016064 Bytes (809500672)
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: SYS
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: RCC
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: NVIC
+2023-01-20 18:43:00,342 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: GPIO
+2023-01-20 18:43:00,345 [INFO] CodeGenerator:681 - code generatio: config db path: /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.common.mx_6.5.0.202202251913//db/
+2023-01-20 18:43:00,779 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp_save
+2023-01-20 18:43:00,885 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp
+2023-01-20 18:43:00,923 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp_save
+2023-01-20 18:43:01,027 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp
+2023-01-20 18:43:01,120 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c_save
+2023-01-20 18:43:01,230 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c
+2023-01-20 18:43:01,232 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h_save
+2023-01-20 18:43:01,332 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h
+2023-01-20 18:43:01,337 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c_save
+2023-01-20 18:43:01,498 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c
+2023-01-20 18:43:01,499 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp_save
+2023-01-20 18:43:01,596 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp
+2023-01-20 18:43:01,602 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h_save
+2023-01-20 18:43:01,718 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h
+2023-01-20 18:43:01,774 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h_save
+2023-01-20 18:43:01,912 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h
+2023-01-20 18:43:01,914 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c_save
+2023-01-20 18:43:02,108 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c
+2023-01-20 18:43:03,220 [INFO] ProjectBuilder:2913 - Time for Copy HAL[1] : 156mS.
+2023-01-20 18:43:03,227 [INFO] ProjectBuilder:4015 - Project Generator version: 3.16.0
+2023-01-20 18:43:04,168 [INFO] ConfigFileManager:1287 - The Die is : DIE419
+2023-01-20 18:43:04,191 [INFO] ApiDbMcu:488 - Load IP Config File for FATFS
+2023-01-20 18:43:04,342 [INFO] ApiDbMcu:488 - Load IP Config File for FREERTOS
+2023-01-20 18:43:04,347 [INFO] ApiDbMcu:488 - Load IP Config File for LIBJPEG
+2023-01-20 18:43:04,361 [INFO] ApiDbMcu:488 - Load IP Config File for LWIP
+2023-01-20 18:43:04,378 [INFO] ApiDbMcu:488 - Load IP Config File for MBEDTLS
+2023-01-20 18:43:04,404 [INFO] ApiDbMcu:488 - Load IP Config File for USB_DEVICE
+2023-01-20 18:43:04,414 [INFO] ApiDbMcu:488 - Load IP Config File for USB_HOST
+2023-01-20 18:43:07,078 [INFO] ProjectBuilder:4183 - Time for Generating toolchain IDE Files: 3851mS.
+2023-01-20 18:43:07,079 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
+2023-01-20 18:43:07,079 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.

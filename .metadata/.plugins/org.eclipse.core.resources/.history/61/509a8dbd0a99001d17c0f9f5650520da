@@ -51,6 +51,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -98,6 +99,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 		 		}
 		}
   }
+
 
 
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan1)

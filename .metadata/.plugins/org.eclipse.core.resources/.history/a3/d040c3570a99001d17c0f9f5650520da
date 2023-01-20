@@ -43,7 +43,7 @@
 CAN_HandleTypeDef hcan2;
 
 /* USER CODE BEGIN PV */
-
+extern uint32_t numero = filllevel;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -51,6 +51,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -69,7 +70,7 @@ uint8_t  TxData[8];
 uint8_t  RxData[8];
 
 int datacheck = 0;
-
+uint32_t numero = filllevel;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
   {
@@ -99,6 +100,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 		}
   }
 
+
+void (HAL_CAN_GetRxFifoFillLevel(CAN_HandleTypeDef *hcan2, uint32_t RxFifo)
+{
+	uint32_t numero = filllevel;
+}
 
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan1)
 {
@@ -230,6 +236,8 @@ int main(void)
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	        HAL_Delay(500);
 
+	        HAL_CAN_GetRxFifoFillLevel(&hcan2,CAN_RX_FIFO0);
+	        uint32_t numero = filllevel;
 
 			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 	  		 	{
