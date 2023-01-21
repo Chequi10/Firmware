@@ -238,7 +238,7 @@ int main(void)
 				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
-     */
+
 	  if (datacheck)
 	  {
 		 for(int i=0; i< RxData[1]; i++ )
@@ -247,7 +247,7 @@ int main(void)
 			 }
 		       datacheck = 0;
 	  }
-
+*/
 
   //	  HAL_CAN_GetRxMessage(&hcan2, tamaño, &RxHeader, RxData);
 
