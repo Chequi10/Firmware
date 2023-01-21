@@ -16270,3 +16270,75 @@
 2023-01-21 00:50:43,112 [INFO] ProjectBuilder:4183 - Time for Generating toolchain IDE Files: 3467mS.
 2023-01-21 00:50:43,112 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
 2023-01-21 00:50:43,119 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
+2023-01-21 00:52:31,336 [INFO] DmaTabbedPanel:198 - Cannot restore the selected Tab for DMA
+2023-01-21 00:55:15,721 [INFO] NvicIntPanel:96 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2023-01-21 00:55:37,699 [INFO] NvicIntPanel:96 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,588x184,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2023-01-21 00:56:34,985 [INFO] NvicIntPanel:96 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2023-01-21 00:56:46,841 [INFO] NvicIntPanel:96 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,588x165,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2023-01-21 00:56:53,313 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 377041200 Bytes (738197504)
+2023-01-21 00:56:55,483 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 451279104 Bytes (738197504)
+2023-01-21 00:56:56,208 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: SYS
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: RCC
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: NVIC
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: USART
+2023-01-21 00:56:56,209 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: GPIO
+2023-01-21 00:56:56,210 [INFO] CodeGenerator:681 - code generatio: config db path: /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.common.mx_6.5.0.202202251913//db/
+2023-01-21 00:56:56,691 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp_save
+2023-01-21 00:56:56,904 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp
+2023-01-21 00:56:56,928 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp_save
+2023-01-21 00:56:57,028 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp
+2023-01-21 00:56:57,247 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c_save
+2023-01-21 00:56:57,511 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c
+2023-01-21 00:56:57,512 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h_save
+2023-01-21 00:56:57,616 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h
+2023-01-21 00:56:57,624 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c_save
+2023-01-21 00:56:57,800 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c
+2023-01-21 00:56:57,802 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp_save
+2023-01-21 00:56:57,891 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp
+2023-01-21 00:56:57,893 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h_save
+2023-01-21 00:56:57,993 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h
+2023-01-21 00:56:58,026 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h_save
+2023-01-21 00:56:58,146 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h
+2023-01-21 00:56:58,147 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c_save
+2023-01-21 00:56:58,306 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c
+2023-01-21 00:56:58,890 [INFO] ProjectBuilder:2913 - Time for Copy HAL[1] : 31mS.
+2023-01-21 00:56:58,894 [INFO] ProjectBuilder:4015 - Project Generator version: 3.16.0
+2023-01-21 00:56:59,620 [INFO] ConfigFileManager:1287 - The Die is : DIE419
+2023-01-21 00:57:01,913 [INFO] ProjectBuilder:4183 - Time for Generating toolchain IDE Files: 3019mS.
+2023-01-21 00:57:01,913 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
+2023-01-21 00:57:01,914 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
+2023-01-21 01:24:19,419 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 342582976 Bytes (738197504)
+2023-01-21 01:24:21,307 [INFO] UtilMem:74 - End SaveConfig() Used Memory: 451634880 Bytes (738197504)
+2023-01-21 01:24:21,678 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-21 01:24:21,678 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: CAN
+2023-01-21 01:24:21,678 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: SYS
+2023-01-21 01:24:21,678 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: RCC
+2023-01-21 01:24:21,678 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: NVIC
+2023-01-21 01:24:21,679 [INFO] BlockDiagram:2740 - set Specific Code input for plugin: GPIO
+2023-01-21 01:24:21,679 [INFO] CodeGenerator:681 - code generatio: config db path: /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.common.mx_6.5.0.202202251913//db/
+2023-01-21 01:24:22,366 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp_save
+2023-01-21 01:24:22,458 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/license.tmp
+2023-01-21 01:24:22,475 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp_save
+2023-01-21 01:24:22,573 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/gpio.tmp
+2023-01-21 01:24:22,657 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c_save
+2023-01-21 01:24:22,756 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_it.c
+2023-01-21 01:24:22,758 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h_save
+2023-01-21 01:24:22,862 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_it.h
+2023-01-21 01:24:22,866 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c_save
+2023-01-21 01:24:23,008 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/stm32f4xx_hal_msp.c
+2023-01-21 01:24:23,010 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp_save
+2023-01-21 01:24:23,094 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/MXTmpFiles/system.tmp
+2023-01-21 01:24:23,096 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h_save
+2023-01-21 01:24:23,200 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/stm32f4xx_hal_conf.h
+2023-01-21 01:24:23,216 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h_save
+2023-01-21 01:24:23,361 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Inc/main.h
+2023-01-21 01:24:23,362 [INFO] CodeEngine:237 - oldGeneratedFile, /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c_save
+2023-01-21 01:24:23,600 [INFO] CodeEngine:261 - Generated code: /home/ezequiel/Firmware/Firmware/CAN_PRUEBA/Core/Src/main.c
+2023-01-21 01:24:24,308 [INFO] ProjectBuilder:2913 - Time for Copy HAL[1] : 66mS.
+2023-01-21 01:24:24,315 [INFO] ProjectBuilder:4015 - Project Generator version: 3.16.0
+2023-01-21 01:24:25,055 [INFO] ConfigFileManager:1287 - The Die is : DIE419
+2023-01-21 01:24:27,159 [INFO] ProjectBuilder:4183 - Time for Generating toolchain IDE Files: 2844mS.
+2023-01-21 01:24:27,160 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
+2023-01-21 01:24:27,160 [INFO] ProjectBuilder:2785 - Time for Copy CMSIS : 0mS.
