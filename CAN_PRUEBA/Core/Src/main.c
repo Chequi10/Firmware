@@ -87,12 +87,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 //	         TxData[5]=6;
 //			 TxData[6]=7;
 //		 	 TxData[7]=8;
-		     TxData[7] = TxData[7] + 1;
+		     TxData[0] = TxData[0] + 1;
 		 	 if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 		 		{
 		 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 		 			Error_Handler ();
 		 		}
+		 	HAL_UART_Transmit(&huart3, (uint8_t *) TxData, sizeof(TxData)/sizeof(char), 1000);
 
 
 /*		 	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
@@ -226,8 +227,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  uint8_t miString[] = "HOLA\r" ;
-	  HAL_UART_Transmit(&huart3, miString, 4, 1000);
+
 	/*  TxData[7] = TxData[7] + 1;
 
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
@@ -360,7 +360,7 @@ static void MX_CAN2_Init(void)
   hcan2.Init.Prescaler = 16;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_2TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_1TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
   hcan2.Init.AutoBusOff = DISABLE;
@@ -394,10 +394,10 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 9600;
+  huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
-  huart3.Init.Parity = UART_PARITY_ODD;
+  huart3.Init.Parity = UART_PARITY_NONE;
   huart3.Init.Mode = UART_MODE_TX_RX;
   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart3.Init.OverSampling = UART_OVERSAMPLING_16;

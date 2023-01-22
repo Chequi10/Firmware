@@ -26,4 +26,9 @@
 			<item value="_hal_rcc_can2_clk_enable()"/>
 		</list>
 	</section>
+	<section name="org.eclipse.ui.preferences.keysPreferencePage">
+		<item key="actionSetFilter" value="true"/>
+		<item key="internalFilter" value="true"/>
+		<item key="uncategorizedFilter" value="true"/>
+	</section>
 </section>
