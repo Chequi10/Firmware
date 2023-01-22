@@ -88,12 +88,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 //	         TxData[5]=6;
 //			 TxData[6]=7;
 //		 	 TxData[7]=8;
-		     TxData[0] = TxData[0] + 1;
+
+			 TxData[0] = TxData[0] + 1;
 		 	 if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-		 		{
+
+		 	 {
 		 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 		 			Error_Handler ();
 		 		}
+
 		 	HAL_UART_Transmit(&huart3, (uint8_t *) TxData, sizeof(TxData)/sizeof(char), 1000);
 
 

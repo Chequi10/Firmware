@@ -8357,3 +8357,18 @@ Command-line arguments:  -data /home/ezequiel/Firmware/Firmware -os linux -ws gt
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-01-22 10:01:54.275
 !MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2023-01-22 10:43:30.559 -----------------------------------------------
+eclipse.buildId=Version 1.9.0
+java.version=11.0.11
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=es_AR
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2023-01-22 10:43:38.446
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-01-22 10:43:38.520
+!MESSAGE Log4j initialized with config file /home/ezequiel/Firmware/Firmware/.metadata/.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-01-22 10:43:50.474
+!MESSAGE Started RMI Server, listening on port 41337
