@@ -1,4 +1,4 @@
-10:40:14 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+16:37:11 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
 make -j2 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "CAN_PRUEBA.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/CAN_PRUEBA/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CAN_PRUEBA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -7,15 +7,57 @@ Finished building target: CAN_PRUEBA.elf
 arm-none-eabi-size   CAN_PRUEBA.elf 
 arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
    text	   data	    bss	    dec	    hex	filename
-  14824	     20	   1852	  16696	   4138	CAN_PRUEBA.elf
+  14856	     28	   1844	  16728	   4158	CAN_PRUEBA.elf
 Finished building: default.size.stdout
  
 Finished building: CAN_PRUEBA.list
  
-10:40:25 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+16:37:39 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
 make -j2 all 
 arm-none-eabi-size   CAN_PRUEBA.elf 
    text	   data	    bss	    dec	    hex	filename
-  14824	     20	   1852	  16696	   4138	CAN_PRUEBA.elf
+  14856	     28	   1844	  16728	   4158	CAN_PRUEBA.elf
 Finished building: default.size.stdout
+ 
+16:38:49 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+make -j2 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "CAN_PRUEBA.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/CAN_PRUEBA/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CAN_PRUEBA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: CAN_PRUEBA.elf
+ 
+arm-none-eabi-size   CAN_PRUEBA.elf 
+arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
+   text	   data	    bss	    dec	    hex	filename
+  14832	     28	   1844	  16704	   4140	CAN_PRUEBA.elf
+Finished building: default.size.stdout
+ 
+Finished building: CAN_PRUEBA.list
+ 
+16:39:28 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+make -j2 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "CAN_PRUEBA.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/CAN_PRUEBA/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CAN_PRUEBA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: CAN_PRUEBA.elf
+ 
+arm-none-eabi-size   CAN_PRUEBA.elf 
+arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
+   text	   data	    bss	    dec	    hex	filename
+  14828	     28	   1844	  16700	   413c	CAN_PRUEBA.elf
+Finished building: default.size.stdout
+ 
+Finished building: CAN_PRUEBA.list
+ 
+16:41:07 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+make -j2 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "CAN_PRUEBA.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/CAN_PRUEBA/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CAN_PRUEBA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: CAN_PRUEBA.elf
+ 
+arm-none-eabi-size   CAN_PRUEBA.elf 
+arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
+   text	   data	    bss	    dec	    hex	filename
+  14828	     28	   1844	  16700	   413c	CAN_PRUEBA.elf
+Finished building: default.size.stdout
+ 
+Finished building: CAN_PRUEBA.list
  

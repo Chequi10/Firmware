@@ -68,11 +68,11 @@ CAN_RxHeaderTypeDef RxHeader2;
 //CAN_FilterTypeDef sFilterConfig;
 
 uint32_t TxMailbox;
-uint8_t  TxData[8];
+uint8_t  TxData[8]="Ezequiel";
 uint8_t  RxData[8];
 
 int datacheck = 0;
-
+int i=0;
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
@@ -80,25 +80,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 	if( GPIO_Button_Pin == GPIO_PIN_13)
 		{
 			 HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-//		 	 TxData[0]=1;
-//		 	 TxData[1]=2;
-//		     TxData[2]=3;
-//		 	 TxData[3]=4;
-//		 	 TxData[4]=5;
-//	         TxData[5]=6;
-//			 TxData[6]=7;
-//		 	 TxData[7]=8;
-
-			 TxData[0] = TxData[0] + 1;
+			 HAL_UART_Transmit(&huart3, &TxData[i], 1, 1000);
+			 i++;
+			 if(i>7)
+			 {
+				 i=0;
+			 }
 		 	 if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-
 		 	 {
 		 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 		 			Error_Handler ();
 		 		}
-
-		 	HAL_UART_Transmit(&huart3, (uint8_t *) TxData, sizeof(TxData)/sizeof(char), 1000);
-
 
 /*		 	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 		 		{
@@ -175,8 +167,8 @@ int main(void)
   sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
   sFilterConfig.FilterActivation=ENABLE;
 */
-  uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: Puerto B Pines 8 y 9\n\rCAN 2: Puerto B Pines 5 y 6\n\r";
-  HAL_UART_Transmit(&huart3, (uint8_t *) title, sizeof(title)/sizeof(char), 1000);
+  uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r";
+  HAL_UART_Transmit(&huart3, (uint8_t*)title, sizeof(title)/sizeof(char), 1000);
 
 
  // HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig);
@@ -234,7 +226,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
 
 	/*  TxData[7] = TxData[7] + 1;
 

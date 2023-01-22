@@ -1,0 +1,6 @@
+connections/org.eclipse.remote.serial.core.connectionType/EZE/serial.baudRate=11
+connections/org.eclipse.remote.serial.core.connectionType/EZE/serial.byteSize=3
+connections/org.eclipse.remote.serial.core.connectionType/EZE/serial.parity=0
+connections/org.eclipse.remote.serial.core.connectionType/EZE/serial.portName=/dev/ttyACM0
+connections/org.eclipse.remote.serial.core.connectionType/EZE/serial.stopBits=0
+eclipse.preferences.version=1
