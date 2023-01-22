@@ -74,6 +74,7 @@ uint8_t  RxData[8];
 int datacheck = 0;
 
 
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
   {
 	if( GPIO_Button_Pin == GPIO_PIN_13)
@@ -171,6 +172,10 @@ int main(void)
   sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
   sFilterConfig.FilterActivation=ENABLE;
 */
+  uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: Puerto B Pines 8 y 9\n\rCAN 2: Puerto B Pines 5 y 6\n\r";
+  HAL_UART_Transmit(&huart3, (uint8_t *) title, sizeof(title)/sizeof(char), 1000);
+
+
  // HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig);
   if(HAL_CAN_Start(&hcan1) != HAL_OK)
   	  {
