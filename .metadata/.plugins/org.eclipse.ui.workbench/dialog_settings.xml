@@ -23,7 +23,7 @@
 			<item value="1"/>
 		</list>
 		<list key="textArray">
-			<item value="_hal_rcc_can2_clk_enable()"/>
+			<item value="nvic can"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.preferences.keysPreferencePage">

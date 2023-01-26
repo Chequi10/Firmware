@@ -39,9 +39,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
-
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
@@ -54,6 +53,7 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -68,7 +68,7 @@ CAN_RxHeaderTypeDef RxHeader2;
 //CAN_FilterTypeDef sFilterConfig;
 
 uint32_t TxMailbox;
-uint8_t  TxData[8]="Ezequiel";
+uint8_t  TxData[8];
 uint8_t  RxData[8];
 
 int datacheck = 0;
@@ -102,21 +102,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
   }
 
 
-void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan1)
+void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan1)
 {
-	HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+	HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
   {
-	HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+	HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
 
-	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 	  {
 	    Error_Handler();
 	  }
 
-	  if ((RxHeader.StdId == 23))
+	  if ((RxHeader2.StdId == 20))
 	  {
 		  datacheck = 1;
 	  }
@@ -154,6 +154,9 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
+
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -205,6 +208,17 @@ int main(void)
   RxHeader.RTR = CAN_RTR_DATA;
   RxHeader.DLC = 8;
 
+  TxHeader2.IDE = CAN_ID_STD;
+   TxHeader2.StdId = 20;
+   TxHeader2.RTR = CAN_RTR_DATA;
+   TxHeader2.DLC = 8;
+   TxHeader2.TransmitGlobalTime = DISABLE;
+
+
+  RxHeader2.IDE = CAN_ID_STD;
+    RxHeader2.StdId = 20;
+    RxHeader2.RTR = CAN_RTR_DATA;
+    RxHeader2.DLC = 8;
 
 
 
@@ -227,15 +241,14 @@ int main(void)
 	  		 	}
 
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	        HAL_Delay(500);
-/*
+	        HAL_Delay(200);
 
-			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
-	  		 	{
-				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	  		 	   Error_Handler ();
-	  		 	}
-*/
+//			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
+//	  		 	{
+//				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+//	  		 	   Error_Handler ();
+//	  		 	}
+
 	  if (datacheck)
 	  {
 		 for(int i=0; i< RxData[1]; i++ )
@@ -246,7 +259,7 @@ int main(void)
 	  }
 
 
-  //	  HAL_CAN_GetRxMessage(&hcan2, tamaño, &RxHeader, RxData);
+
 
 
   }
@@ -292,6 +305,20 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief NVIC Configuration.
+  * @retval None
+  */
+static void MX_NVIC_Init(void)
+{
+  /* CAN2_RX0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
+  /* EXTI15_10_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 /**
@@ -430,10 +457,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
