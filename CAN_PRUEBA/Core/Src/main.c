@@ -116,7 +116,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 	    Error_Handler();
 	  }
 
-	  if ((RxHeader2.StdId == 0x103))
+	  if ((RxHeader.StdId == 23))
 	  {
 		  datacheck = 1;
 	  }
@@ -205,16 +205,7 @@ int main(void)
   RxHeader.RTR = CAN_RTR_DATA;
   RxHeader.DLC = 8;
 
-  TxHeader2.IDE = CAN_ID_STD;
-  TxHeader2.StdId = 12;
-  TxHeader2.RTR = CAN_RTR_DATA;
-  TxHeader2.DLC = 8;
-  TxHeader2.TransmitGlobalTime = DISABLE;
 
-  RxHeader2.IDE = CAN_ID_STD;
-  RxHeader2.StdId = 12;
-  RxHeader2.RTR = CAN_RTR_DATA;
-  RxHeader2.DLC = 8;
 
 
   /* USER CODE END 2 */
@@ -227,7 +218,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	/*  TxData[7] = TxData[7] + 1;
+	  TxData[7] = TxData[7] + 1;
 
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	  		 	{
@@ -237,14 +228,14 @@ int main(void)
 
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	        HAL_Delay(500);
-
+/*
 
 			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 	  		 	{
 				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
-
+*/
 	  if (datacheck)
 	  {
 		 for(int i=0; i< RxData[1]; i++ )
@@ -253,7 +244,7 @@ int main(void)
 			 }
 		       datacheck = 0;
 	  }
-*/
+
 
   //	  HAL_CAN_GetRxMessage(&hcan2, tamaño, &RxHeader, RxData);
 
@@ -322,7 +313,7 @@ static void MX_CAN1_Init(void)
   hcan1.Init.Prescaler = 16;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_2TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
@@ -359,7 +350,7 @@ static void MX_CAN2_Init(void)
   hcan2.Init.Prescaler = 16;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_1TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
   hcan2.Init.AutoBusOff = DISABLE;
