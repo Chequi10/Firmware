@@ -1,17 +1,30 @@
-21:21:35 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
+22:38:19 **** Incremental Build of configuration Debug for project CAN_PRUEBA ****
 make -j2 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:203:32: warning: format '%d' expects argument of type 'int', but argument 2 has type 'char *' [-Wformat=]
+  203 |    printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,(char *)RxHeader2.DLC,(uint8_t *)TxData);
+      |                               ~^                          ~~~~~~~~~~~~~~~~~~~~~~~
+      |                                |                          |
+      |                                int                        char *
+      |                               %s
+../Core/Src/main.c:203:41: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+  203 |    printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,(char *)RxHeader2.DLC,(uint8_t *)TxData);
+      |                                        ~^                                         ~~~~~~~~~~~~~~~~~~~~~
+      |                                         |                                         |
+      |                                         int                                       char *
+      |                                        %s
 arm-none-eabi-gcc -o "CAN_PRUEBA.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/CAN_PRUEBA/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CAN_PRUEBA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: CAN_PRUEBA.elf
  
 arm-none-eabi-size   CAN_PRUEBA.elf 
 arm-none-eabi-objdump -h -S  CAN_PRUEBA.elf  > "CAN_PRUEBA.list"
    text	   data	    bss	    dec	    hex	filename
-  12916	     20	   1844	  14780	   39bc	CAN_PRUEBA.elf
+  17380	    120	   1864	  19364	   4ba4	CAN_PRUEBA.elf
 Finished building: default.size.stdout
  
 Finished building: CAN_PRUEBA.list
  
 
-21:21:36 Build Finished. 0 errors, 0 warnings. (took 1s.36ms)
+22:38:21 Build Finished. 0 errors, 2 warnings. (took 1s.170ms)
 
