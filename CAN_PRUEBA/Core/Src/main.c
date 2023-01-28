@@ -39,8 +39,9 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan1;
+ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
+
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
@@ -53,7 +54,6 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
-static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -65,58 +65,38 @@ CAN_TxHeaderTypeDef TxHeader;
 CAN_TxHeaderTypeDef TxHeader2;
 CAN_RxHeaderTypeDef RxHeader;
 CAN_RxHeaderTypeDef RxHeader2;
-//CAN_FilterTypeDef sFilterConfig;
+CAN_FilterTypeDef sFilterConfig;
 
 uint32_t TxMailbox;
-uint8_t  TxData[8];
-uint8_t  RxData[8];
+uint8_t  TxData[1];
+uint8_t  RxData[1];
 
 int datacheck = 0;
-int i=0;
+int i=0,a;
 
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
+//  {
+//	if( GPIO_Button_Pin == GPIO_PIN_13)
+//		{
+//			 HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+//
+//		}
+//  }
+
+
+void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
   {
-	if( GPIO_Button_Pin == GPIO_PIN_13)
-		{
-			 HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-			 HAL_UART_Transmit(&huart3, &TxData[i], 1, 1000);
-			 i++;
-			 if(i>7)
-			 {
-				 i=0;
-			 }
-		 	 if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-		 	 {
-		 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-		 			Error_Handler ();
-		 		}
-
-/*		 	if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
-		 		{
-		 		    HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-		 		    Error_Handler();
-		 		}
-*/
-		}
-  }
-
-
-void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan1)
-{
 	HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-}
-
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
-  {
-	HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
 
 	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
 	  {
 	    Error_Handler();
 	  }
+	//HAL_UART_Transmit(&huart3, (uint8_t *)RxData, 1, 1000);
+	//	 HAL_UART_Transmit(&huart3, &RxData[7], 1, 1000);
 
-	  if ((RxHeader2.StdId == 20))
+	  if ((RxHeader2.StdId == 23))
 	  {
 		  datacheck = 1;
 	  }
@@ -154,73 +134,39 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
-
-  /* Initialize interrupts */
-  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
 
-  //Se configuran los filtros para el puerto CAN
-
-/*  sFilterConfig.FilterFIFOAssignment=CAN_FILTER_FIFO0;
-  sFilterConfig.FilterIdHigh=0x12<<5;
-  sFilterConfig.FilterIdLow=0;
-  sFilterConfig.FilterMaskIdHigh=0;
-  sFilterConfig.FilterMaskIdLow=0;
-  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
-  sFilterConfig.FilterActivation=ENABLE;
-*/
-  uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r";
-  HAL_UART_Transmit(&huart3, (uint8_t*)title, sizeof(title)/sizeof(char), 1000);
 
 
- // HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig);
-  if(HAL_CAN_Start(&hcan1) != HAL_OK)
-  	  {
-	  	  HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	  	  Error_Handler();
-  	  }
+ uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r";
+ HAL_UART_Transmit(&huart3, (uint8_t*)title, sizeof(title)/sizeof(char), 1000);
 
- // HAL_CAN_ConfigFilter(&hcan2,&sFilterConfig);
-
-  if(HAL_CAN_Start(&hcan2)!= HAL_OK)
-  	  {
-	      HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-  	  	  Error_Handler();
-  	  }
-
-
-  if ( HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-  	  {
-	      HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-  	  	  Error_Handler();
-	  }
-
-
-  TxHeader.IDE = CAN_ID_STD;
+ TxHeader.IDE = CAN_ID_STD;
   TxHeader.StdId = 23;
   TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.DLC = 8;
+  TxHeader.DLC = 1;
   TxHeader.TransmitGlobalTime = DISABLE;
 
   RxHeader.IDE = CAN_ID_STD;
   RxHeader.StdId = 23;
   RxHeader.RTR = CAN_RTR_DATA;
-  RxHeader.DLC = 8;
+  RxHeader.DLC = 1;
 
   TxHeader2.IDE = CAN_ID_STD;
    TxHeader2.StdId = 20;
    TxHeader2.RTR = CAN_RTR_DATA;
-   TxHeader2.DLC = 8;
+   TxHeader2.DLC = 1;
    TxHeader2.TransmitGlobalTime = DISABLE;
 
 
   RxHeader2.IDE = CAN_ID_STD;
     RxHeader2.StdId = 20;
     RxHeader2.RTR = CAN_RTR_DATA;
-    RxHeader2.DLC = 8;
+    RxHeader2.DLC = 1;
 
-
+ 	uint8_t title2[] = "CAN 2 RX:\n\r ";
+ 	HAL_UART_Transmit(&huart3, (uint8_t*)title2, sizeof(title2)/sizeof(char), 1000);
 
   /* USER CODE END 2 */
 
@@ -231,34 +177,32 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  for(a=49;a<58;a++)
+	  {  TxData[0] = a;
 
-	  TxData[7] = TxData[7] + 1;
 
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	  		 	{
 				   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
+			HAL_UART_Transmit(&huart3, (uint8_t *)TxData, 1, 1000);
+
 
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	        HAL_Delay(200);
+			HAL_Delay(100);
 
-//			if (HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
-//	  		 	{
-//				   HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-//	  		 	   Error_Handler ();
-//	  		 	}
 
 	  if (datacheck)
 	  {
-		 for(int i=0; i< RxData[1]; i++ )
-			 { HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+		 for(int i=0; i< RxData[7]; i++ )
+			 { HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
 		       HAL_Delay(50);
 			 }
 		       datacheck = 0;
 	  }
 
-
+	  }
 
 
 
@@ -308,20 +252,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief NVIC Configuration.
-  * @retval None
-  */
-static void MX_NVIC_Init(void)
-{
-  /* CAN2_RX0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
-  /* EXTI15_10_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-}
-
-/**
   * @brief CAN1 Initialization Function
   * @param None
   * @retval None
@@ -330,6 +260,8 @@ static void MX_CAN1_Init(void)
 {
 
   /* USER CODE BEGIN CAN1_Init 0 */
+
+      CAN_FilterTypeDef  sFilterConfig;
 
   /* USER CODE END CAN1_Init 0 */
 
@@ -353,7 +285,31 @@ static void MX_CAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN1_Init 2 */
+  sFilterConfig.FilterBank = 0;
+	  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
+	  sFilterConfig.FilterIdHigh=0;
+	  sFilterConfig.FilterIdLow=0;
+	  sFilterConfig.FilterMaskIdHigh=0;
+	  sFilterConfig.FilterMaskIdLow=0;
+	  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
+	  sFilterConfig.FilterActivation=ENABLE;
+      sFilterConfig.SlaveStartFilterBank = 14;
 
+      if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+        {
+          /* Filter configuration Error */
+          Error_Handler();
+        }
+
+      HAL_CAN_Start(&hcan1);
+
+        /*##-4- Activate CAN RX notification #######################################*/
+        if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+        {
+          /* Notification Error */
+          Error_Handler();
+        }
   /* USER CODE END CAN1_Init 2 */
 
 }
@@ -368,6 +324,7 @@ static void MX_CAN2_Init(void)
 
   /* USER CODE BEGIN CAN2_Init 0 */
 
+	      CAN_FilterTypeDef  sFilterConfig;
   /* USER CODE END CAN2_Init 0 */
 
   /* USER CODE BEGIN CAN2_Init 1 */
@@ -390,7 +347,31 @@ static void MX_CAN2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN2_Init 2 */
+  sFilterConfig.FilterBank = 14;
+		  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+		  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
+		  sFilterConfig.FilterIdHigh=0;
+		  sFilterConfig.FilterIdLow=0;
+		  sFilterConfig.FilterMaskIdHigh=0;
+		  sFilterConfig.FilterMaskIdLow=0;
+		  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
+		  sFilterConfig.FilterActivation=ENABLE;
+	      sFilterConfig.SlaveStartFilterBank = 14;
 
+	      if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+	        {
+	          /* Filter configuration Error */
+	          Error_Handler();
+	        }
+
+	      HAL_CAN_Start(&hcan2);
+
+	        /*##-4- Activate CAN RX notification #######################################*/
+	        if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+	        {
+	          /* Notification Error */
+	          Error_Handler();
+	        }
   /* USER CODE END CAN2_Init 2 */
 
 }
