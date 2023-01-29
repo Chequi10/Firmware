@@ -20,6 +20,9 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -40,7 +43,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 UART_HandleTypeDef huart3;
@@ -81,7 +84,15 @@ int _write(int file,char *ptr,int len)
 	 return len;
 }
 
+void *procesoSeparado(void *data)
+{	char *texto = (char *) data;
 
+	while(1)
+	{
+		printf("%s\n",texto);
+
+	}
+}
 
 //void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Button_Pin)
 //  {
@@ -101,10 +112,8 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 	  {
 	    Error_Handler();
 	  }
-	//HAL_UART_Transmit(&huart3, (uint8_t *)RxData, 1, 1000);
-	//	 HAL_UART_Transmit(&huart3, &RxData[7], 1, 1000);
 
-	  if ((RxHeader2.StdId == 23))
+	  if ((RxHeader2.StdId == 46))
 	  {
 		  datacheck = 1;
 	  }
@@ -144,14 +153,16 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
+//pthread_t proceso1;
+//pthread_t proceso2;
+//pthread_create(&proceso1, NULL, &procesoSeparado, "hola");
+//pthread_create(&proceso2, NULL, &procesoSeparado, "adios");
+//pthread_join(proceso1,NULL);
+//pthread_join(proceso2,NULL);
 
-
-
-// uint8_t title[] = "Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r";
-// HAL_UART_Transmit(&huart3, (uint8_t*)title, sizeof(title)/sizeof(char), 1000);
 printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 
-TxHeader.IDE = CAN_ID_STD;
+  TxHeader.IDE = CAN_ID_STD;
   TxHeader.StdId = 46;
   TxHeader.RTR = CAN_RTR_DATA;
   TxHeader.DLC = 1;
@@ -163,20 +174,15 @@ TxHeader.IDE = CAN_ID_STD;
   RxHeader.DLC = 1;
 
   TxHeader2.IDE = CAN_ID_STD;
-   TxHeader2.StdId = 20;
-   TxHeader2.RTR = CAN_RTR_DATA;
-   TxHeader2.DLC = 1;
-   TxHeader2.TransmitGlobalTime = DISABLE;
+  TxHeader2.StdId = 20;
+  TxHeader2.RTR = CAN_RTR_DATA;
+  TxHeader2.DLC = 1;
+  TxHeader2.TransmitGlobalTime = DISABLE;
 
-
-    RxHeader2.IDE = CAN_ID_STD;
-    RxHeader2.StdId = 20;
-    RxHeader2.RTR = CAN_RTR_DATA;
-    RxHeader2.DLC = 1;
-
-// 	uint8_t title2[] = "CAN 2 RX:\n\r ";
-// 	HAL_UART_Transmit(&huart3, (uint8_t*)title2, sizeof(title2)/sizeof(char), 1000);
-
+  RxHeader2.IDE = CAN_ID_STD;
+  RxHeader2.StdId = 20;
+  RxHeader2.RTR = CAN_RTR_DATA;
+  RxHeader2.DLC = 1;
 
   /* USER CODE END 2 */
 
@@ -193,28 +199,20 @@ TxHeader.IDE = CAN_ID_STD;
 	  for(a=49;a<58;a++)
 	  {  TxData[0] = a;
 
-
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
 	  		 	{
 				   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 	  		 	   Error_Handler ();
 	  		 	}
-		//	printf("\nCAN2 RX - CANID: 0x%08x, LEN: %d, Data: ", msg.id, msg.len);
-			printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,(char *)RxHeader2.DLC,(uint8_t *)TxData);
-		//	HAL_UART_Transmit(&huart3, (uint8_t *)TxData, 1, 1000);
-
-
+			printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
 			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 			HAL_Delay(500);
 
-
 	  if (datacheck)
 	  {
-		 for(int i=0; i< RxData[7]; i++ )
-			 { HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-		       HAL_Delay(50);
-			 }
-		       datacheck = 0;
+		  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+		  HAL_Delay(50);
+		  datacheck = 0;
 	  }
 
 	  }
