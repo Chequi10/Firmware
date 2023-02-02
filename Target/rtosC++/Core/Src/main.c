@@ -62,7 +62,7 @@ static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void StartTask_1(void const * argument);
-void StartTask02(void const * argument);
+void StartTask_2(void const * argument);
 void Callback01(void const * argument);
 
 /* USER CODE BEGIN PFP */
@@ -247,7 +247,7 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   Task_1Handle = osThreadCreate(osThread(Task_1), NULL);
 
   /* definition and creation of Task_2 */
-  osThreadDef(Task_2, StartTask02, osPriorityLow, 0, 128);
+  osThreadDef(Task_2, StartTask_2, osPriorityLow, 0, 128);
   Task_2Handle = osThreadCreate(osThread(Task_2), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -572,7 +572,7 @@ void StartTask_1(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask02 */
-void StartTask02(void const * argument)
+void StartTask_2(void const * argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
