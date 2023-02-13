@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+//#include "can_service.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +38,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+QueueHandle_t COLA_1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -46,9 +48,6 @@ CAN_HandleTypeDef hcan2;
 UART_HandleTypeDef huart3;
 
 osThreadId defaultTaskHandle;
-osThreadId myTask02Handle;
-osThreadId myTask03Handle;
-osMessageQId myQueue01Handle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -60,13 +59,11 @@ static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void const * argument);
-void StartTask02(void const * argument);
-void StartTask03(void const * argument);
 
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
-
+TaskHandle_t task_handle_task_3;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -96,31 +93,13 @@ void Task_1( void* taskParmPtr )
 {
 	    while( 1 )
     {
-	    	for(a=49;a<58;a++)
-	    		  {  TxData[0] = a;
-
-	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	    		  		 	{
-	    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-	    		  		 	   Error_Handler ();
-	    		  		 	}
-	    				printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
-	    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	    				osDelay(500);
+	    printf("\nCAN2 RX:- CANID: , LEN:   RxData:\n\r");
+	   	osDelay(500);
 
 
-	    		  if (datacheck)
-	    		  {
-	    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-	    			  osDelay(500);
-
-	    			  datacheck = 0;
-	    		  }
-
-	    		  }
     }
 
-    //vTaskDelete( NULL );
+
 }
 
 void Task_2( void* taskParmPtr )
@@ -147,6 +126,7 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 		  datacheck = 1;
 	  }
   }
+
 /* USER CODE END 0 */
 
 /**
@@ -185,17 +165,6 @@ int main(void)
 
 printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 
-  TxHeader.IDE = CAN_ID_STD;
-  TxHeader.StdId = 146;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.DLC = 1;
-  TxHeader.TransmitGlobalTime = DISABLE;
-
-  RxHeader.IDE = CAN_ID_STD;
-  RxHeader.StdId = 146;
-  RxHeader.RTR = CAN_RTR_DATA;
-  RxHeader.DLC = 1;
-
   TxHeader2.IDE = CAN_ID_STD;
   TxHeader2.StdId = 20;
   TxHeader2.RTR = CAN_RTR_DATA;
@@ -221,11 +190,6 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
-  /* Create the queue(s) */
-  /* definition and creation of myQueue01 */
-  osMessageQDef(myQueue01, 16, uint16_t);
-  myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
-
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -234,14 +198,6 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  /* definition and creation of myTask02 */
-  osThreadDef(myTask02, StartTask02, osPriorityIdle, 0, 128);
-  myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
-
-  /* definition and creation of myTask03 */
-  osThreadDef(myTask03, StartTask03, osPriorityIdle, 0, 128);
-  myTask03Handle = osThreadCreate(osThread(myTask03), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -268,6 +224,9 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
 
 
   configASSERT( res1 == pdPASS && res2 == pdPASS);
+
+  COLA_1 = xQueueCreate( 1, sizeof(int  ));
+     configASSERT( COLA_1 != NULL );
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -531,42 +490,6 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_StartTask02 */
-/**
-* @brief Function implementing the myTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void const * argument)
-{
-  /* USER CODE BEGIN StartTask02 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask02 */
-}
-
-/* USER CODE BEGIN Header_StartTask03 */
-/**
-* @brief Function implementing the myTask03 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask03 */
-void StartTask03(void const * argument)
-{
-  /* USER CODE BEGIN StartTask03 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask03 */
 }
 
 /**

@@ -36,20 +36,16 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+QueueHandle_t COLA_1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 UART_HandleTypeDef huart3;
 
 osThreadId defaultTaskHandle;
-osThreadId Task_1Handle;
-osThreadId Task_2Handle;
-osMessageQId Queue_1Handle;
-osTimerId myTimer01Handle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -61,9 +57,6 @@ static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void const * argument);
-void StartTask_1(void const * argument);
-void StartTask_2(void const * argument);
-void Callback01(void const * argument);
 
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
@@ -147,6 +140,7 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 	  if ((RxHeader2.StdId == 146))
 	  {
 		  datacheck = 1;
+
 	  }
   }
 /* USER CODE END 0 */
@@ -219,19 +213,9 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
-  /* Create the timer(s) */
-  /* definition and creation of myTimer01 */
-  osTimerDef(myTimer01, Callback01);
-  myTimer01Handle = osTimerCreate(osTimer(myTimer01), osTimerPeriodic, NULL);
-
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
-
-  /* Create the queue(s) */
-  /* definition and creation of Queue_1 */
-  osMessageQDef(Queue_1, 16, uint16_t);
-  Queue_1Handle = osMessageCreate(osMessageQ(Queue_1), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -241,14 +225,6 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  /* definition and creation of Task_1 */
-  osThreadDef(Task_1, StartTask_1, osPriorityLow, 0, 128);
-  Task_1Handle = osThreadCreate(osThread(Task_1), NULL);
-
-  /* definition and creation of Task_2 */
-  osThreadDef(Task_2, StartTask_2, osPriorityLow, 0, 128);
-  Task_2Handle = osThreadCreate(osThread(Task_2), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -275,6 +251,10 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
 
 
   configASSERT( res1 == pdPASS && res2 == pdPASS);
+
+  COLA_1 = xQueueCreate( 1, sizeof(int  ));
+     configASSERT( COLA_1 != NULL );
+
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -286,7 +266,8 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   while (1)
   {
     /* USER CODE END WHILE */
-
+//	  xQueueSend( COLA_1, &datacheck,  portMAX_DELAY  );
+//	  xQueueReceive( COLA_1, &datacheck, portMAX_DELAY);
     /* USER CODE BEGIN 3 */
 
   }
@@ -545,50 +526,6 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_StartTask_1 */
-/**
-* @brief Function implementing the Task_1 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask_1 */
-void StartTask_1(void const * argument)
-{
-  /* USER CODE BEGIN StartTask_1 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask_1 */
-}
-
-/* USER CODE BEGIN Header_StartTask02 */
-/**
-* @brief Function implementing the myTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask02 */
-void StartTask_2(void const * argument)
-{
-  /* USER CODE BEGIN StartTask02 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask02 */
-}
-
-/* Callback01 function */
-void Callback01(void const * argument)
-{
-  /* USER CODE BEGIN Callback01 */
-
-  /* USER CODE END Callback01 */
 }
 
 /**
