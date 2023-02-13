@@ -6,7 +6,6 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src/freertos.c \
-../Core/Src/main.c \
 ../Core/Src/stm32f4xx_hal_msp.c \
 ../Core/Src/stm32f4xx_hal_timebase_tim.c \
 ../Core/Src/stm32f4xx_it.c \
@@ -16,11 +15,11 @@ C_SRCS += \
 
 CPP_SRCS += \
 ../Core/Src/can_service.cpp \
+../Core/Src/main.cpp \
 ../Core/Src/protocol.cpp 
 
 C_DEPS += \
 ./Core/Src/freertos.d \
-./Core/Src/main.d \
 ./Core/Src/stm32f4xx_hal_msp.d \
 ./Core/Src/stm32f4xx_hal_timebase_tim.d \
 ./Core/Src/stm32f4xx_it.d \
@@ -42,6 +41,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./Core/Src/can_service.d \
+./Core/Src/main.d \
 ./Core/Src/protocol.d 
 
 

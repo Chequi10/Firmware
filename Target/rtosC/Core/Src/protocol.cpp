@@ -131,9 +131,8 @@ void packet_decoder::handle_pkt_state_expecting_terminator()
 {
 	if (PACKET_TERMINATOR_CHAR == this->last_received_char)
 	{
-		this->last_received_packet_t0 = std::chrono::duration_cast<std::chrono::milliseconds>(this->timer.elapsed_time()).count();
-		this->handle_packet(this->received_payload_buffer,
-				this->received_payload_index);
+		this->last_received_packet_t0 = STATE_BUTTON_UP;
+				this->received_payload_index;
 	}
 	else
 	{
@@ -152,7 +151,7 @@ void packet_decoder::feed(uint8_t c)
 void packet_decoder::check_timeouts()
 {
 	// 1. Obtener tiempo actual.
-	uint32_t t1 = std::chrono::duration_cast<std::chrono::milliseconds>(this->timer.elapsed_time()).count();
+	uint32_t t1 = STATE_BUTTON_UP;
 
 	// Verificar tiempo que transcurrió desde que se comenzo el procesamiento del paquete.
     // Si se excede, reiniciar FSM.
@@ -176,10 +175,10 @@ void packet_decoder::check_timeouts()
 
 void packet_decoder::reset()
 {
-    this->timer.start();
+  //  this->timer.start();
 	this->current_state = pkt_state::pkt_state_idle;
 	this->received_payload_index = 0;
-	this->start_of_packet_t0 = std::chrono::duration_cast<std::chrono::milliseconds>(this->timer.elapsed_time()).count();
+	this->start_of_packet_t0 = STATE_BUTTON_UP;
 	this->crc16 = 0;
 }
 

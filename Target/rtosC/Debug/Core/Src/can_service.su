@@ -1,7 +1,7 @@
-../Core/Src/can_service.cpp:35:6:void can_service::setup()	16	static
-../Core/Src/can_service.cpp:53:6:void can_service::can1_send_sync_message()	24	static
-../Core/Src/can_service.cpp:83:6:void can_service::can_read_message(int)	40	static
-../Core/Src/can_service.cpp:115:6:void can_service::serial_read_command()	24	static
-../Core/Src/can_service.cpp:132:6:virtual void can_service::handle_packet(const uint8_t*, uint8_t)	40	static
-../Core/Src/can_service.cpp:141:6:virtual void can_service::send_impl(const uint8_t*, uint8_t)	24	static
-../Core/Src/can_service.cpp:148:25:protocol::packet_decoder::error_code can_service::cmd_send_message(const uint8_t*, uint8_t)	24	static
+../Core/Src/can_service.cpp:32:6:void can_service::setup()	16	static
+../Core/Src/can_service.cpp:50:6:void can_service::can1_send_sync_message()	120	static
+../Core/Src/can_service.cpp:81:6:void can_service::can_read_message(int)	128	static
+../Core/Src/can_service.cpp:116:6:void can_service::serial_read_command()	96	static
+../Core/Src/can_service.cpp:133:6:virtual void can_service::handle_packet(const uint8_t*, uint8_t)	40	static
+../Core/Src/can_service.cpp:142:6:virtual void can_service::send_impl(const uint8_t*, uint8_t)	96	static
+../Core/Src/can_service.cpp:149:25:protocol::packet_decoder::error_code can_service::cmd_send_message(const uint8_t*, uint8_t)	24	static

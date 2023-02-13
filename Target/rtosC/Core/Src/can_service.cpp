@@ -8,14 +8,11 @@
 #include "can_service.h"
 #include <errno.h>
 
-UART_HandleTypeDef huart3;
-CAN_HandleTypeDef hcan1;
-CAN_HandleTypeDef hcan2;
 
-CAN_TxHeaderTypeDef TxHeader;
-CAN_TxHeaderTypeDef TxHeader2;
-CAN_RxHeaderTypeDef RxHeader;
-CAN_RxHeaderTypeDef RxHeader2;
+
+
+
+
 
 
 //can_service::can_service()
@@ -51,8 +48,9 @@ void can_service::setup()
 
 /* Enviar mensaje SYNC desde CAN 1. */
 void can_service::can1_send_sync_message()
-{
-
+{CAN_TxHeaderTypeDef TxHeader;
+CAN_RxHeaderTypeDef RxHeader;
+	CAN_HandleTypeDef hcan1;
 	  TxHeader.IDE = CAN_ID_STD;
 	  TxHeader.StdId = 146;
 	  TxHeader.RTR = CAN_RTR_DATA;
@@ -81,7 +79,10 @@ void can_service::can1_send_sync_message()
 
 /* Leer mensaje de CAN e imprimir en pantalla */
 void can_service::can_read_message(int device_id)
-{
+{CAN_HandleTypeDef hcan2;
+CAN_TxHeaderTypeDef TxHeader2;
+
+CAN_RxHeaderTypeDef RxHeader2;
 	      TxHeader2.IDE = CAN_ID_STD;
 		  TxHeader2.StdId = 20;
 		  TxHeader2.RTR = CAN_RTR_DATA;
@@ -113,7 +114,7 @@ void can_service::can_read_message(int device_id)
 }
 
 void can_service::serial_read_command()
-{
+{UART_HandleTypeDef huart3;
 	    static char buf[32] = {0};
         ssize_t n = HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
 
@@ -139,7 +140,7 @@ void can_service::handle_packet(const uint8_t* payload, uint8_t n)
 
 
 void can_service::send_impl(const uint8_t* buf, uint8_t n)
-{
+{UART_HandleTypeDef huart3;
 	HAL_UART_Transmit(&huart3, buf, n, 1000);
 }
 

@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-//#include "can_service.h"
+#include "can_service.h"
 
 /* USER CODE END Includes */
 
@@ -92,9 +92,28 @@ int _write(int file,char *ptr,int len)
 void Task_1( void* taskParmPtr )
 {
 	    while( 1 )
-    {
-	    printf("\nCAN2 RX:- CANID: , LEN:   RxData:\n\r");
-	   	osDelay(500);
+    {for(a=49;a<58;a++)
+	  {  TxData[0] = a;
+
+			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	  		 	{
+				   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+	  		 	   Error_Handler ();
+	  		 	}
+			printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
+			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+			osDelay(500);
+
+
+	  if (datacheck)
+	  {
+		  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+		  osDelay(500);
+
+		  datacheck = 0;
+	  }
+
+	  }
 
 
     }
@@ -164,6 +183,17 @@ int main(void)
 
 
 printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+
+TxHeader.IDE = CAN_ID_STD;
+  TxHeader.StdId = 146;
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.DLC = 1;
+  TxHeader.TransmitGlobalTime = DISABLE;
+
+  RxHeader.IDE = CAN_ID_STD;
+  RxHeader.StdId = 146;
+  RxHeader.RTR = CAN_RTR_DATA;
+  RxHeader.DLC = 1;
 
   TxHeader2.IDE = CAN_ID_STD;
   TxHeader2.StdId = 20;
