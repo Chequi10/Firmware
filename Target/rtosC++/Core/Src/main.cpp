@@ -183,7 +183,26 @@ int main(void)
 
 
 printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+TxHeader.StdId = 146;
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.DLC = 1;
+  TxHeader.TransmitGlobalTime = DISABLE;
 
+  RxHeader.IDE = CAN_ID_STD;
+  RxHeader.StdId = 146;
+  RxHeader.RTR = CAN_RTR_DATA;
+  RxHeader.DLC = 1;
+
+  TxHeader2.IDE = CAN_ID_STD;
+  TxHeader2.StdId = 20;
+  TxHeader2.RTR = CAN_RTR_DATA;
+  TxHeader2.DLC = 1;
+  TxHeader2.TransmitGlobalTime = DISABLE;
+
+  RxHeader2.IDE = CAN_ID_STD;
+  RxHeader2.StdId = 20;
+  RxHeader2.RTR = CAN_RTR_DATA;
+  RxHeader2.DLC = 1;
 
   /* USER CODE END 2 */
 

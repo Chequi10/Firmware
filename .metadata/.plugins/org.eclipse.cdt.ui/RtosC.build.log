@@ -1,0 +1,16 @@
+04:38:36 **** Build of configuration Debug for project RtosC ****
+make -j2 all 
+arm-none-eabi-gcc -o "RtosC.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/rtosC2++/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RtosC.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: RtosC.elf
+ 
+arm-none-eabi-size   RtosC.elf 
+arm-none-eabi-objdump -h -S  RtosC.elf  > "RtosC.list"
+   text	   data	    bss	    dec	    hex	filename
+  25048	    124	  18252	  43424	   a9a0	RtosC.elf
+Finished building: default.size.stdout
+ 
+Finished building: RtosC.list
+ 
+
+04:38:37 Build Finished. 0 errors, 0 warnings. (took 883ms)
+

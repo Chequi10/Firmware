@@ -9,16 +9,6 @@
 #include "can_service.h"
 #include <errno.h>
 
-<<<<<<< HEAD:Target/rtosC/Core/Src/can_service.cpp
-
-
-
-
-
-
-
-=======
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/can_service.cpp
 //can_service::can_service()
 //:
 //		opcodes
@@ -52,15 +42,9 @@ void can_service::setup()
 
 /* Enviar mensaje SYNC desde CAN 1. */
 void can_service::can1_send_sync_message()
-<<<<<<< HEAD:Target/rtosC/Core/Src/can_service.cpp
-{CAN_TxHeaderTypeDef TxHeader;
-CAN_RxHeaderTypeDef RxHeader;
-	CAN_HandleTypeDef hcan1;
-=======
 {
 	 CAN_HandleTypeDef hcan1;
 
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/can_service.cpp
 	  TxHeader.IDE = CAN_ID_STD;
 	  TxHeader.StdId = 146;
 	  TxHeader.RTR = CAN_RTR_DATA;
@@ -89,19 +73,12 @@ CAN_RxHeaderTypeDef RxHeader;
 
 /* Leer mensaje de CAN e imprimir en pantalla */
 void can_service::can_read_message(int device_id)
-<<<<<<< HEAD:Target/rtosC/Core/Src/can_service.cpp
-{CAN_HandleTypeDef hcan2;
-CAN_TxHeaderTypeDef TxHeader2;
-
-CAN_RxHeaderTypeDef RxHeader2;
-=======
 {
 
 CAN_HandleTypeDef hcan2;
 
 
 
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/can_service.cpp
 	      TxHeader2.IDE = CAN_ID_STD;
 		  TxHeader2.StdId = 20;
 		  TxHeader2.RTR = CAN_RTR_DATA;
@@ -133,13 +110,9 @@ CAN_HandleTypeDef hcan2;
 }
 
 void can_service::serial_read_command()
-<<<<<<< HEAD:Target/rtosC/Core/Src/can_service.cpp
-{UART_HandleTypeDef huart3;
-=======
 {
 
 UART_HandleTypeDef huart3;
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/can_service.cpp
 	    static char buf[32] = {0};
         _ssize_t n = HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
 
@@ -165,13 +138,9 @@ void can_service::handle_packet(const uint8_t* payload, uint8_t n)
 
 
 void can_service::send_impl(const uint8_t* buf, uint8_t n)
-<<<<<<< HEAD:Target/rtosC/Core/Src/can_service.cpp
-{UART_HandleTypeDef huart3;
-=======
 {
 
 UART_HandleTypeDef huart3;
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/can_service.cpp
 	HAL_UART_Transmit(&huart3, buf, n, 1000);
 }
 

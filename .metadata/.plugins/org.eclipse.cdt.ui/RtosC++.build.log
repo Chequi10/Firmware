@@ -1,0 +1,10 @@
+04:54:01 **** Incremental Build of configuration Debug for project RtosC++ ****
+make -j2 all 
+arm-none-eabi-size   RtosC++.elf 
+   text	   data	    bss	    dec	    hex	filename
+  24552	    124	  18252	  42928	   a7b0	RtosC++.elf
+Finished building: default.size.stdout
+ 
+
+04:54:01 Build Finished. 0 errors, 0 warnings. (took 946ms)
+

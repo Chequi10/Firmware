@@ -131,14 +131,9 @@ void packet_decoder::handle_pkt_state_expecting_terminator()
 {
 	if (PACKET_TERMINATOR_CHAR == this->last_received_char)
 	{
-<<<<<<< HEAD:Target/rtosC/Core/Src/protocol.cpp
-		this->last_received_packet_t0 = STATE_BUTTON_UP;
-				this->received_payload_index;
-=======
 		this->last_received_packet_t0 =  keys_data.state = STATE_BUTTON_UP;
 		this->handle_packet(this->received_payload_buffer,
 				this->received_payload_index);
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/protocol.cpp
 	}
 	else
 	{
@@ -157,11 +152,7 @@ void packet_decoder::feed(uint8_t c)
 void packet_decoder::check_timeouts()
 {
 	// 1. Obtener tiempo actual.
-<<<<<<< HEAD:Target/rtosC/Core/Src/protocol.cpp
-	uint32_t t1 = STATE_BUTTON_UP;
-=======
 	uint32_t t1 =  keys_data.state = STATE_BUTTON_UP;
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/protocol.cpp
 
 	// Verificar tiempo que transcurrió desde que se comenzo el procesamiento del paquete.
     // Si se excede, reiniciar FSM.
@@ -188,11 +179,7 @@ void packet_decoder::reset()
   //  this->timer.start();
 	this->current_state = pkt_state::pkt_state_idle;
 	this->received_payload_index = 0;
-<<<<<<< HEAD:Target/rtosC/Core/Src/protocol.cpp
-	this->start_of_packet_t0 = STATE_BUTTON_UP;
-=======
 	this->start_of_packet_t0 =  keys_data.state = STATE_BUTTON_UP;
->>>>>>> 4be632ee8d5e8f8f960ef6fd94449c16d5982e10:Target/rtosC++/Core/Src/protocol.cpp
 	this->crc16 = 0;
 }
 
