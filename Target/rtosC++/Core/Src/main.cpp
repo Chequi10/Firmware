@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "can_service.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,9 +42,8 @@ QueueHandle_t COLA_1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan1;
+ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
-
 UART_HandleTypeDef huart3;
 
 osThreadId defaultTaskHandle;
@@ -61,7 +62,7 @@ void StartDefaultTask(void const * argument);
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
-
+TaskHandle_t task_handle_task_3;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,30 +93,32 @@ void Task_1( void* taskParmPtr )
 	    while( 1 )
     {
 	    	for(a=49;a<58;a++)
-	    		  {  TxData[0] = a;
+	    		    		  {  TxData[0] = a;
 
-	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	    		  		 	{
-	    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-	    		  		 	   Error_Handler ();
-	    		  		 	}
-	    				printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
-	    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	    				osDelay(500);
+	    		    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	    		    		  		 	{
+	    		    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+	    		    		  		 	   Error_Handler ();
+	    		    		  		 	}
+	    		    				printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
+	    		    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+	    		    				osDelay(500);
 
 
-	    		  if (datacheck)
-	    		  {
-	    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-	    			  osDelay(500);
+	    		    		  if (datacheck)
+	    		    		  {
+	    		    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+	    		    			  osDelay(500);
 
-	    			  datacheck = 0;
-	    		  }
+	    		    			  datacheck = 0;
+	    		    		  }
 
-	    		  }
+	    		    		  }
+
+
     }
 
-    //vTaskDelete( NULL );
+
 }
 
 void Task_2( void* taskParmPtr )
@@ -140,9 +143,9 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 	  if ((RxHeader2.StdId == 146))
 	  {
 		  datacheck = 1;
-
 	  }
   }
+
 /* USER CODE END 0 */
 
 /**
@@ -181,27 +184,6 @@ int main(void)
 
 printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 
-  TxHeader.IDE = CAN_ID_STD;
-  TxHeader.StdId = 146;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.DLC = 1;
-  TxHeader.TransmitGlobalTime = DISABLE;
-
-  RxHeader.IDE = CAN_ID_STD;
-  RxHeader.StdId = 146;
-  RxHeader.RTR = CAN_RTR_DATA;
-  RxHeader.DLC = 1;
-
-  TxHeader2.IDE = CAN_ID_STD;
-  TxHeader2.StdId = 20;
-  TxHeader2.RTR = CAN_RTR_DATA;
-  TxHeader2.DLC = 1;
-  TxHeader2.TransmitGlobalTime = DISABLE;
-
-  RxHeader2.IDE = CAN_ID_STD;
-  RxHeader2.StdId = 20;
-  RxHeader2.RTR = CAN_RTR_DATA;
-  RxHeader2.DLC = 1;
 
   /* USER CODE END 2 */
 
@@ -224,11 +206,12 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+ // osThreadDef(secondTaskName, Task1::task1Run, osPriorityNormal, 0, CPPTASK1_TASK_STACKSIZE);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-
+//  xTaskCreate(&tskWrp, (signed char*)name, 1000, this, 1, NULL);
   BaseType_t res1 =
        xTaskCreate(
            Task_1,                     // Funcion de la tarea a ejecutar
@@ -254,7 +237,6 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
 
   COLA_1 = xQueueCreate( 1, sizeof(int  ));
      configASSERT( COLA_1 != NULL );
-
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -266,8 +248,7 @@ printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: P
   while (1)
   {
     /* USER CODE END WHILE */
-//	  xQueueSend( COLA_1, &datacheck,  portMAX_DELAY  );
-//	  xQueueReceive( COLA_1, &datacheck, portMAX_DELAY);
+
     /* USER CODE BEGIN 3 */
 
   }
@@ -483,19 +464,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, Amarillo_Pin|Rojo_Pin|Azul_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : Button_Pin */
-  GPIO_InitStruct.Pin = Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Amarillo_Pin Rojo_Pin Azul_Pin */
   GPIO_InitStruct.Pin = Amarillo_Pin|Rojo_Pin|Azul_Pin;

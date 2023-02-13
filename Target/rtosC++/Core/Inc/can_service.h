@@ -18,6 +18,11 @@
 #include "config.h"
 #include "protocol.h"
 #include "cmd_def.h"
+#include "cmsis_os.h"
+
+
+
+
 
 class can_service :
     private protocol::packet_encoder,
@@ -28,13 +33,17 @@ public:
     can_service();
     ~can_service() {}
     void setup();
+
 private:
     void serial_read_command();
     void can_read_message(int device_id);
     void can1_send_sync_message();
     /* Contador de mensajes de SYNC enviados por canal 1. */
     char sync_counter;
-
+    CAN_TxHeaderTypeDef TxHeader;
+    CAN_TxHeaderTypeDef TxHeader2;
+    CAN_RxHeaderTypeDef RxHeader;
+    CAN_RxHeaderTypeDef RxHeader2;
     /* Cola de eventos de acceso a dispositivo CAN (prioridad alta) */
  //   EventQueue can_dev_queue;
 
