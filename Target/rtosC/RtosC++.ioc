@@ -159,4 +159,3 @@ VP_FREERTOS_VS_CMSIS_V1.Signal=FREERTOS_VS_CMSIS_V1
 VP_SYS_VS_tim7.Mode=TIM7
 VP_SYS_VS_tim7.Signal=SYS_VS_tim7
 board=custom
-isbadioc=false
