@@ -38,11 +38,13 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
+can_service service;
 QueueHandle_t COLA_1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 UART_HandleTypeDef huart3;
 
@@ -80,6 +82,7 @@ uint8_t  RxData[1];
 
 int datacheck = 0;
 int i=0,a;
+
 
 int _write(int file,char *ptr,int len)
 {
@@ -224,9 +227,9 @@ TxHeader.StdId = 146;
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+ osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
  // osThreadDef(secondTaskName, Task1::task1Run, osPriorityNormal, 0, CPPTASK1_TASK_STACKSIZE);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+ defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -267,7 +270,7 @@ TxHeader.StdId = 146;
   while (1)
   {
     /* USER CODE END WHILE */
-
+  service.setup();
     /* USER CODE BEGIN 3 */
 
   }

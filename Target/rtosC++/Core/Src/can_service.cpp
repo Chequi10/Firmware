@@ -9,23 +9,23 @@
 #include "can_service.h"
 #include <errno.h>
 
-//can_service::can_service()
-//:
-//		opcodes
-//		{
-//
-//			{ &can_service::cmd_send_message, opcode_flags::default_flags }
-//		},
-//
-//    sync_counter(0)
-////    can_event_thread(osPriorityHigh)
-////{
+can_service::can_service()
+:
+		opcodes
+		{
+
+			{ &can_service::cmd_send_message, opcode_flags::default_flags }
+		},
+
+    sync_counter(0)
+//    can_event_thread(osPriorityHigh)
+{}
 
 
 
 void can_service::setup()
-{
-			//HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
+{          static char buf[32] = {0};
+     		HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
 
     /* Registrar la función de lectura de CAN en la interrupción Rx.
        Notar que la función se ejecuta en una cola, y no directamente en la interrupción. */
@@ -43,8 +43,6 @@ void can_service::setup()
 /* Enviar mensaje SYNC desde CAN 1. */
 void can_service::can1_send_sync_message()
 {
-	 CAN_HandleTypeDef hcan1;
-
 	  TxHeader.IDE = CAN_ID_STD;
 	  TxHeader.StdId = 146;
 	  TxHeader.RTR = CAN_RTR_DATA;
@@ -54,7 +52,7 @@ void can_service::can1_send_sync_message()
 	  RxHeader.StdId = 146;
 	  RxHeader.RTR = CAN_RTR_DATA;
 	  RxHeader.DLC = 1;
-	  uint32_t TxMailbox;
+
 
     char data[2];
     data[0] = 0;
@@ -72,12 +70,8 @@ void can_service::can1_send_sync_message()
 }
 
 /* Leer mensaje de CAN e imprimir en pantalla */
-void can_service::can_read_message(int device_id)
+void can_service::can_read_message()
 {
-
-CAN_HandleTypeDef hcan2;
-
-
 
 	      TxHeader2.IDE = CAN_ID_STD;
 		  TxHeader2.StdId = 20;
@@ -95,7 +89,7 @@ CAN_HandleTypeDef hcan2;
           	    Error_Handler();
           	  }
 		        get_payload_buffer()[0] = 0x0;  // Event type
-		        get_payload_buffer()[1] = device_id; // Device Id
+		        get_payload_buffer()[1] = 1; // Device Id
 		        get_payload_buffer()[2] = RxHeader2.StdId >> 24; //
 		        get_payload_buffer()[3] = RxHeader2.DLC >> 16;
 		        get_payload_buffer()[4] = RxHeader2.DLC >> 8;
@@ -112,7 +106,6 @@ CAN_HandleTypeDef hcan2;
 void can_service::serial_read_command()
 {
 
-UART_HandleTypeDef huart3;
 	    static char buf[32] = {0};
         _ssize_t n = HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
 
@@ -140,7 +133,6 @@ void can_service::handle_packet(const uint8_t* payload, uint8_t n)
 void can_service::send_impl(const uint8_t* buf, uint8_t n)
 {
 
-UART_HandleTypeDef huart3;
 	HAL_UART_Transmit(&huart3, buf, n, 1000);
 }
 
@@ -148,13 +140,9 @@ UART_HandleTypeDef huart3;
 
 can_service::error_code can_service::cmd_send_message(const uint8_t* payload, uint8_t n)
 {
-
-  //  uint32_t device_id = payload[0];
-  //  const uint32_t canid = (payload[1] << 24) | (payload[2] << 16) | (payload[3] << 8) | (payload[4] << 0);
- //   size_t msg_len = payload[5];
- //   can[device_id].write(CANMessage(canid, &payload[6], msg_len));
-
+    TxHeader2.StdId= (payload[1] << 24) | (payload[2] << 16) | (payload[3] << 8) | (payload[4] << 0);
+    TxHeader.DLC= payload[5];
+	HAL_CAN_AddTxMessage(&hcan1, &TxHeader, (uint8_t*)&payload[6], &TxMailbox);
     return error_code::success;
 }
-
 

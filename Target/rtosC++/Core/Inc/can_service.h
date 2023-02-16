@@ -21,29 +21,32 @@
 #include "cmsis_os.h"
 
 
-
-
-
-class can_service :
+class can_service:
     private protocol::packet_encoder,
     private protocol::packet_decoder
 
 {
 public:
-    can_service();
-    ~can_service() {}
+	can_service();
+    ~can_service(){};
     void setup();
-
+    osThreadId defaultTaskHandle;
 private:
     void serial_read_command();
-    void can_read_message(int device_id);
+    void can_read_message();
     void can1_send_sync_message();
     /* Contador de mensajes de SYNC enviados por canal 1. */
     char sync_counter;
+    CAN_HandleTypeDef hcan1;
+    CAN_HandleTypeDef hcan2;
+    UART_HandleTypeDef huart3;
     CAN_TxHeaderTypeDef TxHeader;
     CAN_TxHeaderTypeDef TxHeader2;
     CAN_RxHeaderTypeDef RxHeader;
     CAN_RxHeaderTypeDef RxHeader2;
+    uint32_t TxMailbox;
+
+
     /* Cola de eventos de acceso a dispositivo CAN (prioridad alta) */
  //   EventQueue can_dev_queue;
 
@@ -53,8 +56,6 @@ private:
     /* Ticker para mensajes SYNC */
  //   Ticker can_sync_ticker;
 
-    /* Dispositivos CAN */
- //   CAN can[2];
 
     /* Protocolo de comunicación serie */
 	using opcode_callback = can_service::error_code(can_service::*)(const uint8_t* payload, uint8_t n);
@@ -64,7 +65,7 @@ private:
      *  Por defecto los telecomandos sólo se reciben y se procesan.
      */
 	enum opcode_flags {
-		default_flags 				   	= 0x00
+		default_flags = 0x00
 	};
 
     /** Descriptor de un OPCODE. */
@@ -94,7 +95,6 @@ private:
 	void send_impl(const uint8_t* buf, uint8_t n) override;
 
     /* Comandos */
-
 
     can_service::error_code cmd_send_message(const uint8_t* payload, uint8_t n);
 };
