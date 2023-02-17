@@ -10,13 +10,14 @@
 
 
 
-#include "config.h"
+
 #include <stdint.h>
 #include "main.h"
 #include "cmsis_os.h"
 
 namespace protocol {
 
+#define PACKET_TIMEOUT_IN_MS 500
 #define HEADER_SIZE (4+1) /* SYNC + LENGTH */
 #define PAYLOAD_BUFFER_SIZE 96
 #define TRAILER_SIZE (2+1) /* CRC16 + TERMINATOR */

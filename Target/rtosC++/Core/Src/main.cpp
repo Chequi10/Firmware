@@ -37,11 +37,11 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-can_service service;
+//can_service service;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 UART_HandleTypeDef huart3;
@@ -143,6 +143,32 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 		  datacheck = 1;
 	  }
   }
+
+void config(void)
+{
+	  BaseType_t res1 =
+           xTaskCreate(
+               Task_1,                     // Funcion de la tarea a ejecutar
+               ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
+               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+               NULL,                       // Parametros de tarea
+               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
+           );
+
+      BaseType_t res2 =
+           xTaskCreate(
+               Task_2,                     // Funcion de la tarea a ejecutar
+               ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
+               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+               NULL,                       // Parametros de tarea
+               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
+           );
+
+
+      configASSERT( res1 == pdPASS && res2 == pdPASS);
+}
 /* USER CODE END 0 */
 
 /**
@@ -202,33 +228,12 @@ int main(void)
   Tarea_1Handle = osThreadCreate(osThread(Tarea_1), NULL);
 
   /* definition and creation of Tarea_2 */
-  osThreadDef(Tarea_2, StartTask02, osPriorityIdle, 0, 128);
+  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
   Tarea_2Handle = osThreadCreate(osThread(Tarea_2), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  BaseType_t res1 =
-           xTaskCreate(
-               Task_1,                     // Funcion de la tarea a ejecutar
-               ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
-               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-               NULL,                       // Parametros de tarea
-               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
-           );
-
-      BaseType_t res2 =
-           xTaskCreate(
-               Task_2,                     // Funcion de la tarea a ejecutar
-               ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
-               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-               NULL,                       // Parametros de tarea
-               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
-           );
-
-
-      configASSERT( res1 == pdPASS && res2 == pdPASS);
+  config();
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -240,7 +245,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  service.setup();
+	  //service.setup();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

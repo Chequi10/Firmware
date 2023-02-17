@@ -15,11 +15,10 @@
 #endif
 
 #include "main.h"
-#include "config.h"
+//#include "config.h"
 #include "protocol.h"
 #include "cmd_def.h"
 #include "cmsis_os.h"
-
 
 class can_service:
     private protocol::packet_encoder,
@@ -30,7 +29,6 @@ public:
 	can_service();
     ~can_service(){};
     void setup();
-
 
 private:
     void serial_read_command();
