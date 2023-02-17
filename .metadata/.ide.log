@@ -33652,3 +33652,10 @@
 2023-02-13 05:02:40,598 [INFO] ThirdParty:925 - Integrity check success = true
 2023-02-13 05:02:40,598 [INFO] IntegrityCheckThread:94 - exiting critical section [integrity check]
 2023-02-13 05:02:40,598 [INFO] IntegrityCheckThread:97 - End integrity checks thread
+2023-02-17 11:48:58,275 [INFO] Activator:177 - 
+
+
+2023-02-17 11:48:58,281 [INFO] Activator:178 - !SESSION log4j initialized
+2023-02-17 11:49:00,737 [ERROR] ApiDbMcu:1585 - Can't use Application install path:
+2023-02-17 11:49:00,743 [WARN] RulesReader:59 - Compatibility file://mcu/compatibility.xml not found
+2023-02-17 11:49:05,153 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com

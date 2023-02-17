@@ -30,7 +30,8 @@ public:
 	can_service();
     ~can_service(){};
     void setup();
-    osThreadId defaultTaskHandle;
+
+
 private:
     void serial_read_command();
     void can_read_message();

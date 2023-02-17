@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "can_service.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,17 +37,17 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 can_service service;
-QueueHandle_t COLA_1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan1;
+ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
+
 UART_HandleTypeDef huart3;
 
-osThreadId defaultTaskHandle;
+osThreadId Tarea_1Handle;
+osThreadId Tarea_2Handle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -59,17 +58,16 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
-void StartDefaultTask(void const * argument);
+void StartTask01(void const * argument);
+void StartTask02(void const * argument);
 
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
-TaskHandle_t task_handle_task_3;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 CAN_TxHeaderTypeDef TxHeader;
 CAN_TxHeaderTypeDef TxHeader2;
 CAN_RxHeaderTypeDef RxHeader;
@@ -83,7 +81,6 @@ uint8_t  RxData[1];
 int datacheck = 0;
 int i=0,a;
 
-
 int _write(int file,char *ptr,int len)
 {
 	 HAL_UART_Transmit(&huart3, (uint8_t*)ptr, len, HAL_MAX_DELAY);
@@ -96,32 +93,30 @@ void Task_1( void* taskParmPtr )
 	    while( 1 )
     {
 	    	for(a=49;a<58;a++)
-	    		    		  {  TxData[0] = a;
+	    		  {  TxData[0] = a;
 
-	    		    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	    		    		  		 	{
-	    		    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-	    		    		  		 	   Error_Handler ();
-	    		    		  		 	}
-	    		    				printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
-	    		    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-	    		    				osDelay(500);
-
-
-	    		    		  if (datacheck)
-	    		    		  {
-	    		    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-	    		    			  osDelay(500);
-
-	    		    			  datacheck = 0;
-	    		    		  }
-
-	    		    		  }
+	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	    		  		 	{
+	    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+	    		  		 	   Error_Handler ();
+	    		  		 	}
+	    				printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
+	    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+	    				osDelay(500);
 
 
+	    		  if (datacheck)
+	    		  {
+	    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+	    			  osDelay(500);
+
+	    			  datacheck = 0;
+	    		  }
+
+	    		  }
     }
 
-
+    //vTaskDelete( NULL );
 }
 
 void Task_2( void* taskParmPtr )
@@ -148,7 +143,6 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 		  datacheck = 1;
 	  }
   }
-
 /* USER CODE END 0 */
 
 /**
@@ -184,29 +178,6 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-
-printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
-TxHeader.StdId = 146;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.DLC = 1;
-  TxHeader.TransmitGlobalTime = DISABLE;
-
-  RxHeader.IDE = CAN_ID_STD;
-  RxHeader.StdId = 146;
-  RxHeader.RTR = CAN_RTR_DATA;
-  RxHeader.DLC = 1;
-
-  TxHeader2.IDE = CAN_ID_STD;
-  TxHeader2.StdId = 20;
-  TxHeader2.RTR = CAN_RTR_DATA;
-  TxHeader2.DLC = 1;
-  TxHeader2.TransmitGlobalTime = DISABLE;
-
-  RxHeader2.IDE = CAN_ID_STD;
-  RxHeader2.StdId = 20;
-  RxHeader2.RTR = CAN_RTR_DATA;
-  RxHeader2.DLC = 1;
-
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -226,39 +197,38 @@ TxHeader.StdId = 146;
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
- osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
- // osThreadDef(secondTaskName, Task1::task1Run, osPriorityNormal, 0, CPPTASK1_TASK_STACKSIZE);
- defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of Tarea_1 */
+  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+  Tarea_1Handle = osThreadCreate(osThread(Tarea_1), NULL);
+
+  /* definition and creation of Tarea_2 */
+  osThreadDef(Tarea_2, StartTask02, osPriorityIdle, 0, 128);
+  Tarea_2Handle = osThreadCreate(osThread(Tarea_2), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-//  xTaskCreate(&tskWrp, (signed char*)name, 1000, this, 1, NULL);
   BaseType_t res1 =
-       xTaskCreate(
-           Task_1,                     // Funcion de la tarea a ejecutar
-           ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
-           configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-           NULL,                       // Parametros de tarea
-           tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-	   &task_handle_task_1             // Puntero a la tarea creada en el sistema
-       );
+           xTaskCreate(
+               Task_1,                     // Funcion de la tarea a ejecutar
+               ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
+               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+               NULL,                       // Parametros de tarea
+               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
+           );
 
-  BaseType_t res2 =
-       xTaskCreate(
-           Task_2,                     // Funcion de la tarea a ejecutar
-           ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
-           configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-           NULL,                       // Parametros de tarea
-           tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-	   &task_handle_task_2             // Puntero a la tarea creada en el sistema
-       );
+      BaseType_t res2 =
+           xTaskCreate(
+               Task_2,                     // Funcion de la tarea a ejecutar
+               ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
+               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+               NULL,                       // Parametros de tarea
+               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
+           );
 
 
-  configASSERT( res1 == pdPASS && res2 == pdPASS);
-
-  COLA_1 = xQueueCreate( 1, sizeof(int  ));
-     configASSERT( COLA_1 != NULL );
+      configASSERT( res1 == pdPASS && res2 == pdPASS);
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -270,9 +240,8 @@ TxHeader.StdId = 146;
   while (1)
   {
     /* USER CODE END WHILE */
-  service.setup();
+	  service.setup();
     /* USER CODE BEGIN 3 */
-
   }
   /* USER CODE END 3 */
 }
@@ -328,8 +297,6 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE BEGIN CAN1_Init 0 */
 
-      CAN_FilterTypeDef  sFilterConfig;
-
   /* USER CODE END CAN1_Init 0 */
 
   /* USER CODE BEGIN CAN1_Init 1 */
@@ -352,31 +319,7 @@ static void MX_CAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN1_Init 2 */
-  sFilterConfig.FilterBank = 0;
-	  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-	  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
-	  sFilterConfig.FilterIdHigh=0;
-	  sFilterConfig.FilterIdLow=0;
-	  sFilterConfig.FilterMaskIdHigh=0;
-	  sFilterConfig.FilterMaskIdLow=0;
-	  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
-	  sFilterConfig.FilterActivation=ENABLE;
-      sFilterConfig.SlaveStartFilterBank = 14;
 
-      if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
-        {
-          /* Filter configuration Error */
-          Error_Handler();
-        }
-
-      HAL_CAN_Start(&hcan1);
-
-        /*##-4- Activate CAN RX notification #######################################*/
-        if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-        {
-          /* Notification Error */
-          Error_Handler();
-        }
   /* USER CODE END CAN1_Init 2 */
 
 }
@@ -391,7 +334,6 @@ static void MX_CAN2_Init(void)
 
   /* USER CODE BEGIN CAN2_Init 0 */
 
-	      CAN_FilterTypeDef  sFilterConfig;
   /* USER CODE END CAN2_Init 0 */
 
   /* USER CODE BEGIN CAN2_Init 1 */
@@ -414,31 +356,7 @@ static void MX_CAN2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN2_Init 2 */
-  sFilterConfig.FilterBank = 14;
-		  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-		  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
-		  sFilterConfig.FilterIdHigh=0;
-		  sFilterConfig.FilterIdLow=0;
-		  sFilterConfig.FilterMaskIdHigh=0;
-		  sFilterConfig.FilterMaskIdLow=0;
-		  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
-		  sFilterConfig.FilterActivation=ENABLE;
-	      sFilterConfig.SlaveStartFilterBank = 14;
 
-	      if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
-	        {
-	          /* Filter configuration Error */
-	          Error_Handler();
-	        }
-
-	      HAL_CAN_Start(&hcan2);
-
-	        /*##-4- Activate CAN RX notification #######################################*/
-	        if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-	        {
-	          /* Notification Error */
-	          Error_Handler();
-	        }
   /* USER CODE END CAN2_Init 2 */
 
 }
@@ -506,14 +424,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_StartTask01 */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the Tarea_1 thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_StartTask01 */
+void StartTask01(void const * argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -522,6 +440,24 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartTask02 */
+/**
+* @brief Function implementing the Tarea_2 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask02 */
+void StartTask02(void const * argument)
+{
+  /* USER CODE BEGIN StartTask02 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask02 */
 }
 
 /**
