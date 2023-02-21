@@ -21,6 +21,9 @@ can_service::can_service()
 //    can_event_thread(osPriorityHigh)
 {}
 
+
+
+
 void can_service::setup()
 {          static char buf[32] = {0};
      		HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
@@ -37,6 +40,8 @@ void can_service::setup()
 
 //    can_sync_ticker.attach(can_dev_queue.event(this, &can_service::can1_send_sync_message), 50ms);
 }
+
+
 
 /* Enviar mensaje SYNC desde CAN 1. */
 void can_service::can1_send_sync_message()
