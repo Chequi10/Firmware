@@ -22,8 +22,6 @@ can_service::can_service()
 {}
 
 
-
-
 void can_service::setup()
 {          static char buf[32] = {0};
      		HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);

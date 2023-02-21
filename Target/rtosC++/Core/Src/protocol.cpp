@@ -25,6 +25,20 @@ packet_decoder::packet_decoder()
 {
 	this->reset();
 }
+TickType_t packet_decoder::Time_get_diff( void )
+{
+    TickType_t tiempo;
+
+    tiempo = Time_data.time_diff;
+
+    return tiempo;
+}
+
+void packet_decoder::Time_clear_diff( void )
+{
+    Time_data.time_diff = KEYS_INVALID_TIME;
+}
+
 
 void packet_decoder::handle_pkt_state_idle()
 {
@@ -131,7 +145,7 @@ void packet_decoder::handle_pkt_state_expecting_terminator()
 {
 	if (PACKET_TERMINATOR_CHAR == this->last_received_char)
 	{
-		this->last_received_packet_t0 =  keys_data.state = STATE_BUTTON_UP;
+		this->last_received_packet_t0 =  Time_data.time_up = xTaskGetTickCount();
 		this->handle_packet(this->received_payload_buffer,
 				this->received_payload_index);
 	}
@@ -152,7 +166,7 @@ void packet_decoder::feed(uint8_t c)
 void packet_decoder::check_timeouts()
 {
 	// 1. Obtener tiempo actual.
-	uint32_t t1 =  keys_data.state = STATE_BUTTON_UP;
+	uint32_t t1 =  Time_data.time_up = xTaskGetTickCount();
 
 	// Verificar tiempo que transcurrió desde que se comenzo el procesamiento del paquete.
     // Si se excede, reiniciar FSM.
@@ -179,7 +193,7 @@ void packet_decoder::reset()
   //  this->timer.start();
 	this->current_state = pkt_state::pkt_state_idle;
 	this->received_payload_index = 0;
-	this->start_of_packet_t0 =  keys_data.state = STATE_BUTTON_UP;
+	this->start_of_packet_t0 =  Time_data.time_up = xTaskGetTickCount();
 	this->crc16 = 0;
 }
 

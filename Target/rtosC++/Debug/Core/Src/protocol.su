@@ -1,19 +1,21 @@
 ../Core/Src/protocol.cpp:12:1:protocol::packet_decoder::packet_decoder()	16	static
-../Core/Src/protocol.cpp:29:6:void protocol::packet_decoder::handle_pkt_state_idle()	16	static
-../Core/Src/protocol.cpp:38:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync1()	16	static
-../Core/Src/protocol.cpp:52:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync2()	16	static
-../Core/Src/protocol.cpp:66:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync3()	16	static
-../Core/Src/protocol.cpp:79:6:void protocol::packet_decoder::handle_pkt_state_expecting_length()	16	static
-../Core/Src/protocol.cpp:93:6:void protocol::packet_decoder::handle_pkt_state_expecting_payload()	16	static
-../Core/Src/protocol.cpp:109:6:void protocol::packet_decoder::handle_pkt_state_expecting_crc1()	16	static
-../Core/Src/protocol.cpp:115:6:void protocol::packet_decoder::handle_pkt_state_expecting_crc2()	16	static
-../Core/Src/protocol.cpp:130:6:void protocol::packet_decoder::handle_pkt_state_expecting_terminator()	16	static
-../Core/Src/protocol.cpp:145:6:void protocol::packet_decoder::feed(uint8_t)	16	static
-../Core/Src/protocol.cpp:152:6:void protocol::packet_decoder::check_timeouts()	24	static
-../Core/Src/protocol.cpp:177:6:void protocol::packet_decoder::reset()	16	static
-../Core/Src/protocol.cpp:193:1:protocol::packet_encoder::packet_encoder()	16	static
-../Core/Src/protocol.cpp:201:6:void protocol::packet_encoder::calc_crc_and_close_packet(uint8_t)	24	static
-../Core/Src/protocol.cpp:210:10:uint8_t* protocol::packet_encoder::get_payload_buffer()	16	static
-../Core/Src/protocol.cpp:215:16:const uint8_t* protocol::packet_encoder::get_packet() const	16	static
-../Core/Src/protocol.cpp:220:6:void protocol::packet_encoder::send(uint8_t)	24	static
-../Core/Src/protocol.cpp:226:10:uint16_t protocol::calc_crc16(const uint8_t*, uint8_t)	24	static
+../Core/Src/protocol.cpp:28:12:TickType_t protocol::packet_decoder::Time_get_diff()	24	static
+../Core/Src/protocol.cpp:37:6:void protocol::packet_decoder::Time_clear_diff()	16	static
+../Core/Src/protocol.cpp:43:6:void protocol::packet_decoder::handle_pkt_state_idle()	16	static
+../Core/Src/protocol.cpp:52:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync1()	16	static
+../Core/Src/protocol.cpp:66:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync2()	16	static
+../Core/Src/protocol.cpp:80:6:void protocol::packet_decoder::handle_pkt_state_expecting_start_sync3()	16	static
+../Core/Src/protocol.cpp:93:6:void protocol::packet_decoder::handle_pkt_state_expecting_length()	16	static
+../Core/Src/protocol.cpp:107:6:void protocol::packet_decoder::handle_pkt_state_expecting_payload()	16	static
+../Core/Src/protocol.cpp:123:6:void protocol::packet_decoder::handle_pkt_state_expecting_crc1()	16	static
+../Core/Src/protocol.cpp:129:6:void protocol::packet_decoder::handle_pkt_state_expecting_crc2()	16	static
+../Core/Src/protocol.cpp:144:6:void protocol::packet_decoder::handle_pkt_state_expecting_terminator()	16	static
+../Core/Src/protocol.cpp:159:6:void protocol::packet_decoder::feed(uint8_t)	16	static
+../Core/Src/protocol.cpp:166:6:void protocol::packet_decoder::check_timeouts()	24	static
+../Core/Src/protocol.cpp:191:6:void protocol::packet_decoder::reset()	16	static
+../Core/Src/protocol.cpp:207:1:protocol::packet_encoder::packet_encoder()	16	static
+../Core/Src/protocol.cpp:215:6:void protocol::packet_encoder::calc_crc_and_close_packet(uint8_t)	24	static
+../Core/Src/protocol.cpp:224:10:uint8_t* protocol::packet_encoder::get_payload_buffer()	16	static
+../Core/Src/protocol.cpp:229:16:const uint8_t* protocol::packet_encoder::get_packet() const	16	static
+../Core/Src/protocol.cpp:234:6:void protocol::packet_encoder::send(uint8_t)	24	static
+../Core/Src/protocol.cpp:240:10:uint16_t protocol::calc_crc16(const uint8_t*, uint8_t)	24	static

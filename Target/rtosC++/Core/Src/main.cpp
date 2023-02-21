@@ -20,10 +20,12 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "can_service.h"
+#include <string.h>
+//#include "can_service.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,6 +68,7 @@ void StartTask02(void const * argument);
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -83,42 +86,48 @@ uint8_t  RxData[1];
 int datacheck = 0;
 int i=0,a;
 
-int _write(int file,char *ptr,int len)
+
+void vPrintString( const char *pcString )
 {
-	 HAL_UART_Transmit(&huart3, (uint8_t*)ptr, len, HAL_MAX_DELAY);
-	 return len;
+	/* Print the string, using a critical section as a crude method of mutual
+	exclusion. */
+	taskENTER_CRITICAL();
+
+		HAL_UART_Transmit( &huart3, (uint8_t *)pcString, (uint16_t) strlen((char *)pcString), HAL_MAX_DELAY );
+
+	taskEXIT_CRITICAL();
 }
 
+
 void Task_1( void* taskParmPtr )
-		{
-			    while( 1 )
-		    {
-			    	for(a=49;a<58;a++)
-			    		  {  TxData[0] = a;
+{
+	char buffer [100];
+	   while( 1 )
+	    {
+	    	for(a=49;a<58;a++)
+	    		  {   TxData[0] = a;
+	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	    		  		 	{
+    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+    		  		 	   Error_Handler ();
+	    		  		 	}
+		    				sprintf( (char*)buffer, "\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
+		    				vPrintString( (char*)buffer );
+		    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+		    				osDelay(200);
 
-			    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-			    		  		 	{
-			    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-			    		  		 	   Error_Handler ();
-			    		  		 	}
-			    		//		printf("\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
-			    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-			    				osDelay(500);
+    		  if (datacheck)
+	    		  {
+    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+    			  osDelay(200);
+    			  datacheck = 0;
+	    		  }
 
-
-			    		  if (datacheck)
-			    		  {
-			    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-			    			  osDelay(500);
-
-			    			  datacheck = 0;
-			    		  }
-
-			    		  }
-		    }
+   		          }
+        }
 
 		    //vTaskDelete( NULL );
-		}
+}
 
 
 
@@ -127,7 +136,7 @@ void Task_2( void* taskParmPtr )
 	    while( 1 )
     {
        HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-       osDelay(50);
+       osDelay(100);
     }
 }
 
@@ -146,7 +155,31 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 	  }
   }
 
+void config(void)
+{
+	BaseType_t res1 =
+  			           xTaskCreate(
+  			               Task_1,                     // Funcion de la tarea a ejecutar
+  			               ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
+  			               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+  			               NULL,                       // Parametros de tarea
+  			               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+  			    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
+  			           );
 
+  			      BaseType_t res2 =
+  			           xTaskCreate(
+  			               Task_2,                     // Funcion de la tarea a ejecutar
+  			               ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
+  			               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
+  			               NULL,                       // Parametros de tarea
+  			               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
+  			    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
+  			           );
+
+
+  			      configASSERT( res1 == pdPASS && res2 == pdPASS);
+  			      }
 
 
 /* USER CODE END 0 */
@@ -183,7 +216,8 @@ int main(void)
   MX_CAN2_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  printf("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+  vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+
 
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.StdId = 146;
@@ -236,29 +270,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  BaseType_t res1 =
-  			           xTaskCreate(
-  			               Task_1,                     // Funcion de la tarea a ejecutar
-  			               ( const char * )"Task 1",   // Nombre de la tarea como String amigable para el usuario
-  			               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-  			               NULL,                       // Parametros de tarea
-  			               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-  			    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
-  			           );
-
-  			      BaseType_t res2 =
-  			           xTaskCreate(
-  			               Task_2,                     // Funcion de la tarea a ejecutar
-  			               ( const char * )"Task 2",   // Nombre de la tarea como String amigable para el usuario
-  			               configMINIMAL_STACK_SIZE*2, /* tamaño del stack de cada tarea (words) */
-  			               NULL,                       // Parametros de tarea
-  			               tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-  			    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
-  			           );
-
-
-  			      configASSERT( res1 == pdPASS && res2 == pdPASS);
-
+  config();
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */

@@ -1,14 +1,15 @@
-../Core/Src/main.cpp:86:5:int _write(int, char*, int)	24	static
-../Core/Src/main.cpp:92:6:void Task_1(void*)	16	static
-../Core/Src/main.cpp:125:6:void Task_2(void*)	16	static
-../Core/Src/main.cpp:134:7:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:158:5:int main()	96	static,ignoring_inline_asm
-../Core/Src/main.cpp:284:6:void SystemClock_Config()	88	static
-../Core/Src/main.cpp:326:13:void MX_CAN1_Init()	8	static
-../Core/Src/main.cpp:387:13:void MX_CAN2_Init()	8	static
-../Core/Src/main.cpp:448:13:void MX_USART3_UART_Init()	8	static
-../Core/Src/main.cpp:481:13:void MX_GPIO_Init()	40	static
-../Core/Src/main.cpp:513:6:void StartTask01(const void*)	16	static
-../Core/Src/main.cpp:531:6:void StartTask02(const void*)	16	static
-../Core/Src/main.cpp:550:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:567:6:void Error_Handler()	4	static,ignoring_inline_asm
+../Core/Src/main.cpp:90:6:void vPrintString(const char*)	16	static
+../Core/Src/main.cpp:102:6:void Task_1(void*)	128	static
+../Core/Src/main.cpp:134:6:void Task_2(void*)	16	static
+../Core/Src/main.cpp:143:7:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:158:6:void config()	32	static,ignoring_inline_asm
+../Core/Src/main.cpp:191:5:int main()	72	static
+../Core/Src/main.cpp:296:6:void SystemClock_Config()	88	static
+../Core/Src/main.cpp:338:13:void MX_CAN1_Init()	8	static
+../Core/Src/main.cpp:399:13:void MX_CAN2_Init()	8	static
+../Core/Src/main.cpp:460:13:void MX_USART3_UART_Init()	8	static
+../Core/Src/main.cpp:493:13:void MX_GPIO_Init()	40	static
+../Core/Src/main.cpp:525:6:void StartTask01(const void*)	16	static
+../Core/Src/main.cpp:543:6:void StartTask02(const void*)	16	static
+../Core/Src/main.cpp:562:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:579:6:void Error_Handler()	4	static,ignoring_inline_asm

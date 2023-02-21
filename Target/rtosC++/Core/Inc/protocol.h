@@ -17,6 +17,9 @@
 
 namespace protocol {
 
+#define LED_RATE_MS 1000
+#define KEYS_INVALID_TIME	-1
+#define DEBOUNCE_TIME_MS	40
 #define PACKET_TIMEOUT_IN_MS 500
 #define HEADER_SIZE (4+1) /* SYNC + LENGTH */
 #define PAYLOAD_BUFFER_SIZE 96
@@ -178,26 +181,17 @@ private:
 	packet_state_handler state_handlers[pkt_state::pkt_state_last];
 
 
-
-	typedef enum
-		{
-		    STATE_BUTTON_UP,
-		    STATE_BUTTON_DOWN,
-		    STATE_BUTTON_FALLING,
-		    STATE_BUTTON_RISING
-		} keys_ButtonState_t;
-
 		typedef struct
 		{
-		    keys_ButtonState_t state;   //variables
-
 		    TickType_t time_down;		//timestamp of the last High to Low transition of the key
 		    TickType_t time_up;		    //timestamp of the last Low to High transition of the key
 		    TickType_t time_diff;	    //variables
-		} t_key_data;
+		} t_time_data;
 
-		t_key_data keys_data;
+		t_time_data Time_data;
 
+		TickType_t Time_get_diff( void );
+		void Time_clear_diff( void );
 
 		   /** Timer para llevar registro de tiempo transcurrido reconociendo un paquete. */
 
@@ -233,6 +227,11 @@ private:
 
     /** Tamaño del payload. */
 	uint8_t payload_length;
+
+
+
+
+
 
     /** Handler de FSM para estado inicial. */
 	void handle_pkt_state_idle();
