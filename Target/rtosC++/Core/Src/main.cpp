@@ -25,7 +25,9 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
-//#include "can_service.h"
+#include "can_service.h"
+#include "printscreen.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,14 +42,14 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 //can_service service;
-
+printer imprime;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
-UART_HandleTypeDef huart3;
+
 
 osThreadId Tarea_1Handle;
 osThreadId Tarea_2Handle;
@@ -83,27 +85,39 @@ uint32_t TxMailbox;
 uint8_t  TxData[1];
 uint8_t  RxData[1];
 
-int datacheck = 0;
-int i=0,a;
+int datacheck=0;
+int i=0;
 
+uint16_t calc_crc16(const uint8_t* data_p, uint8_t length);
 
-void vPrintString( const char *pcString )
-{
-	/* Print the string, using a critical section as a crude method of mutual
-	exclusion. */
-	taskENTER_CRITICAL();
-
-		HAL_UART_Transmit( &huart3, (uint8_t *)pcString, (uint16_t) strlen((char *)pcString), HAL_MAX_DELAY );
-
-	taskEXIT_CRITICAL();
-}
-
+uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
+	    				{
+	    					uint8_t x;
+	    					uint16_t crc = 0xFFFF;
+	    					while (length--)
+	    					{
+	    						x = crc >> 8 ^ *data_p++;
+	    						x ^= x >> 4;
+	    						crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5))
+	    								^ ((uint16_t) x);
+	    					}
+	    					return crc;
+	    				}
 
 void Task_1( void* taskParmPtr )
 {
-	char buffer [100];
+	uint8_t a;
+
+	uint8_t buffer [100];
+	uint8_t buffer1[20];
+	uint8_t buffer3[10];
 	   while( 1 )
 	    {
+
+		 //  len = getData(rcvBuffer[0], 62);
+		  // imprime.vPrintreading((char*)buffer3[0] );
+
+
 	    	for(a=49;a<58;a++)
 	    		  {   TxData[0] = a;
 	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
@@ -111,8 +125,38 @@ void Task_1( void* taskParmPtr )
     					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
     		  		 	   Error_Handler ();
 	    		  		 	}
-		    				sprintf( (char*)buffer, "\nCAN2 RX:- CANID: %d, LEN: %d  RxData:%s\n\r",(char *)RxHeader2.StdId,( char *)RxHeader2.DLC,(uint8_t *)TxData);
-		    				vPrintString( (char*)buffer );
+
+	    				buffer[0]='P';
+	    				buffer[1]='K';
+	    				buffer[2]='T';
+	    				buffer[3]='!';
+	    				buffer[4]= 0x6;
+	    				buffer[5]= '0';
+	    				for(uint8_t sdf=6;sdf<=10;sdf++)
+	    				{
+	    				buffer1[5]='0';
+	    					buffer1[sdf]=0x66+sdf-6;
+	    					uint16_t crc = calc_crc16(buffer1, 5);
+	    					buffer[sdf]=buffer1[sdf];
+	    					buffer[11]=0b10110011;
+		    			//	buffer[11]=(crc >> 8) & 0xFF;
+		    			//	buffer[12]=crc & 0xFF;
+		    				buffer[12]=0b10101110;
+		    				buffer[13]='\n';
+	    				}
+	    				if(imprime.uartRecvString(buffer3, 11))
+	    							   {
+
+	    						imprime.vPrintString( (char*)buffer3 );
+
+	    							   }
+
+
+	    		//	sprintf( (char*)buffer, "03456789ABCDEFGHIJKLMabcdefghijklmnopqrstuvwxyzYZ\n");
+	    				//sprintf( (char*)buffer, "\nPKT!9abcdefghijk%ldlmno%ldpqrs:%s\n",(uint32_t)RxHeader2.StdId,(uint32_t)RxHeader2.DLC,(char *)TxData);
+		    		//		imprime.vPrintString( (char*)buffer3 );
+
+
 		    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 		    				osDelay(200);
 
@@ -216,7 +260,7 @@ int main(void)
   MX_CAN2_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 
 
     TxHeader.IDE = CAN_ID_STD;
@@ -467,18 +511,18 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 1 */
 
   /* USER CODE END USART3_Init 1 */
-  huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
-  huart3.Init.WordLength = UART_WORDLENGTH_8B;
-  huart3.Init.StopBits = UART_STOPBITS_1;
-  huart3.Init.Parity = UART_PARITY_NONE;
-  huart3.Init.Mode = UART_MODE_TX_RX;
-  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart3) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  huart3.Instance = USART3;
+//  huart3.Init.BaudRate = 115200;
+//  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+//  huart3.Init.StopBits = UART_STOPBITS_1;
+//  huart3.Init.Parity = UART_PARITY_NONE;
+//  huart3.Init.Mode = UART_MODE_TX_RX;
+//  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+//  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+//  if (HAL_UART_Init(&huart3) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */

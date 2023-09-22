@@ -1,4 +1,4 @@
-# Install script for directory: /home/ezequiel/Firmware/Firmware/Host/libcanserial/stm32canbusif
+# Install script for directory: /home/ezequiel/prueba2/Host/libcanserial/stm32canbusif
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

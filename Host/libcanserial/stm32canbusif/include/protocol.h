@@ -15,7 +15,8 @@ namespace protocol {
 #define HEADER_SIZE (4+1) /* SYNC + LENGTH */
 #define PAYLOAD_BUFFER_SIZE 96
 #define TRAILER_SIZE (2+1) /* CRC16 + TERMINATOR */
-#define PACKET_TIMEOUT_IN_MS 500
+#define PACKET_TIMEOUT_IN_MS 600
+#define HEARTBEAT_TIMEOUT_IN_MS 600
 
 #define MAX_PACKET_SIZE = HEADER_SIZE + PAYLOAD_BUFFER_SIZE + TRAILER_SIZE
 
@@ -190,7 +191,7 @@ private:
     /** CRC16 del último paquete recibido. */
 	uint16_t crc16;
 
-    /** Último caracter recibido. */
+     /** Último caracter recibido. */
 	uint8_t last_received_char;
 
     /** Flag para indicar que hay nuevos datos disponibles. */

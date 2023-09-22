@@ -8,9 +8,6 @@
 #ifndef INC_PROTOCOL_H_
 #define INC_PROTOCOL_H_
 
-
-
-
 #include <stdint.h>
 #include "main.h"
 #include "cmsis_os.h"

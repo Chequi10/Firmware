@@ -8,13 +8,18 @@
 #include "cmsis_os.h"
 #include "can_service.h"
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 can_service::can_service()
 :
 		opcodes
 		{
 
-			{ &can_service::cmd_send_message, opcode_flags::default_flags }
+			{ &can_service::cmd_send_message,
+				opcode_flags::default_flags
+			}
+
 		},
 
     sync_counter(0)

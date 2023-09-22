@@ -20,10 +20,10 @@
 #include "cmd_def.h"
 #include "cmsis_os.h"
 
+
 class can_service:
     private protocol::packet_encoder,
     private protocol::packet_decoder
-
 {
 public:
 	can_service();
@@ -45,7 +45,6 @@ private:
     CAN_RxHeaderTypeDef RxHeader2;
     uint32_t TxMailbox;
 
-
     /* Cola de eventos de acceso a dispositivo CAN (prioridad alta) */
  //   EventQueue can_dev_queue;
 
@@ -54,7 +53,6 @@ private:
 
     /* Ticker para mensajes SYNC */
  //   Ticker can_sync_ticker;
-
 
     /* Protocolo de comunicación serie */
 	using opcode_callback = can_service::error_code(can_service::*)(const uint8_t* payload, uint8_t n);

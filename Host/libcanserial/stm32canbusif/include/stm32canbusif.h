@@ -58,7 +58,7 @@ public:
      * @brief Iniciar monitor/controlador. Cuando el controlador está arrancado, se habilita el monitoreo y capacidad de envío de mensajes.
      */
     void start();
-
+   
     /**
      * @brief Detener monitor/controlador.
      */
@@ -69,15 +69,19 @@ private:
     boost::asio::serial_port port;
     //boost::asio::streambuf buffer;
     std::array<char,BUFSIZE> rx_buffer;
+    std::array<char,BUFSIZE> tx_buffer;
     std::thread comm_thread;
     std::atomic<bool> keep_running;
-
     on_can_message_callback on_event_callback;
-    
+   
+
     void read_handler( const boost::system::error_code& error, size_t bytes_transferred);
+    void write_handler( const boost::system::error_code& error, size_t bytes_transferred);
     void read_some();
+    void write_some();
     std::string response_get(std::size_t length);
     void run();
+ 
 
     // Protocolo de paquetes (receptor)
 	void handle_packet(const uint8_t* payload, size_t n) override;
@@ -86,4 +90,5 @@ private:
 
     // Protocolo de paquetes (emisor)
     void send_impl(const uint8_t* buf, uint8_t n) override;
+   
 };
