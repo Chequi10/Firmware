@@ -147,8 +147,8 @@ void Task_1( void* taskParmPtr )
 	    				if(imprime.uartRecvString(buffer3, 11))
 	    							   {
 
-	    						imprime.vPrintString( (char*)buffer3 );
-
+	    						//imprime.vPrintString( (char*)buffer3 );
+	    					imprime.vPrintString( (char*)buffer );
 	    							   }
 
 
