@@ -1,4 +1,4 @@
-# Install script for directory: /home/ezequiel/prueba2/Host/libcanserial
+# Install script for directory: /home/ezequiel/Firmware/Firmware/Host/libcanserial
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,8 +44,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/ezequiel/prueba2/Host/libcanserial/build/stm32canbusif/cmake_install.cmake")
-  include("/home/ezequiel/prueba2/Host/libcanserial/build/example/cmake_install.cmake")
+  include("/home/ezequiel/Firmware/Firmware/Host/libcanserial/build/stm32canbusif/cmake_install.cmake")
+  include("/home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example/cmake_install.cmake")
 
 endif()
 
@@ -57,5 +57,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ezequiel/prueba2/Host/libcanserial/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ezequiel/Firmware/Firmware/Host/libcanserial/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

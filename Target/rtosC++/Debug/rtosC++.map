@@ -185,8 +185,8 @@ Discarded input sections
                 0x0000000000000000       0x6c ./Core/Src/can_service.o
  .rodata._ZTV11can_service
                 0x0000000000000000       0x24 ./Core/Src/can_service.o
- .debug_info    0x0000000000000000     0x17db ./Core/Src/can_service.o
- .debug_abbrev  0x0000000000000000      0x485 ./Core/Src/can_service.o
+ .debug_info    0x0000000000000000     0x17ee ./Core/Src/can_service.o
+ .debug_abbrev  0x0000000000000000      0x477 ./Core/Src/can_service.o
  .debug_aranges
                 0x0000000000000000       0x60 ./Core/Src/can_service.o
  .debug_ranges  0x0000000000000000       0x50 ./Core/Src/can_service.o

@@ -53,10 +53,10 @@ RM = /snap/cmake/1334/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ezequiel/prueba2/Host/libcanserial
+CMAKE_SOURCE_DIR = /home/ezequiel/Firmware/Firmware/Host/libcanserial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ezequiel/prueba2/Host/libcanserial/build
+CMAKE_BINARY_DIR = /home/ezequiel/Firmware/Firmware/Host/libcanserial/build
 
 # Include any dependencies generated for this target.
 include example/CMakeFiles/stm32canbus_serial_example.dir/depend.make
@@ -70,18 +70,18 @@ include example/CMakeFiles/stm32canbus_serial_example.dir/progress.make
 include example/CMakeFiles/stm32canbus_serial_example.dir/flags.make
 
 example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o: example/CMakeFiles/stm32canbus_serial_example.dir/flags.make
-example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o: /home/ezequiel/prueba2/Host/libcanserial/example/main.cpp
+example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o: /home/ezequiel/Firmware/Firmware/Host/libcanserial/example/main.cpp
 example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o: example/CMakeFiles/stm32canbus_serial_example.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ezequiel/prueba2/Host/libcanserial/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o"
-	cd /home/ezequiel/prueba2/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o -MF CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o.d -o CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o -c /home/ezequiel/prueba2/Host/libcanserial/example/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ezequiel/Firmware/Firmware/Host/libcanserial/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o"
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o -MF CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o.d -o CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o -c /home/ezequiel/Firmware/Firmware/Host/libcanserial/example/main.cpp
 
 example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/stm32canbus_serial_example.dir/main.cpp.i"
-	cd /home/ezequiel/prueba2/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ezequiel/prueba2/Host/libcanserial/example/main.cpp > CMakeFiles/stm32canbus_serial_example.dir/main.cpp.i
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ezequiel/Firmware/Firmware/Host/libcanserial/example/main.cpp > CMakeFiles/stm32canbus_serial_example.dir/main.cpp.i
 
 example/CMakeFiles/stm32canbus_serial_example.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/stm32canbus_serial_example.dir/main.cpp.s"
-	cd /home/ezequiel/prueba2/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ezequiel/prueba2/Host/libcanserial/example/main.cpp -o CMakeFiles/stm32canbus_serial_example.dir/main.cpp.s
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ezequiel/Firmware/Firmware/Host/libcanserial/example/main.cpp -o CMakeFiles/stm32canbus_serial_example.dir/main.cpp.s
 
 # Object files for target stm32canbus_serial_example
 stm32canbus_serial_example_OBJECTS = \
@@ -96,18 +96,18 @@ example/stm32canbus_serial_example: stm32canbusif/libstm32canbus_serialif.a
 example/stm32canbus_serial_example: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
 example/stm32canbus_serial_example: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
 example/stm32canbus_serial_example: example/CMakeFiles/stm32canbus_serial_example.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/ezequiel/prueba2/Host/libcanserial/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable stm32canbus_serial_example"
-	cd /home/ezequiel/prueba2/Host/libcanserial/build/example && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/stm32canbus_serial_example.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/ezequiel/Firmware/Firmware/Host/libcanserial/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable stm32canbus_serial_example"
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/stm32canbus_serial_example.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 example/CMakeFiles/stm32canbus_serial_example.dir/build: example/stm32canbus_serial_example
 .PHONY : example/CMakeFiles/stm32canbus_serial_example.dir/build
 
 example/CMakeFiles/stm32canbus_serial_example.dir/clean:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build/example && $(CMAKE_COMMAND) -P CMakeFiles/stm32canbus_serial_example.dir/cmake_clean.cmake
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example && $(CMAKE_COMMAND) -P CMakeFiles/stm32canbus_serial_example.dir/cmake_clean.cmake
 .PHONY : example/CMakeFiles/stm32canbus_serial_example.dir/clean
 
 example/CMakeFiles/stm32canbus_serial_example.dir/depend:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ezequiel/prueba2/Host/libcanserial /home/ezequiel/prueba2/Host/libcanserial/example /home/ezequiel/prueba2/Host/libcanserial/build /home/ezequiel/prueba2/Host/libcanserial/build/example /home/ezequiel/prueba2/Host/libcanserial/build/example/CMakeFiles/stm32canbus_serial_example.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ezequiel/Firmware/Firmware/Host/libcanserial /home/ezequiel/Firmware/Firmware/Host/libcanserial/example /home/ezequiel/Firmware/Firmware/Host/libcanserial/build /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/example/CMakeFiles/stm32canbus_serial_example.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : example/CMakeFiles/stm32canbus_serial_example.dir/depend
 

@@ -57,10 +57,10 @@ RM = /snap/cmake/1334/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ezequiel/prueba2/Host/libcanserial
+CMAKE_SOURCE_DIR = /home/ezequiel/Firmware/Firmware/Host/libcanserial
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ezequiel/prueba2/Host/libcanserial/build
+CMAKE_BINARY_DIR = /home/ezequiel/Firmware/Firmware/Host/libcanserial/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /home/ezequiel/prueba2/Host/libcanserial/build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/snap/cmake/1299/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/snap/cmake/1334/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ezequiel/prueba2/Host/libcanserial/build/CMakeFiles /home/ezequiel/prueba2/Host/libcanserial/build/stm32canbusif//CMakeFiles/progress.marks
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ezequiel/prueba2/Host/libcanserial/build/CMakeFiles 0
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/CMakeFiles /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/stm32canbusif//CMakeFiles/progress.marks
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ezequiel/Firmware/Firmware/Host/libcanserial/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/clean
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/preinstall
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/preinstall
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/rule:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/rule
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/rule
 .PHONY : stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ stm32canbus_serialif: stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/rule
 
 # fast build rule for target.
 stm32canbus_serialif/fast:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build
 .PHONY : stm32canbus_serialif/fast
 
 src/protocol.o: src/protocol.cpp.o
@@ -135,7 +135,7 @@ src/protocol.o: src/protocol.cpp.o
 
 # target to build an object file
 src/protocol.cpp.o:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.o
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.o
 .PHONY : src/protocol.cpp.o
 
 src/protocol.i: src/protocol.cpp.i
@@ -143,7 +143,7 @@ src/protocol.i: src/protocol.cpp.i
 
 # target to preprocess a source file
 src/protocol.cpp.i:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.i
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.i
 .PHONY : src/protocol.cpp.i
 
 src/protocol.s: src/protocol.cpp.s
@@ -151,7 +151,7 @@ src/protocol.s: src/protocol.cpp.s
 
 # target to generate assembly for a file
 src/protocol.cpp.s:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.s
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.s
 .PHONY : src/protocol.cpp.s
 
 src/stm32canbusif.o: src/stm32canbusif.cpp.o
@@ -159,7 +159,7 @@ src/stm32canbusif.o: src/stm32canbusif.cpp.o
 
 # target to build an object file
 src/stm32canbusif.cpp.o:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.o
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.o
 .PHONY : src/stm32canbusif.cpp.o
 
 src/stm32canbusif.i: src/stm32canbusif.cpp.i
@@ -167,7 +167,7 @@ src/stm32canbusif.i: src/stm32canbusif.cpp.i
 
 # target to preprocess a source file
 src/stm32canbusif.cpp.i:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.i
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.i
 .PHONY : src/stm32canbusif.cpp.i
 
 src/stm32canbusif.s: src/stm32canbusif.cpp.s
@@ -175,7 +175,7 @@ src/stm32canbusif.s: src/stm32canbusif.cpp.s
 
 # target to generate assembly for a file
 src/stm32canbusif.cpp.s:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.s
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(MAKE) $(MAKESILENT) -f stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/build.make stm32canbusif/CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.s
 .PHONY : src/stm32canbusif.cpp.s
 
 # Help Target
@@ -204,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/ezequiel/prueba2/Host/libcanserial/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ezequiel/Firmware/Firmware/Host/libcanserial/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -30,7 +30,6 @@ public:
     ~can_service(){};
     void setup();
 
-private:
     void serial_read_command();
     void can_read_message();
     void can1_send_sync_message();

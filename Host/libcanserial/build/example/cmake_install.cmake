@@ -1,4 +1,4 @@
-# Install script for directory: /home/ezequiel/prueba2/Host/libcanserial/example
+# Install script for directory: /home/ezequiel/Firmware/Firmware/Host/libcanserial/example
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
