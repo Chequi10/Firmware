@@ -145,7 +145,7 @@ void Task_1( void* taskParmPtr )
 		    				buffer[13]='\n';
 	    				}
 	    				if(imprime.uartRecvString(buffer3, 11))
-	    							   {
+	    						   {
 
 	    						imprime.vPrintString( (char*)buffer );
 

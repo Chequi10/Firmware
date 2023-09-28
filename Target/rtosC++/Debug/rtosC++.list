@@ -611,7 +611,7 @@ void Task_1( void* taskParmPtr )
  80006ac:	b2db      	uxtb	r3, r3
  80006ae:	2b00      	cmp	r3, #0
  80006b0:	d005      	beq.n	80006be <_Z6Task_1Pv+0x102>
-	    							   {
+	    						   {
 
 	    						imprime.vPrintString( (char*)buffer );
  80006b2:	f107 0328 	add.w	r3, r7, #40	; 0x28

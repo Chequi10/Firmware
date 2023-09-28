@@ -12,6 +12,7 @@ stm32canbus_serialif::stm32canbus_serialif(const char *dev_name, int baudrate, o
     port.set_option(boost::asio::serial_port_base::baud_rate(baudrate));
 }
 
+
 void stm32canbus_serialif::start()
 {
     comm_thread = std::thread([this]()
@@ -25,11 +26,12 @@ void stm32canbus_serialif::stop()
 }
 
 void stm32canbus_serialif::run()
+
 {
     read_some();
-    write_some();
     io.run();
 }
+
 
 // para recibir datos por el puerto serie
 void stm32canbus_serialif::read_handler(const boost::system::error_code &error, size_t bytes_transferred)
@@ -102,7 +104,7 @@ void stm32canbus_serialif::send_impl(const uint8_t *buf, uint8_t n)
     {
         tx_buffer[i] = *buf++;
 
-      //  std::cout << boost::format(" %c") % tx_buffer[i];
+        std::cout << boost::format(" %c") % tx_buffer[i];
     }
    
 }
@@ -126,7 +128,7 @@ void stm32canbus_serialif::write_handler(const boost::system::error_code &error,
         ::protocol::packet_encoder::send(0x4);
         ::protocol::packet_decoder::check_timeouts();
     }
-     write_some();
+   //  write_some();
     
 }
 

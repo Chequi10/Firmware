@@ -7,7 +7,7 @@
 void on_can_message( const stm32canbus_serialif::can_message_event& ev )
 {
     std::cout << boost::format("Device %d CANID: %d Len: %d Data: ") % ev.device_id % ev.canid % ev.len;
-        for(size_t i=0;i<=8;i++)
+        for(size_t i=0;i<=4;i++)
     {
         std::cout << boost::format(" %c") % ev.data[i];
        //std::cout << boost::format(" Longitud%d") % ev.len;
@@ -27,13 +27,23 @@ int main(int argc, const char* argv[])
     std::cout << "Port: " << argv[1] << std::endl;
     stm32canbus_serialif can(argv[1],115200,on_can_message);
     
-   
+    char entrada{};
     can.start();
-   
+ while(1)
+ {
 
+ std::cin>> entrada;
+ std::cin.ignore();
+ 
+ if(entrada < '5' )
+ {
+    can.write_some(); 
+    entrada=0;     
+ }
+ 
     // Wait for key
-    std::cin.ignore(); 
-  
+   
+}
     can.stop();
       
     return 0;
