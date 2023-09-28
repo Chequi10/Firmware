@@ -145,10 +145,10 @@ void Task_1( void* taskParmPtr )
 		    				buffer[13]='\n';
 	    				}
 	    				if(imprime.uartRecvString(buffer3, 11))
+	    						   {if(buffer3[5]=='X')
 	    						   {
-
 	    						imprime.vPrintString( (char*)buffer );
-
+	    						   }
 	    							   }
 
 
