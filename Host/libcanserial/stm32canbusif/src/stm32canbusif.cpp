@@ -135,7 +135,7 @@ void stm32canbus_serialif::write_handler(const boost::system::error_code &error,
 // para ver errores y estado de la conexion
 void stm32canbus_serialif::set_error(error_code ec)
 {
-    std::cout << boost::format("Error: %c ") % ec << std::endl;
+    std::cout << boost::format("Error debido a: %c ") % ec << std::endl;
 }
 
 void stm32canbus_serialif::handle_connection_lost()
