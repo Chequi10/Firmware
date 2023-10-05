@@ -40,10 +40,9 @@ void printer::vPrintString( const char *pcString )
 
 uint8_t printer::uartRecvString(uint8_t *ptrstring, uint8_t cantidad)
 {
-	//taskENTER_CRITICAL();
-	if (HAL_UART_Receive(&huart3,ptrstring, cantidad,1000) == HAL_OK) return true;
-	return false;
-	//taskENTER_CRITICAL();
+
+	HAL_UART_Receive_IT(&huart3,ptrstring, 1);
+
 }
 
 
