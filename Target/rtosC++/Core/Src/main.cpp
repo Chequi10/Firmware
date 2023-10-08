@@ -37,6 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LED_RATE_MS 50
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,13 +49,13 @@ printer imprime;
 /* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
-
+UART_HandleTypeDef huart3;
 
 
 osThreadId Tarea_1Handle;
 osThreadId Tarea_2Handle;
 /* USER CODE BEGIN PV */
-
+uint8_t cadena[11];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,9 +68,12 @@ void StartTask01(void const * argument);
 void StartTask02(void const * argument);
 
 
+
 /* USER CODE BEGIN PFP */
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
+SemaphoreHandle_t BinarySemaphoreHandle;
+
 
 /* USER CODE END PFP */
 
@@ -85,9 +89,26 @@ uint32_t TxMailbox;
 uint8_t  TxData[1];
 uint8_t  RxData[1];
 
+typedef struct
+{
+  //  keys_ButtonState_t state;   //variables
+
+    TickType_t time_down;		//timestamp of the last High to Low transition of the key
+    TickType_t time_up;		    //timestamp of the last Low to High transition of the key
+    TickType_t time_diff;	    //variables
+} t_key_data;
+
+t_key_data keys_data;
+
 int datacheck=0;
+int probando=0;
 int i=0;
 
+uint8_t a;
+
+			uint8_t buffer [100];
+			uint8_t buffer1[20];
+			uint8_t buffer3[10];
 uint16_t calc_crc16(const uint8_t* data_p, uint8_t length);
 
 uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
@@ -106,85 +127,56 @@ uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
 
 void Task_1( void* taskParmPtr )
 {
-	uint8_t a;
+	while(1)
+	{buffer[0]='P';
+	buffer[1]='K';
+	buffer[2]='T';
+	buffer[3]='!';
+	buffer[4]= 0x6;
+	buffer[5]= '0';
+		for(uint8_t sdf=6;sdf<=10;sdf++)
+			{
+			buffer1[5]='0';
+			buffer1[sdf]=0x66+sdf-6;
+			uint16_t crc = calc_crc16(buffer1, 5);
+			buffer[sdf]=buffer1[sdf];
+			buffer[11]=0b10110011;
+		//	buffer[11]=(crc >> 8) & 0xFF;
+		//	buffer[12]=crc & 0xFF;
+			buffer[12]=0b10101110;
+			buffer[13]='\n';
+			}
+	    				xSemaphoreTake( BinarySemaphoreHandle, portMAX_DELAY );
+   						imprime.vPrintString( (char*)buffer );
 
-	uint8_t buffer [100];
-	uint8_t buffer1[20];
-	uint8_t buffer3[10];
-	   while( 1 )
-	    {
-
-		 //  len = getData(rcvBuffer[0], 62);
-		  // imprime.vPrintreading((char*)buffer3[0] );
-
-
-	    	for(a=49;a<58;a++)
-	    		  {   TxData[0] = a;
-	    				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	    		  		 	{
-    					   HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-    		  		 	   Error_Handler ();
-	    		  		 	}
-
-	    				buffer[0]='P';
-	    				buffer[1]='K';
-	    				buffer[2]='T';
-	    				buffer[3]='!';
-	    				buffer[4]= 0x6;
-	    				buffer[5]= '0';
-	    				for(uint8_t sdf=6;sdf<=10;sdf++)
-	    				{
-	    				buffer1[5]='0';
-	    					buffer1[sdf]=0x66+sdf-6;
-	    					uint16_t crc = calc_crc16(buffer1, 5);
-	    					buffer[sdf]=buffer1[sdf];
-	    					buffer[11]=0b10110011;
-		    			//	buffer[11]=(crc >> 8) & 0xFF;
-		    			//	buffer[12]=crc & 0xFF;
-		    				buffer[12]=0b10101110;
-		    				buffer[13]='\n';
-	    				}
-	    				if(imprime.uartRecvString(buffer3, 11))
-	    						   {if(buffer3[5]=='X')
-	    						   {
-	    						imprime.vPrintString( (char*)buffer );
-	    						   }
-	    							   }
+	}
 
 
-	    		//	sprintf( (char*)buffer, "03456789ABCDEFGHIJKLMabcdefghijklmnopqrstuvwxyzYZ\n");
-	    				//sprintf( (char*)buffer, "\nPKT!9abcdefghijk%ldlmno%ldpqrs:%s\n",(uint32_t)RxHeader2.StdId,(uint32_t)RxHeader2.DLC,(char *)TxData);
-		    		//		imprime.vPrintString( (char*)buffer3 );
 
-
-		    				HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-		    				osDelay(200);
-
-    		  if (datacheck)
-	    		  {
-    			  HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-    			  osDelay(200);
-    			  datacheck = 0;
-	    		  }
-
-   		          }
-        }
-
-		    //vTaskDelete( NULL );
 }
 
 
 
 void Task_2( void* taskParmPtr )
 {
-	    while( 1 )
-    {
-       HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-       osDelay(100);
-    }
+	while( 1 )
+		{
+			for(a=49;a<58;a++)
+			  {
+				TxData[0] = a;
+					if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+						{
+							Error_Handler ();
+						}
+
+				 HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+                 vTaskDelay( LED_RATE_MS / portTICK_RATE_MS );
+               }
+
+         }
 }
 
-void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
   {
 	HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 
@@ -198,6 +190,31 @@ void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
 		  datacheck = 1;
 	  }
   }
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+
+	if(huart->Instance == USART3)
+	{
+		BaseType_t xHigherPriorityTaskWoken;
+
+		xHigherPriorityTaskWoken = pdFALSE;
+
+
+		xSemaphoreGiveFromISR( BinarySemaphoreHandle, &xHigherPriorityTaskWoken );
+
+	    HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+
+     	HAL_UART_Receive_IT (&huart3, cadena, 12);
+
+		portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+
+	}
+
+
+
+}
+
 
 void config(void)
 {
@@ -259,6 +276,7 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
+  HAL_UART_Receive_IT (&huart3, cadena, 10);
   /* USER CODE BEGIN 2 */
 //  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 
@@ -292,6 +310,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
+    BinarySemaphoreHandle = xSemaphoreCreateBinary();
+    configASSERT( BinarySemaphoreHandle != NULL );
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
@@ -511,18 +531,18 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 1 */
 
   /* USER CODE END USART3_Init 1 */
-//  huart3.Instance = USART3;
-//  huart3.Init.BaudRate = 115200;
-//  huart3.Init.WordLength = UART_WORDLENGTH_8B;
-//  huart3.Init.StopBits = UART_STOPBITS_1;
-//  huart3.Init.Parity = UART_PARITY_NONE;
-//  huart3.Init.Mode = UART_MODE_TX_RX;
-//  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-//  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-//  if (HAL_UART_Init(&huart3) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+ if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */

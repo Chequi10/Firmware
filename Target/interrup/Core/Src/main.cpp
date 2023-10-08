@@ -176,7 +176,7 @@ void Task_2( void* taskParmPtr )
          }
 }
 
-void  HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
   {
 	HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 
