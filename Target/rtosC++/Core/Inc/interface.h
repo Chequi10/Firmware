@@ -21,13 +21,13 @@
 #include "cmsis_os.h"
 
 
-class can_service:
+class interface:
     private protocol::packet_encoder,
     private protocol::packet_decoder
 {
 public:
-	can_service();
-    ~can_service(){};
+	interface();
+    ~interface(){};
     void setup();
 
     void serial_read_command();
@@ -54,7 +54,7 @@ public:
  //   Ticker can_sync_ticker;
 
     /* Protocolo de comunicación serie */
-	using opcode_callback = can_service::error_code(can_service::*)(const uint8_t* payload, uint8_t n);
+	using opcode_callback = interface::error_code(interface::*)(const uint8_t* payload, uint8_t n);
 
     /** Telecomandos */
     /** Flags de un telecomando
@@ -92,7 +92,7 @@ public:
 
     /* Comandos */
 
-    can_service::error_code cmd_send_message(const uint8_t* payload, uint8_t n);
+    interface::error_code cmd_send_message(const uint8_t* payload, uint8_t n);
 };
 
 

@@ -6,17 +6,17 @@
  */
 #include "main.h"
 #include "cmsis_os.h"
-#include "can_service.h"
 #include <errno.h>
+#include <interface.h>
 #include <stdio.h>
 #include <string.h>
 
-can_service::can_service()
+interface::interface()
 :
 		opcodes
 		{
 
-			{ &can_service::cmd_send_message,
+			{ &interface::cmd_send_message,
 				opcode_flags::default_flags
 			}
 
@@ -27,7 +27,7 @@ can_service::can_service()
 {}
 
 
-void can_service::setup()
+void interface::setup()
 {          static char buf[32] = {0};
      		HAL_UART_Receive(&huart3, (uint8_t *)buf, sizeof(buf), 1000);
 
@@ -47,7 +47,7 @@ void can_service::setup()
 
 
 /* Enviar mensaje SYNC desde CAN 1. */
-void can_service::can1_send_sync_message()
+void interface::can1_send_sync_message()
 {
 	  TxHeader.IDE = CAN_ID_STD;
 	  TxHeader.StdId = 146;
@@ -76,7 +76,7 @@ void can_service::can1_send_sync_message()
 }
 
 /* Leer mensaje de CAN e imprimir en pantalla */
-void can_service::can_read_message()
+void interface::can_read_message()
 {
 
 	      TxHeader2.IDE = CAN_ID_STD;
@@ -109,7 +109,7 @@ void can_service::can_read_message()
 
 }
 
-void can_service::serial_read_command()
+void interface::serial_read_command()
 {
 
 	    static char buf[32] = {0};
@@ -127,7 +127,7 @@ void can_service::serial_read_command()
 }
 
 
-void can_service::handle_packet(const uint8_t* payload, uint8_t n)
+void interface::handle_packet(const uint8_t* payload, uint8_t n)
 {
     // El byte 0 es el código de opcode, el resto el payload. */
 	uint8_t opcode = payload[0];
@@ -136,7 +136,7 @@ void can_service::handle_packet(const uint8_t* payload, uint8_t n)
 }
 
 
-void can_service::send_impl(const uint8_t* buf, uint8_t n)
+void interface::send_impl(const uint8_t* buf, uint8_t n)
 {
 
 	HAL_UART_Transmit(&huart3, buf, n, 1000);
@@ -144,7 +144,7 @@ void can_service::send_impl(const uint8_t* buf, uint8_t n)
 
 
 
-can_service::error_code can_service::cmd_send_message(const uint8_t* payload, uint8_t n)
+interface::error_code interface::cmd_send_message(const uint8_t* payload, uint8_t n)
 {
     TxHeader2.StdId= (payload[1] << 24) | (payload[2] << 16) | (payload[3] << 8) | (payload[4] << 0);
     TxHeader.DLC= payload[5];

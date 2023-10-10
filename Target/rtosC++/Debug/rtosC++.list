@@ -29,23 +29,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  00020010  2**0
                   CONTENTS, READONLY
- 13 .debug_info   00017322  00000000  00000000  00020040  2**0
+ 13 .debug_info   00017320  00000000  00000000  00020040  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00003410  00000000  00000000  00037362  2**0
+ 14 .debug_abbrev 00003421  00000000  00000000  00037360  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 000013d0  00000000  00000000  0003a778  2**3
+ 15 .debug_aranges 000013d0  00000000  00000000  0003a788  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 00001298  00000000  00000000  0003bb48  2**3
+ 16 .debug_ranges 00001298  00000000  00000000  0003bb58  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00004cf4  00000000  00000000  0003cde0  2**0
+ 17 .debug_macro  00004cf4  00000000  00000000  0003cdf0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00015d4d  00000000  00000000  00041ad4  2**0
+ 18 .debug_line   00015d38  00000000  00000000  00041ae4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000e66d3  00000000  00000000  00057821  2**0
+ 19 .debug_str    000e66d3  00000000  00000000  0005781c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000050  00000000  00000000  0013def4  2**0
+ 20 .comment      00000050  00000000  00000000  0013deef  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  000052d4  00000000  00000000  0013df44  2**2
+ 21 .debug_frame  000052d4  00000000  00000000  0013df40  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -398,23 +398,23 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
  8000534:	20000080 	.word	0x20000080
 
 08000538 <_Z10calc_crc16PKhh>:
-			uint8_t buffer1[20];
-			uint8_t buffer3[10];
-uint16_t calc_crc16(const uint8_t* data_p, uint8_t length);
+uint8_t buffer[100];
+uint8_t buffer1[20];
+uint8_t buffer3[10];
+uint16_t calc_crc16(const uint8_t *data_p, uint8_t length);
 
-uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
-	    				{
+uint16_t calc_crc16(const uint8_t *data_p, uint8_t length) {
  8000538:	b480      	push	{r7}
  800053a:	b085      	sub	sp, #20
  800053c:	af00      	add	r7, sp, #0
  800053e:	6078      	str	r0, [r7, #4]
  8000540:	460b      	mov	r3, r1
  8000542:	70fb      	strb	r3, [r7, #3]
-	    					uint8_t x;
-	    					uint16_t crc = 0xFFFF;
+	uint8_t x;
+	uint16_t crc = 0xFFFF;
  8000544:	f64f 73ff 	movw	r3, #65535	; 0xffff
  8000548:	81fb      	strh	r3, [r7, #14]
-	    					while (length--)
+	while (length--) {
  800054a:	78fb      	ldrb	r3, [r7, #3]
  800054c:	1e5a      	subs	r2, r3, #1
  800054e:	70fa      	strb	r2, [r7, #3]
@@ -425,8 +425,7 @@ uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
  8000558:	b2db      	uxtb	r3, r3
  800055a:	2b00      	cmp	r3, #0
  800055c:	d026      	beq.n	80005ac <_Z10calc_crc16PKhh+0x74>
-	    					{
-	    						x = crc >> 8 ^ *data_p++;
+		x = crc >> 8 ^ *data_p++;
  800055e:	89fb      	ldrh	r3, [r7, #14]
  8000560:	0a1b      	lsrs	r3, r3, #8
  8000562:	b29b      	uxth	r3, r3
@@ -437,14 +436,14 @@ uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
  800056c:	781b      	ldrb	r3, [r3, #0]
  800056e:	4053      	eors	r3, r2
  8000570:	737b      	strb	r3, [r7, #13]
-	    						x ^= x >> 4;
+		x ^= x >> 4;
  8000572:	7b7b      	ldrb	r3, [r7, #13]
  8000574:	091b      	lsrs	r3, r3, #4
  8000576:	b2da      	uxtb	r2, r3
  8000578:	7b7b      	ldrb	r3, [r7, #13]
  800057a:	4053      	eors	r3, r2
  800057c:	737b      	strb	r3, [r7, #13]
-	    						crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5))
+		crc = (crc << 8) ^ ((uint16_t) (x << 12)) ^ ((uint16_t) (x << 5))
  800057e:	89fb      	ldrh	r3, [r7, #14]
  8000580:	021b      	lsls	r3, r3, #8
  8000582:	b21a      	sxth	r2, r3
@@ -462,19 +461,19 @@ uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
  800059a:	b21b      	sxth	r3, r3
  800059c:	4053      	eors	r3, r2
  800059e:	b21a      	sxth	r2, r3
-	    								^ ((uint16_t) x);
+				^ ((uint16_t) x);
  80005a0:	7b7b      	ldrb	r3, [r7, #13]
  80005a2:	b21b      	sxth	r3, r3
  80005a4:	4053      	eors	r3, r2
  80005a6:	b21b      	sxth	r3, r3
-	    						crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5))
+		crc = (crc << 8) ^ ((uint16_t) (x << 12)) ^ ((uint16_t) (x << 5))
  80005a8:	81fb      	strh	r3, [r7, #14]
-	    					while (length--)
+	while (length--) {
  80005aa:	e7ce      	b.n	800054a <_Z10calc_crc16PKhh+0x12>
-	    					}
-	    					return crc;
+	}
+	return crc;
  80005ac:	89fb      	ldrh	r3, [r7, #14]
-	    				}
+}
  80005ae:	4618      	mov	r0, r3
  80005b0:	3714      	adds	r7, #20
  80005b2:	46bd      	mov	sp, r7
@@ -484,51 +483,47 @@ uint16_t calc_crc16(const uint8_t* data_p, uint8_t length)
 
 080005bc <_Z19serial_read_commandPv>:
 
-
-
-void serial_read_command( void* taskParmPtr )
-{
+void serial_read_command(void *taskParmPtr) {
  80005bc:	b580      	push	{r7, lr}
  80005be:	b084      	sub	sp, #16
  80005c0:	af00      	add	r7, sp, #0
  80005c2:	6078      	str	r0, [r7, #4]
-	while(1)
-	{buffer[0]='P';
+	while (1) {
+		buffer[0] = 'P';
  80005c4:	4b22      	ldr	r3, [pc, #136]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005c6:	2250      	movs	r2, #80	; 0x50
  80005c8:	701a      	strb	r2, [r3, #0]
-	buffer[1]='K';
+		buffer[1] = 'K';
  80005ca:	4b21      	ldr	r3, [pc, #132]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005cc:	224b      	movs	r2, #75	; 0x4b
  80005ce:	705a      	strb	r2, [r3, #1]
-	buffer[2]='T';
+		buffer[2] = 'T';
  80005d0:	4b1f      	ldr	r3, [pc, #124]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005d2:	2254      	movs	r2, #84	; 0x54
  80005d4:	709a      	strb	r2, [r3, #2]
-	buffer[3]='!';
+		buffer[3] = '!';
  80005d6:	4b1e      	ldr	r3, [pc, #120]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005d8:	2221      	movs	r2, #33	; 0x21
  80005da:	70da      	strb	r2, [r3, #3]
-	buffer[4]= 0x6;
+		buffer[4] = 0x6;
  80005dc:	4b1c      	ldr	r3, [pc, #112]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005de:	2206      	movs	r2, #6
  80005e0:	711a      	strb	r2, [r3, #4]
-	buffer[5]= '0';
+		buffer[5] = '0';
  80005e2:	4b1b      	ldr	r3, [pc, #108]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  80005e4:	2230      	movs	r2, #48	; 0x30
  80005e6:	715a      	strb	r2, [r3, #5]
-		for(uint8_t sdf=6;sdf<=10;sdf++)
+		for (uint8_t sdf = 6; sdf <= 10; sdf++) {
  80005e8:	2306      	movs	r3, #6
  80005ea:	73fb      	strb	r3, [r7, #15]
  80005ec:	7bfb      	ldrb	r3, [r7, #15]
  80005ee:	2b0a      	cmp	r3, #10
  80005f0:	d821      	bhi.n	8000636 <_Z19serial_read_commandPv+0x7a>
-			{
-			buffer1[5]='0';
+			buffer1[5] = '0';
  80005f2:	4b18      	ldr	r3, [pc, #96]	; (8000654 <_Z19serial_read_commandPv+0x98>)
  80005f4:	2230      	movs	r2, #48	; 0x30
  80005f6:	715a      	strb	r2, [r3, #5]
-			buffer1[sdf]=0x66+sdf-6;
+			buffer1[sdf] = 0x66 + sdf - 6;
  80005f8:	7bfb      	ldrb	r3, [r7, #15]
  80005fa:	7bfa      	ldrb	r2, [r7, #15]
  80005fc:	3260      	adds	r2, #96	; 0x60
@@ -541,40 +536,40 @@ void serial_read_command( void* taskParmPtr )
  8000608:	f7ff ff96 	bl	8000538 <_Z10calc_crc16PKhh>
  800060c:	4603      	mov	r3, r0
  800060e:	81bb      	strh	r3, [r7, #12]
-			buffer[sdf]=buffer1[sdf];
+			buffer[sdf] = buffer1[sdf];
  8000610:	7bfa      	ldrb	r2, [r7, #15]
  8000612:	7bfb      	ldrb	r3, [r7, #15]
  8000614:	490f      	ldr	r1, [pc, #60]	; (8000654 <_Z19serial_read_commandPv+0x98>)
  8000616:	5c89      	ldrb	r1, [r1, r2]
  8000618:	4a0d      	ldr	r2, [pc, #52]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  800061a:	54d1      	strb	r1, [r2, r3]
-			buffer[11]=0b10110011;
+			buffer[11] = 0b10110011;
  800061c:	4b0c      	ldr	r3, [pc, #48]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  800061e:	22b3      	movs	r2, #179	; 0xb3
  8000620:	72da      	strb	r2, [r3, #11]
-		//	buffer[11]=(crc >> 8) & 0xFF;
-		//	buffer[12]=crc & 0xFF;
-			buffer[12]=0b10101110;
+			//	buffer[11]=(crc >> 8) & 0xFF;
+			//	buffer[12]=crc & 0xFF;
+			buffer[12] = 0b10101110;
  8000622:	4b0b      	ldr	r3, [pc, #44]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  8000624:	22ae      	movs	r2, #174	; 0xae
  8000626:	731a      	strb	r2, [r3, #12]
-			buffer[13]='\n';
+			buffer[13] = '\n';
  8000628:	4b09      	ldr	r3, [pc, #36]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  800062a:	220a      	movs	r2, #10
  800062c:	735a      	strb	r2, [r3, #13]
-		for(uint8_t sdf=6;sdf<=10;sdf++)
+		for (uint8_t sdf = 6; sdf <= 10; sdf++) {
  800062e:	7bfb      	ldrb	r3, [r7, #15]
  8000630:	3301      	adds	r3, #1
  8000632:	73fb      	strb	r3, [r7, #15]
  8000634:	e7da      	b.n	80005ec <_Z19serial_read_commandPv+0x30>
-			}
-	    				xSemaphoreTake( BinarySemaphoreHandle, portMAX_DELAY );
+		}
+		xSemaphoreTake(BinarySemaphoreHandle, portMAX_DELAY);
  8000636:	4b08      	ldr	r3, [pc, #32]	; (8000658 <_Z19serial_read_commandPv+0x9c>)
  8000638:	681b      	ldr	r3, [r3, #0]
  800063a:	f04f 31ff 	mov.w	r1, #4294967295	; 0xffffffff
  800063e:	4618      	mov	r0, r3
  8000640:	f004 fa54 	bl	8004aec <xQueueSemaphoreTake>
-   						imprime.vPrintString( (char*)buffer );
+		imprime.vPrintString((char*) buffer);
  8000644:	4902      	ldr	r1, [pc, #8]	; (8000650 <_Z19serial_read_commandPv+0x94>)
  8000646:	4805      	ldr	r0, [pc, #20]	; (800065c <_Z19serial_read_commandPv+0xa0>)
  8000648:	f000 fc22 	bl	8000e90 <_ZN7printer12vPrintStringEPKc>
@@ -589,18 +584,14 @@ void serial_read_command( void* taskParmPtr )
 
 08000660 <_Z14can1_send_syncPv>:
 
-
-
 }
-void can1_send_sync( void* taskParmPtr )
-{
+void can1_send_sync(void *taskParmPtr) {
  8000660:	b580      	push	{r7, lr}
  8000662:	b082      	sub	sp, #8
  8000664:	af00      	add	r7, sp, #0
  8000666:	6078      	str	r0, [r7, #4]
-	while( 1 )
-		{
-			for(a=49;a<58;a++)
+	while (1) {
+		for (a = 49; a < 58; a++) {
  8000668:	4b14      	ldr	r3, [pc, #80]	; (80006bc <_Z14can1_send_syncPv+0x5c>)
  800066a:	2231      	movs	r2, #49	; 0x31
  800066c:	701a      	strb	r2, [r3, #0]
@@ -608,39 +599,39 @@ void can1_send_sync( void* taskParmPtr )
  8000670:	781b      	ldrb	r3, [r3, #0]
  8000672:	2b39      	cmp	r3, #57	; 0x39
  8000674:	d8f8      	bhi.n	8000668 <_Z14can1_send_syncPv+0x8>
-			  {
-				TxData[0] = a;
+			TxData[0] = a;
  8000676:	4b11      	ldr	r3, [pc, #68]	; (80006bc <_Z14can1_send_syncPv+0x5c>)
  8000678:	781a      	ldrb	r2, [r3, #0]
  800067a:	4b11      	ldr	r3, [pc, #68]	; (80006c0 <_Z14can1_send_syncPv+0x60>)
  800067c:	701a      	strb	r2, [r3, #0]
-					if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
  800067e:	4b11      	ldr	r3, [pc, #68]	; (80006c4 <_Z14can1_send_syncPv+0x64>)
  8000680:	4a0f      	ldr	r2, [pc, #60]	; (80006c0 <_Z14can1_send_syncPv+0x60>)
  8000682:	4911      	ldr	r1, [pc, #68]	; (80006c8 <_Z14can1_send_syncPv+0x68>)
  8000684:	4811      	ldr	r0, [pc, #68]	; (80006cc <_Z14can1_send_syncPv+0x6c>)
  8000686:	f001 f869 	bl	800175c <HAL_CAN_AddTxMessage>
  800068a:	4603      	mov	r3, r0
+					!= HAL_OK) {
  800068c:	2b00      	cmp	r3, #0
  800068e:	bf14      	ite	ne
  8000690:	2301      	movne	r3, #1
  8000692:	2300      	moveq	r3, #0
  8000694:	b2db      	uxtb	r3, r3
+			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
  8000696:	2b00      	cmp	r3, #0
  8000698:	d001      	beq.n	800069e <_Z14can1_send_syncPv+0x3e>
-						{
-							Error_Handler ();
+				Error_Handler();
  800069a:	f000 fba3 	bl	8000de4 <Error_Handler>
-						}
+			}
 
-				 HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
  800069e:	2180      	movs	r1, #128	; 0x80
  80006a0:	480b      	ldr	r0, [pc, #44]	; (80006d0 <_Z14can1_send_syncPv+0x70>)
  80006a2:	f001 ffd6 	bl	8002652 <HAL_GPIO_TogglePin>
-                 vTaskDelay( LED_RATE_MS / portTICK_RATE_MS );
+			vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
  80006a6:	2032      	movs	r0, #50	; 0x32
  80006a8:	f004 fd40 	bl	800512c <vTaskDelay>
-			for(a=49;a<58;a++)
+		for (a = 49; a < 58; a++) {
  80006ac:	4b03      	ldr	r3, [pc, #12]	; (80006bc <_Z14can1_send_syncPv+0x5c>)
  80006ae:	781b      	ldrb	r3, [r3, #0]
  80006b0:	3301      	adds	r3, #1
@@ -657,81 +648,77 @@ void can1_send_sync( void* taskParmPtr )
  80006d0:	40020400 	.word	0x40020400
 
 080006d4 <_Z17can2_read_messagePv>:
-               }
+		}
 
-         }
+	}
 }
-void can2_read_message( void* taskParmPtr )
-{
+void can2_read_message(void *taskParmPtr) {
  80006d4:	b580      	push	{r7, lr}
  80006d6:	b082      	sub	sp, #8
  80006d8:	af00      	add	r7, sp, #0
  80006da:	6078      	str	r0, [r7, #4]
-	while(1)
-		{
-			if(datacheck==1)
+	while (1) {
+		if (datacheck == 1) {
  80006dc:	4b05      	ldr	r3, [pc, #20]	; (80006f4 <_Z17can2_read_messagePv+0x20>)
  80006de:	681b      	ldr	r3, [r3, #0]
  80006e0:	2b01      	cmp	r3, #1
  80006e2:	d1fb      	bne.n	80006dc <_Z17can2_read_messagePv+0x8>
-				{
-					HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
+			HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
  80006e4:	2101      	movs	r1, #1
  80006e6:	4804      	ldr	r0, [pc, #16]	; (80006f8 <_Z17can2_read_messagePv+0x24>)
  80006e8:	f001 ffb3 	bl	8002652 <HAL_GPIO_TogglePin>
-					datacheck=0;
+			datacheck = 0;
  80006ec:	4b01      	ldr	r3, [pc, #4]	; (80006f4 <_Z17can2_read_messagePv+0x20>)
  80006ee:	2200      	movs	r2, #0
  80006f0:	601a      	str	r2, [r3, #0]
-			if(datacheck==1)
+		if (datacheck == 1) {
  80006f2:	e7f3      	b.n	80006dc <_Z17can2_read_messagePv+0x8>
  80006f4:	2000041c 	.word	0x2000041c
  80006f8:	40020400 	.word	0x40020400
 
 080006fc <HAL_CAN_RxFifo0MsgPendingCallback>:
-				}
-
 		}
+
+	}
 }
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
-  {
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
  80006fc:	b580      	push	{r7, lr}
  80006fe:	b082      	sub	sp, #8
  8000700:	af00      	add	r7, sp, #0
  8000702:	6078      	str	r0, [r7, #4]
 
-    if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData) != HAL_OK)
+	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData)
  8000704:	4b0d      	ldr	r3, [pc, #52]	; (800073c <HAL_CAN_RxFifo0MsgPendingCallback+0x40>)
  8000706:	4a0e      	ldr	r2, [pc, #56]	; (8000740 <HAL_CAN_RxFifo0MsgPendingCallback+0x44>)
  8000708:	2100      	movs	r1, #0
  800070a:	6878      	ldr	r0, [r7, #4]
  800070c:	f001 f901 	bl	8001912 <HAL_CAN_GetRxMessage>
  8000710:	4603      	mov	r3, r0
+			!= HAL_OK) {
  8000712:	2b00      	cmp	r3, #0
  8000714:	bf14      	ite	ne
  8000716:	2301      	movne	r3, #1
  8000718:	2300      	moveq	r3, #0
  800071a:	b2db      	uxtb	r3, r3
+	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData)
  800071c:	2b00      	cmp	r3, #0
  800071e:	d001      	beq.n	8000724 <HAL_CAN_RxFifo0MsgPendingCallback+0x28>
-		{
-	    	Error_Handler();
+		Error_Handler();
  8000720:	f000 fb60 	bl	8000de4 <Error_Handler>
-		}
+	}
 
-    if ((RxHeader2.StdId == 146))
+	if ((RxHeader2.StdId == 146)) {
  8000724:	4b06      	ldr	r3, [pc, #24]	; (8000740 <HAL_CAN_RxFifo0MsgPendingCallback+0x44>)
  8000726:	681b      	ldr	r3, [r3, #0]
  8000728:	2b92      	cmp	r3, #146	; 0x92
  800072a:	d102      	bne.n	8000732 <HAL_CAN_RxFifo0MsgPendingCallback+0x36>
-		{
-			datacheck = 1;
+		datacheck = 1;
  800072c:	4b05      	ldr	r3, [pc, #20]	; (8000744 <HAL_CAN_RxFifo0MsgPendingCallback+0x48>)
  800072e:	2201      	movs	r2, #1
  8000730:	601a      	str	r2, [r3, #0]
-		}
+	}
 
-  }
+}
  8000732:	bf00      	nop
  8000734:	3708      	adds	r7, #8
  8000736:	46bd      	mov	sp, r7
@@ -742,28 +729,25 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2)
  8000744:	2000041c 	.word	0x2000041c
 
 08000748 <HAL_UART_RxCpltCallback>:
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  8000748:	b580      	push	{r7, lr}
  800074a:	b084      	sub	sp, #16
  800074c:	af00      	add	r7, sp, #0
  800074e:	6078      	str	r0, [r7, #4]
 
-	if(huart->Instance == USART3)
+	if (huart->Instance == USART3) {
  8000750:	687b      	ldr	r3, [r7, #4]
  8000752:	681b      	ldr	r3, [r3, #0]
  8000754:	4a12      	ldr	r2, [pc, #72]	; (80007a0 <HAL_UART_RxCpltCallback+0x58>)
  8000756:	4293      	cmp	r3, r2
  8000758:	d11e      	bne.n	8000798 <HAL_UART_RxCpltCallback+0x50>
-	{
 		BaseType_t xHigherPriorityTaskWoken;
 
 		xHigherPriorityTaskWoken = pdFALSE;
  800075a:	2300      	movs	r3, #0
  800075c:	60fb      	str	r3, [r7, #12]
 
-
-		xSemaphoreGiveFromISR( BinarySemaphoreHandle, &xHigherPriorityTaskWoken );
+		xSemaphoreGiveFromISR(BinarySemaphoreHandle, &xHigherPriorityTaskWoken);
  800075e:	4b11      	ldr	r3, [pc, #68]	; (80007a4 <HAL_UART_RxCpltCallback+0x5c>)
  8000760:	681b      	ldr	r3, [r3, #0]
  8000762:	f107 020c 	add.w	r2, r7, #12
@@ -771,18 +755,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  8000768:	4618      	mov	r0, r3
  800076a:	f004 f932 	bl	80049d2 <xQueueGiveFromISR>
 
-	    HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
+		HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
  800076e:	f44f 4180 	mov.w	r1, #16384	; 0x4000
  8000772:	480d      	ldr	r0, [pc, #52]	; (80007a8 <HAL_UART_RxCpltCallback+0x60>)
  8000774:	f001 ff6d 	bl	8002652 <HAL_GPIO_TogglePin>
 
-     	HAL_UART_Receive_IT (&huart3, cadena, 12);
+		HAL_UART_Receive_IT(&huart3, cadena, 12);
  8000778:	220c      	movs	r2, #12
  800077a:	490c      	ldr	r1, [pc, #48]	; (80007ac <HAL_UART_RxCpltCallback+0x64>)
  800077c:	480c      	ldr	r0, [pc, #48]	; (80007b0 <HAL_UART_RxCpltCallback+0x68>)
  800077e:	f002 ff9a 	bl	80036b6 <HAL_UART_Receive_IT>
 
-		portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
  8000782:	68fb      	ldr	r3, [r7, #12]
  8000784:	2b00      	cmp	r3, #0
  8000786:	d007      	beq.n	8000798 <HAL_UART_RxCpltCallback+0x50>
@@ -793,8 +777,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  8000794:	f3bf 8f6f 	isb	sy
 
 	}
-
-
 
 }
  8000798:	bf00      	nop
@@ -810,14 +792,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 080007b8 <_Z6configv>:
 
-
-void config(void)
-{
+void config(void) {
  80007b8:	b580      	push	{r7, lr}
  80007ba:	b086      	sub	sp, #24
  80007bc:	af02      	add	r7, sp, #8
-	              BaseType_t res1 =
-  			           xTaskCreate(
+	BaseType_t res1 = xTaskCreate(serial_read_command, // Funcion de la tarea a ejecutar
  80007be:	4b20      	ldr	r3, [pc, #128]	; (8000840 <_Z6configv+0x88>)
  80007c0:	9301      	str	r3, [sp, #4]
  80007c2:	2302      	movs	r3, #2
@@ -828,12 +807,12 @@ void config(void)
  80007ce:	481e      	ldr	r0, [pc, #120]	; (8000848 <_Z6configv+0x90>)
  80007d0:	f004 fb75 	bl	8004ebe <xTaskCreate>
  80007d4:	60f8      	str	r0, [r7, #12]
-  			               tskIDLE_PRIORITY+2,         // Prioridad de la tarea
-  			    	   &task_handle_task_1            // Puntero a la tarea creada en el sistema
-  			           );
+			NULL,                       // Parametros de tarea
+			tskIDLE_PRIORITY + 2,         // Prioridad de la tarea
+			&task_handle_task_1       // Puntero a la tarea creada en el sistema
+			);
 
-  			      BaseType_t res2 =
-  			           xTaskCreate(
+	BaseType_t res2 = xTaskCreate(can1_send_sync, // Funcion de la tarea a ejecutar
  80007d6:	4b1d      	ldr	r3, [pc, #116]	; (800084c <_Z6configv+0x94>)
  80007d8:	9301      	str	r3, [sp, #4]
  80007da:	2303      	movs	r3, #3
@@ -844,12 +823,12 @@ void config(void)
  80007e6:	481b      	ldr	r0, [pc, #108]	; (8000854 <_Z6configv+0x9c>)
  80007e8:	f004 fb69 	bl	8004ebe <xTaskCreate>
  80007ec:	60b8      	str	r0, [r7, #8]
-  			               tskIDLE_PRIORITY+3,         // Prioridad de la tarea
-  			    	   &task_handle_task_2           // Puntero a la tarea creada en el sistema
-  			           );
+			NULL,                       // Parametros de tarea
+			tskIDLE_PRIORITY + 3,         // Prioridad de la tarea
+			&task_handle_task_2       // Puntero a la tarea creada en el sistema
+			);
 
-  			       BaseType_t res3 =
-  			      		xTaskCreate(
+	BaseType_t res3 = xTaskCreate(can2_read_message, // Funcion de la tarea a ejecutar
  80007ee:	4b1a      	ldr	r3, [pc, #104]	; (8000858 <_Z6configv+0xa0>)
  80007f0:	9301      	str	r3, [sp, #4]
  80007f2:	2301      	movs	r3, #1
@@ -860,12 +839,12 @@ void config(void)
  80007fe:	4818      	ldr	r0, [pc, #96]	; (8000860 <_Z6configv+0xa8>)
  8000800:	f004 fb5d 	bl	8004ebe <xTaskCreate>
  8000804:	6078      	str	r0, [r7, #4]
-  			      		   NULL,                       // Parametros de tarea
-  			      		   tskIDLE_PRIORITY+1,         // Prioridad de la tarea
-  			      		  &task_handle_task_3           // Puntero a la tarea creada en el sistema
-  			      		  );
+			NULL,                       // Parametros de tarea
+			tskIDLE_PRIORITY + 1,         // Prioridad de la tarea
+			&task_handle_task_3       // Puntero a la tarea creada en el sistema
+			);
 
-  			      configASSERT( res1 == pdPASS && res2 == pdPASS && res3 == pdPASS);
+	configASSERT(res1 == pdPASS && res2 == pdPASS && res3 == pdPASS);
  8000806:	68fb      	ldr	r3, [r7, #12]
  8000808:	2b01      	cmp	r3, #1
  800080a:	d107      	bne.n	800081c <_Z6configv+0x64>
@@ -899,7 +878,7 @@ uint32_t ulNewBASEPRI;
 }
  8000834:	bf00      	nop
  8000836:	e7fe      	b.n	8000836 <_Z6configv+0x7e>
-  			      }
+}
  8000838:	bf00      	nop
  800083a:	3710      	adds	r7, #16
  800083c:	46bd      	mov	sp, r7
@@ -915,132 +894,130 @@ uint32_t ulNewBASEPRI;
  8000860:	080006d5 	.word	0x080006d5
 
 08000864 <main>:
+
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
+ * @brief  The application entry point.
+ * @retval int
+ */
+int main(void) {
  8000864:	b5b0      	push	{r4, r5, r7, lr}
  8000866:	b096      	sub	sp, #88	; 0x58
  8000868:	af00      	add	r7, sp, #0
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
  800086a:	f000 fd15 	bl	8001298 <HAL_Init>
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
  800086e:	f000 f8b1 	bl	80009d4 <_Z18SystemClock_Configv>
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
  8000872:	f000 fa3b 	bl	8000cec <_ZL12MX_GPIO_Initv>
-  MX_CAN1_Init();
+	MX_CAN1_Init();
  8000876:	f000 f917 	bl	8000aa8 <_ZL12MX_CAN1_Initv>
-  MX_CAN2_Init();
+	MX_CAN2_Init();
  800087a:	f000 f98f 	bl	8000b9c <_ZL12MX_CAN2_Initv>
-  MX_USART3_UART_Init();
+	MX_USART3_UART_Init();
  800087e:	f000 fa07 	bl	8000c90 <_ZL19MX_USART3_UART_Initv>
-  HAL_UART_Receive_IT (&huart3, cadena, 10);
+	HAL_UART_Receive_IT(&huart3, cadena, 10);
  8000882:	220a      	movs	r2, #10
  8000884:	4946      	ldr	r1, [pc, #280]	; (80009a0 <main+0x13c>)
  8000886:	4847      	ldr	r0, [pc, #284]	; (80009a4 <main+0x140>)
  8000888:	f002 ff15 	bl	80036b6 <HAL_UART_Receive_IT>
-  /* USER CODE BEGIN 2 */
-//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
-
-
-    TxHeader.IDE = CAN_ID_STD;
+	/* USER CODE BEGIN 2 */
+	//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+	TxHeader.IDE = CAN_ID_STD;
  800088c:	4b46      	ldr	r3, [pc, #280]	; (80009a8 <main+0x144>)
  800088e:	2200      	movs	r2, #0
  8000890:	609a      	str	r2, [r3, #8]
-    TxHeader.StdId = 146;
+	TxHeader.StdId = 146;
  8000892:	4b45      	ldr	r3, [pc, #276]	; (80009a8 <main+0x144>)
  8000894:	2292      	movs	r2, #146	; 0x92
  8000896:	601a      	str	r2, [r3, #0]
-    TxHeader.RTR = CAN_RTR_DATA;
+	TxHeader.RTR = CAN_RTR_DATA;
  8000898:	4b43      	ldr	r3, [pc, #268]	; (80009a8 <main+0x144>)
  800089a:	2200      	movs	r2, #0
  800089c:	60da      	str	r2, [r3, #12]
-    TxHeader.DLC = 1;
+	TxHeader.DLC = 1;
  800089e:	4b42      	ldr	r3, [pc, #264]	; (80009a8 <main+0x144>)
  80008a0:	2201      	movs	r2, #1
  80008a2:	611a      	str	r2, [r3, #16]
-    TxHeader.TransmitGlobalTime = DISABLE;
+	TxHeader.TransmitGlobalTime = DISABLE;
  80008a4:	4b40      	ldr	r3, [pc, #256]	; (80009a8 <main+0x144>)
  80008a6:	2200      	movs	r2, #0
  80008a8:	751a      	strb	r2, [r3, #20]
 
-    RxHeader.IDE = CAN_ID_STD;
+	RxHeader.IDE = CAN_ID_STD;
  80008aa:	4b40      	ldr	r3, [pc, #256]	; (80009ac <main+0x148>)
  80008ac:	2200      	movs	r2, #0
  80008ae:	609a      	str	r2, [r3, #8]
-    RxHeader.StdId = 146;
+	RxHeader.StdId = 146;
  80008b0:	4b3e      	ldr	r3, [pc, #248]	; (80009ac <main+0x148>)
  80008b2:	2292      	movs	r2, #146	; 0x92
  80008b4:	601a      	str	r2, [r3, #0]
-    RxHeader.RTR = CAN_RTR_DATA;
+	RxHeader.RTR = CAN_RTR_DATA;
  80008b6:	4b3d      	ldr	r3, [pc, #244]	; (80009ac <main+0x148>)
  80008b8:	2200      	movs	r2, #0
  80008ba:	60da      	str	r2, [r3, #12]
-    RxHeader.DLC = 1;
+	RxHeader.DLC = 1;
  80008bc:	4b3b      	ldr	r3, [pc, #236]	; (80009ac <main+0x148>)
  80008be:	2201      	movs	r2, #1
  80008c0:	611a      	str	r2, [r3, #16]
 
-    TxHeader2.IDE = CAN_ID_STD;
+	TxHeader2.IDE = CAN_ID_STD;
  80008c2:	4b3b      	ldr	r3, [pc, #236]	; (80009b0 <main+0x14c>)
  80008c4:	2200      	movs	r2, #0
  80008c6:	609a      	str	r2, [r3, #8]
-    TxHeader2.StdId = 20;
+	TxHeader2.StdId = 20;
  80008c8:	4b39      	ldr	r3, [pc, #228]	; (80009b0 <main+0x14c>)
  80008ca:	2214      	movs	r2, #20
  80008cc:	601a      	str	r2, [r3, #0]
-    TxHeader2.RTR = CAN_RTR_DATA;
+	TxHeader2.RTR = CAN_RTR_DATA;
  80008ce:	4b38      	ldr	r3, [pc, #224]	; (80009b0 <main+0x14c>)
  80008d0:	2200      	movs	r2, #0
  80008d2:	60da      	str	r2, [r3, #12]
-    TxHeader2.DLC = 1;
+	TxHeader2.DLC = 1;
  80008d4:	4b36      	ldr	r3, [pc, #216]	; (80009b0 <main+0x14c>)
  80008d6:	2201      	movs	r2, #1
  80008d8:	611a      	str	r2, [r3, #16]
-    TxHeader2.TransmitGlobalTime = DISABLE;
+	TxHeader2.TransmitGlobalTime = DISABLE;
  80008da:	4b35      	ldr	r3, [pc, #212]	; (80009b0 <main+0x14c>)
  80008dc:	2200      	movs	r2, #0
  80008de:	751a      	strb	r2, [r3, #20]
 
-    RxHeader2.IDE = CAN_ID_STD;
+	RxHeader2.IDE = CAN_ID_STD;
  80008e0:	4b34      	ldr	r3, [pc, #208]	; (80009b4 <main+0x150>)
  80008e2:	2200      	movs	r2, #0
  80008e4:	609a      	str	r2, [r3, #8]
-    RxHeader2.StdId = 20;
+	RxHeader2.StdId = 20;
  80008e6:	4b33      	ldr	r3, [pc, #204]	; (80009b4 <main+0x150>)
  80008e8:	2214      	movs	r2, #20
  80008ea:	601a      	str	r2, [r3, #0]
-    RxHeader2.RTR = CAN_RTR_DATA;
+	RxHeader2.RTR = CAN_RTR_DATA;
  80008ec:	4b31      	ldr	r3, [pc, #196]	; (80009b4 <main+0x150>)
  80008ee:	2200      	movs	r2, #0
  80008f0:	60da      	str	r2, [r3, #12]
-    RxHeader2.DLC = 1;
+	RxHeader2.DLC = 1;
  80008f2:	4b30      	ldr	r3, [pc, #192]	; (80009b4 <main+0x150>)
  80008f4:	2201      	movs	r2, #1
  80008f6:	611a      	str	r2, [r3, #16]
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
+	/* add mutexes, ... */
+	/* USER CODE END RTOS_MUTEX */
 
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-    BinarySemaphoreHandle = xSemaphoreCreateBinary();
+	/* USER CODE BEGIN RTOS_SEMAPHORES */
+	/* add semaphores, ... */
+	BinarySemaphoreHandle = xSemaphoreCreateBinary();
  80008f8:	2203      	movs	r2, #3
  80008fa:	2100      	movs	r1, #0
  80008fc:	2001      	movs	r0, #1
@@ -1048,7 +1025,7 @@ int main(void)
  8000902:	4603      	mov	r3, r0
  8000904:	4a2c      	ldr	r2, [pc, #176]	; (80009b8 <main+0x154>)
  8000906:	6013      	str	r3, [r2, #0]
-    configASSERT( BinarySemaphoreHandle != NULL );
+	configASSERT(BinarySemaphoreHandle != NULL);
  8000908:	4b2b      	ldr	r3, [pc, #172]	; (80009b8 <main+0x154>)
  800090a:	681b      	ldr	r3, [r3, #0]
  800090c:	2b00      	cmp	r3, #0
@@ -1062,12 +1039,12 @@ int main(void)
 }
  8000922:	bf00      	nop
  8000924:	e7fe      	b.n	8000924 <main+0xc0>
-  /* USER CODE END RTOS_QUEUES */
+	/* USER CODE END RTOS_QUEUES */
 
-  /* Create the thread(s) */
-  /* definition and creation of Tarea_1 */
+	/* Create the thread(s) */
+	/* definition and creation of Tarea_1 */
 
-  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+	osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
  8000926:	4b25      	ldr	r3, [pc, #148]	; (80009bc <main+0x158>)
  8000928:	f107 0438 	add.w	r4, r7, #56	; 0x38
  800092c:	461d      	mov	r5, r3
@@ -1075,7 +1052,7 @@ int main(void)
  8000930:	c40f      	stmia	r4!, {r0, r1, r2, r3}
  8000932:	e895 0007 	ldmia.w	r5, {r0, r1, r2}
  8000936:	e884 0007 	stmia.w	r4, {r0, r1, r2}
-  Tarea_1Handle = osThreadCreate(osThread(Tarea_1), NULL);
+	Tarea_1Handle = osThreadCreate(osThread(Tarea_1), NULL);
  800093a:	f107 0338 	add.w	r3, r7, #56	; 0x38
  800093e:	2100      	movs	r1, #0
  8000940:	4618      	mov	r0, r3
@@ -1084,8 +1061,8 @@ int main(void)
  8000948:	4a1d      	ldr	r2, [pc, #116]	; (80009c0 <main+0x15c>)
  800094a:	6013      	str	r3, [r2, #0]
 
-  /* definition and creation of Tarea_2 */
-  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
+	/* definition and creation of Tarea_2 */
+	osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
  800094c:	4b1d      	ldr	r3, [pc, #116]	; (80009c4 <main+0x160>)
  800094e:	f107 041c 	add.w	r4, r7, #28
  8000952:	461d      	mov	r5, r3
@@ -1093,7 +1070,7 @@ int main(void)
  8000956:	c40f      	stmia	r4!, {r0, r1, r2, r3}
  8000958:	e895 0007 	ldmia.w	r5, {r0, r1, r2}
  800095c:	e884 0007 	stmia.w	r4, {r0, r1, r2}
-  Tarea_2Handle = osThreadCreate(osThread(Tarea_2), NULL);
+	Tarea_2Handle = osThreadCreate(osThread(Tarea_2), NULL);
  8000960:	f107 031c 	add.w	r3, r7, #28
  8000964:	2100      	movs	r1, #0
  8000966:	4618      	mov	r0, r3
@@ -1102,8 +1079,8 @@ int main(void)
  800096e:	4a16      	ldr	r2, [pc, #88]	; (80009c8 <main+0x164>)
  8000970:	6013      	str	r3, [r2, #0]
 
-  /* definition and creation of Tarea_3 */
-  osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
+	/* definition and creation of Tarea_3 */
+	osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
  8000972:	4b16      	ldr	r3, [pc, #88]	; (80009cc <main+0x168>)
  8000974:	463c      	mov	r4, r7
  8000976:	461d      	mov	r5, r3
@@ -1111,7 +1088,7 @@ int main(void)
  800097a:	c40f      	stmia	r4!, {r0, r1, r2, r3}
  800097c:	e895 0007 	ldmia.w	r5, {r0, r1, r2}
  8000980:	e884 0007 	stmia.w	r4, {r0, r1, r2}
-  Tarea_3Handle = osThreadCreate(osThread(Tarea_3), NULL);
+	Tarea_3Handle = osThreadCreate(osThread(Tarea_3), NULL);
  8000984:	463b      	mov	r3, r7
  8000986:	2100      	movs	r1, #0
  8000988:	4618      	mov	r0, r3
@@ -1120,20 +1097,20 @@ int main(void)
  8000990:	4a0f      	ldr	r2, [pc, #60]	; (80009d0 <main+0x16c>)
  8000992:	6013      	str	r3, [r2, #0]
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  config();
+	/* USER CODE BEGIN RTOS_THREADS */
+	/* add threads, ... */
+	config();
  8000994:	f7ff ff10 	bl	80007b8 <_Z6configv>
-  /* USER CODE END RTOS_THREADS */
+	/* USER CODE END RTOS_THREADS */
 
-  /* Start scheduler */
-  osKernelStart();
+	/* Start scheduler */
+	osKernelStart();
  8000998:	f003 fe3e 	bl	8004618 <osKernelStart>
 
-  /* We should never get here as control is now taken by the scheduler */
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
+	/* We should never get here as control is now taken by the scheduler */
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	while (1) {
  800099c:	e7fe      	b.n	800099c <main+0x138>
  800099e:	bf00      	nop
  80009a0:	20000364 	.word	0x20000364
@@ -1151,22 +1128,22 @@ int main(void)
  80009d0:	20000360 	.word	0x20000360
 
 080009d4 <_Z18SystemClock_Configv>:
+
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
+ * @brief System Clock Configuration
+ * @retval None
+ */
+void SystemClock_Config(void) {
  80009d4:	b580      	push	{r7, lr}
  80009d6:	b094      	sub	sp, #80	; 0x50
  80009d8:	af00      	add	r7, sp, #0
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
  80009da:	f107 0320 	add.w	r3, r7, #32
  80009de:	2230      	movs	r2, #48	; 0x30
  80009e0:	2100      	movs	r1, #0
  80009e2:	4618      	mov	r0, r3
  80009e4:	f005 fdce 	bl	8006584 <memset>
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
  80009e8:	f107 030c 	add.w	r3, r7, #12
  80009ec:	2200      	movs	r2, #0
  80009ee:	601a      	str	r2, [r3, #0]
@@ -1175,9 +1152,9 @@ void SystemClock_Config(void)
  80009f4:	60da      	str	r2, [r3, #12]
  80009f6:	611a      	str	r2, [r3, #16]
 
-  /** Configure the main internal regulator output voltage
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
+	/** Configure the main internal regulator output voltage
+	 */
+	__HAL_RCC_PWR_CLK_ENABLE();
  80009f8:	2300      	movs	r3, #0
  80009fa:	60bb      	str	r3, [r7, #8]
  80009fc:	4b28      	ldr	r3, [pc, #160]	; (8000aa0 <_Z18SystemClock_Configv+0xcc>)
@@ -1190,7 +1167,7 @@ void SystemClock_Config(void)
  8000a0c:	f003 5380 	and.w	r3, r3, #268435456	; 0x10000000
  8000a10:	60bb      	str	r3, [r7, #8]
  8000a12:	68bb      	ldr	r3, [r7, #8]
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
  8000a14:	2300      	movs	r3, #0
  8000a16:	607b      	str	r3, [r7, #4]
  8000a18:	4b22      	ldr	r3, [pc, #136]	; (8000aa4 <_Z18SystemClock_Configv+0xd0>)
@@ -1205,22 +1182,22 @@ void SystemClock_Config(void)
  8000a30:	607b      	str	r3, [r7, #4]
  8000a32:	687b      	ldr	r3, [r7, #4]
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+	/** Initializes the RCC Oscillators according to the specified parameters
+	 * in the RCC_OscInitTypeDef structure.
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
  8000a34:	2302      	movs	r3, #2
  8000a36:	623b      	str	r3, [r7, #32]
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
  8000a38:	2301      	movs	r3, #1
  8000a3a:	62fb      	str	r3, [r7, #44]	; 0x2c
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
  8000a3c:	2310      	movs	r3, #16
  8000a3e:	633b      	str	r3, [r7, #48]	; 0x30
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
  8000a40:	2300      	movs	r3, #0
  8000a42:	63bb      	str	r3, [r7, #56]	; 0x38
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
  8000a44:	f107 0320 	add.w	r3, r7, #32
  8000a48:	4618      	mov	r0, r3
  8000a4a:	f001 fe1d 	bl	8002688 <HAL_RCC_OscConfig>
@@ -1232,31 +1209,30 @@ void SystemClock_Config(void)
  8000a58:	b2db      	uxtb	r3, r3
  8000a5a:	2b00      	cmp	r3, #0
  8000a5c:	d001      	beq.n	8000a62 <_Z18SystemClock_Configv+0x8e>
-  {
-    Error_Handler();
+		Error_Handler();
  8000a5e:	f000 f9c1 	bl	8000de4 <Error_Handler>
-  }
+	}
 
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+	/** Initializes the CPU, AHB and APB buses clocks
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
  8000a62:	230f      	movs	r3, #15
  8000a64:	60fb      	str	r3, [r7, #12]
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
  8000a66:	2300      	movs	r3, #0
  8000a68:	613b      	str	r3, [r7, #16]
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
  8000a6a:	2300      	movs	r3, #0
  8000a6c:	617b      	str	r3, [r7, #20]
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
  8000a6e:	2300      	movs	r3, #0
  8000a70:	61bb      	str	r3, [r7, #24]
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
  8000a72:	2300      	movs	r3, #0
  8000a74:	61fb      	str	r3, [r7, #28]
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
  8000a76:	f107 030c 	add.w	r3, r7, #12
  8000a7a:	2100      	movs	r1, #0
  8000a7c:	4618      	mov	r0, r3
@@ -1269,10 +1245,9 @@ void SystemClock_Config(void)
  8000a8c:	b2db      	uxtb	r3, r3
  8000a8e:	2b00      	cmp	r3, #0
  8000a90:	d001      	beq.n	8000a96 <_Z18SystemClock_Configv+0xc2>
-  {
-    Error_Handler();
+		Error_Handler();
  8000a92:	f000 f9a7 	bl	8000de4 <Error_Handler>
-  }
+	}
 }
  8000a96:	bf00      	nop
  8000a98:	3750      	adds	r7, #80	; 0x50
@@ -1283,68 +1258,68 @@ void SystemClock_Config(void)
  8000aa4:	40007000 	.word	0x40007000
 
 08000aa8 <_ZL12MX_CAN1_Initv>:
-  * @brief CAN1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN1_Init(void)
-{
+/**
+ * @brief CAN1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_CAN1_Init(void) {
  8000aa8:	b580      	push	{r7, lr}
  8000aaa:	af00      	add	r7, sp, #0
-  /* USER CODE END CAN1_Init 0 */
+	/* USER CODE END CAN1_Init 0 */
 
-  /* USER CODE BEGIN CAN1_Init 1 */
+	/* USER CODE BEGIN CAN1_Init 1 */
 
-  /* USER CODE END CAN1_Init 1 */
-  hcan1.Instance = CAN1;
+	/* USER CODE END CAN1_Init 1 */
+	hcan1.Instance = CAN1;
  8000aac:	4b38      	ldr	r3, [pc, #224]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000aae:	4a39      	ldr	r2, [pc, #228]	; (8000b94 <_ZL12MX_CAN1_Initv+0xec>)
  8000ab0:	601a      	str	r2, [r3, #0]
-  hcan1.Init.Prescaler = 16;
+	hcan1.Init.Prescaler = 16;
  8000ab2:	4b37      	ldr	r3, [pc, #220]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ab4:	2210      	movs	r2, #16
  8000ab6:	605a      	str	r2, [r3, #4]
-  hcan1.Init.Mode = CAN_MODE_NORMAL;
+	hcan1.Init.Mode = CAN_MODE_NORMAL;
  8000ab8:	4b35      	ldr	r3, [pc, #212]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000aba:	2200      	movs	r2, #0
  8000abc:	609a      	str	r2, [r3, #8]
-  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+	hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
  8000abe:	4b34      	ldr	r3, [pc, #208]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ac0:	2200      	movs	r2, #0
  8000ac2:	60da      	str	r2, [r3, #12]
-  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+	hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
  8000ac4:	4b32      	ldr	r3, [pc, #200]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ac6:	f44f 2240 	mov.w	r2, #786432	; 0xc0000
  8000aca:	611a      	str	r2, [r3, #16]
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+	hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
  8000acc:	4b30      	ldr	r3, [pc, #192]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ace:	2200      	movs	r2, #0
  8000ad0:	615a      	str	r2, [r3, #20]
-  hcan1.Init.TimeTriggeredMode = DISABLE;
+	hcan1.Init.TimeTriggeredMode = DISABLE;
  8000ad2:	4b2f      	ldr	r3, [pc, #188]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ad4:	2200      	movs	r2, #0
  8000ad6:	761a      	strb	r2, [r3, #24]
-  hcan1.Init.AutoBusOff = DISABLE;
+	hcan1.Init.AutoBusOff = DISABLE;
  8000ad8:	4b2d      	ldr	r3, [pc, #180]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ada:	2200      	movs	r2, #0
  8000adc:	765a      	strb	r2, [r3, #25]
-  hcan1.Init.AutoWakeUp = DISABLE;
+	hcan1.Init.AutoWakeUp = DISABLE;
  8000ade:	4b2c      	ldr	r3, [pc, #176]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ae0:	2200      	movs	r2, #0
  8000ae2:	769a      	strb	r2, [r3, #26]
-  hcan1.Init.AutoRetransmission = DISABLE;
+	hcan1.Init.AutoRetransmission = DISABLE;
  8000ae4:	4b2a      	ldr	r3, [pc, #168]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000ae6:	2200      	movs	r2, #0
  8000ae8:	76da      	strb	r2, [r3, #27]
-  hcan1.Init.ReceiveFifoLocked = DISABLE;
+	hcan1.Init.ReceiveFifoLocked = DISABLE;
  8000aea:	4b29      	ldr	r3, [pc, #164]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000aec:	2200      	movs	r2, #0
  8000aee:	771a      	strb	r2, [r3, #28]
-  hcan1.Init.TransmitFifoPriority = DISABLE;
+	hcan1.Init.TransmitFifoPriority = DISABLE;
  8000af0:	4b27      	ldr	r3, [pc, #156]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000af2:	2200      	movs	r2, #0
  8000af4:	775a      	strb	r2, [r3, #29]
-  if (HAL_CAN_Init(&hcan1) != HAL_OK)
+	if (HAL_CAN_Init(&hcan1) != HAL_OK) {
  8000af6:	4826      	ldr	r0, [pc, #152]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000af8:	f000 fc10 	bl	800131c <HAL_CAN_Init>
  8000afc:	4603      	mov	r3, r0
@@ -1355,53 +1330,52 @@ static void MX_CAN1_Init(void)
  8000b06:	b2db      	uxtb	r3, r3
  8000b08:	2b00      	cmp	r3, #0
  8000b0a:	d001      	beq.n	8000b10 <_ZL12MX_CAN1_Initv+0x68>
-  {
-    Error_Handler();
+		Error_Handler();
  8000b0c:	f000 f96a 	bl	8000de4 <Error_Handler>
-  }
-  /* USER CODE BEGIN CAN1_Init 2 */
-  sFilterConfig.FilterBank = 0;
+	}
+	/* USER CODE BEGIN CAN1_Init 2 */
+	sFilterConfig.FilterBank = 0;
  8000b10:	4b21      	ldr	r3, [pc, #132]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b12:	2200      	movs	r2, #0
  8000b14:	615a      	str	r2, [r3, #20]
-	  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
  8000b16:	4b20      	ldr	r3, [pc, #128]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b18:	2200      	movs	r2, #0
  8000b1a:	619a      	str	r2, [r3, #24]
-	  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
+	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
  8000b1c:	4b1e      	ldr	r3, [pc, #120]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b1e:	2200      	movs	r2, #0
  8000b20:	611a      	str	r2, [r3, #16]
-	  sFilterConfig.FilterIdHigh=0;
+	sFilterConfig.FilterIdHigh = 0;
  8000b22:	4b1d      	ldr	r3, [pc, #116]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b24:	2200      	movs	r2, #0
  8000b26:	601a      	str	r2, [r3, #0]
-	  sFilterConfig.FilterIdLow=0;
+	sFilterConfig.FilterIdLow = 0;
  8000b28:	4b1b      	ldr	r3, [pc, #108]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b2a:	2200      	movs	r2, #0
  8000b2c:	605a      	str	r2, [r3, #4]
-	  sFilterConfig.FilterMaskIdHigh=0;
+	sFilterConfig.FilterMaskIdHigh = 0;
  8000b2e:	4b1a      	ldr	r3, [pc, #104]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b30:	2200      	movs	r2, #0
  8000b32:	609a      	str	r2, [r3, #8]
-	  sFilterConfig.FilterMaskIdLow=0;
+	sFilterConfig.FilterMaskIdLow = 0;
  8000b34:	4b18      	ldr	r3, [pc, #96]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b36:	2200      	movs	r2, #0
  8000b38:	60da      	str	r2, [r3, #12]
-	  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
+	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
  8000b3a:	4b17      	ldr	r3, [pc, #92]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b3c:	2201      	movs	r2, #1
  8000b3e:	61da      	str	r2, [r3, #28]
-	  sFilterConfig.FilterActivation=ENABLE;
+	sFilterConfig.FilterActivation = ENABLE;
  8000b40:	4b15      	ldr	r3, [pc, #84]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b42:	2201      	movs	r2, #1
  8000b44:	621a      	str	r2, [r3, #32]
-      sFilterConfig.SlaveStartFilterBank = 14;
+	sFilterConfig.SlaveStartFilterBank = 14;
  8000b46:	4b14      	ldr	r3, [pc, #80]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b48:	220e      	movs	r2, #14
  8000b4a:	625a      	str	r2, [r3, #36]	; 0x24
 
-      if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+	if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK) {
  8000b4c:	4912      	ldr	r1, [pc, #72]	; (8000b98 <_ZL12MX_CAN1_Initv+0xf0>)
  8000b4e:	4810      	ldr	r0, [pc, #64]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000b50:	f000 fce0 	bl	8001514 <HAL_CAN_ConfigFilter>
@@ -1413,35 +1387,35 @@ static void MX_CAN1_Init(void)
  8000b5e:	b2db      	uxtb	r3, r3
  8000b60:	2b00      	cmp	r3, #0
  8000b62:	d001      	beq.n	8000b68 <_ZL12MX_CAN1_Initv+0xc0>
-        {
-          /* Filter configuration Error */
-          Error_Handler();
+		/* Filter configuration Error */
+		Error_Handler();
  8000b64:	f000 f93e 	bl	8000de4 <Error_Handler>
-        }
+	}
 
-      HAL_CAN_Start(&hcan1);
+	HAL_CAN_Start(&hcan1);
  8000b68:	4809      	ldr	r0, [pc, #36]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000b6a:	f000 fdb3 	bl	80016d4 <HAL_CAN_Start>
 
-        /*##-4- Activate CAN RX notification #######################################*/
-        if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+	/*##-4- Activate CAN RX notification #######################################*/
+	if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING)
  8000b6e:	2102      	movs	r1, #2
  8000b70:	4807      	ldr	r0, [pc, #28]	; (8000b90 <_ZL12MX_CAN1_Initv+0xe8>)
  8000b72:	f000 ffe0 	bl	8001b36 <HAL_CAN_ActivateNotification>
  8000b76:	4603      	mov	r3, r0
+			!= HAL_OK) {
  8000b78:	2b00      	cmp	r3, #0
  8000b7a:	bf14      	ite	ne
  8000b7c:	2301      	movne	r3, #1
  8000b7e:	2300      	moveq	r3, #0
  8000b80:	b2db      	uxtb	r3, r3
+	if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING)
  8000b82:	2b00      	cmp	r3, #0
  8000b84:	d001      	beq.n	8000b8a <_ZL12MX_CAN1_Initv+0xe2>
-        {
-          /* Notification Error */
-          Error_Handler();
+		/* Notification Error */
+		Error_Handler();
  8000b86:	f000 f92d 	bl	8000de4 <Error_Handler>
-        }
-  /* USER CODE END CAN1_Init 2 */
+	}
+	/* USER CODE END CAN1_Init 2 */
 
 }
  8000b8a:	bf00      	nop
@@ -1452,68 +1426,68 @@ static void MX_CAN1_Init(void)
  8000b98:	200003e8 	.word	0x200003e8
 
 08000b9c <_ZL12MX_CAN2_Initv>:
-  * @brief CAN2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN2_Init(void)
-{
+/**
+ * @brief CAN2 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_CAN2_Init(void) {
  8000b9c:	b580      	push	{r7, lr}
  8000b9e:	af00      	add	r7, sp, #0
-  /* USER CODE END CAN2_Init 0 */
+	/* USER CODE END CAN2_Init 0 */
 
-  /* USER CODE BEGIN CAN2_Init 1 */
+	/* USER CODE BEGIN CAN2_Init 1 */
 
-  /* USER CODE END CAN2_Init 1 */
-  hcan2.Instance = CAN2;
+	/* USER CODE END CAN2_Init 1 */
+	hcan2.Instance = CAN2;
  8000ba0:	4b38      	ldr	r3, [pc, #224]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000ba2:	4a39      	ldr	r2, [pc, #228]	; (8000c88 <_ZL12MX_CAN2_Initv+0xec>)
  8000ba4:	601a      	str	r2, [r3, #0]
-  hcan2.Init.Prescaler = 16;
+	hcan2.Init.Prescaler = 16;
  8000ba6:	4b37      	ldr	r3, [pc, #220]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000ba8:	2210      	movs	r2, #16
  8000baa:	605a      	str	r2, [r3, #4]
-  hcan2.Init.Mode = CAN_MODE_NORMAL;
+	hcan2.Init.Mode = CAN_MODE_NORMAL;
  8000bac:	4b35      	ldr	r3, [pc, #212]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bae:	2200      	movs	r2, #0
  8000bb0:	609a      	str	r2, [r3, #8]
-  hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
+	hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
  8000bb2:	4b34      	ldr	r3, [pc, #208]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bb4:	2200      	movs	r2, #0
  8000bb6:	60da      	str	r2, [r3, #12]
-  hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
+	hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
  8000bb8:	4b32      	ldr	r3, [pc, #200]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bba:	f44f 2240 	mov.w	r2, #786432	; 0xc0000
  8000bbe:	611a      	str	r2, [r3, #16]
-  hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
+	hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
  8000bc0:	4b30      	ldr	r3, [pc, #192]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bc2:	2200      	movs	r2, #0
  8000bc4:	615a      	str	r2, [r3, #20]
-  hcan2.Init.TimeTriggeredMode = DISABLE;
+	hcan2.Init.TimeTriggeredMode = DISABLE;
  8000bc6:	4b2f      	ldr	r3, [pc, #188]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bc8:	2200      	movs	r2, #0
  8000bca:	761a      	strb	r2, [r3, #24]
-  hcan2.Init.AutoBusOff = DISABLE;
+	hcan2.Init.AutoBusOff = DISABLE;
  8000bcc:	4b2d      	ldr	r3, [pc, #180]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bce:	2200      	movs	r2, #0
  8000bd0:	765a      	strb	r2, [r3, #25]
-  hcan2.Init.AutoWakeUp = DISABLE;
+	hcan2.Init.AutoWakeUp = DISABLE;
  8000bd2:	4b2c      	ldr	r3, [pc, #176]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bd4:	2200      	movs	r2, #0
  8000bd6:	769a      	strb	r2, [r3, #26]
-  hcan2.Init.AutoRetransmission = DISABLE;
+	hcan2.Init.AutoRetransmission = DISABLE;
  8000bd8:	4b2a      	ldr	r3, [pc, #168]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bda:	2200      	movs	r2, #0
  8000bdc:	76da      	strb	r2, [r3, #27]
-  hcan2.Init.ReceiveFifoLocked = DISABLE;
+	hcan2.Init.ReceiveFifoLocked = DISABLE;
  8000bde:	4b29      	ldr	r3, [pc, #164]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000be0:	2200      	movs	r2, #0
  8000be2:	771a      	strb	r2, [r3, #28]
-  hcan2.Init.TransmitFifoPriority = DISABLE;
+	hcan2.Init.TransmitFifoPriority = DISABLE;
  8000be4:	4b27      	ldr	r3, [pc, #156]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000be6:	2200      	movs	r2, #0
  8000be8:	775a      	strb	r2, [r3, #29]
-  if (HAL_CAN_Init(&hcan2) != HAL_OK)
+	if (HAL_CAN_Init(&hcan2) != HAL_OK) {
  8000bea:	4826      	ldr	r0, [pc, #152]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000bec:	f000 fb96 	bl	800131c <HAL_CAN_Init>
  8000bf0:	4603      	mov	r3, r0
@@ -1524,53 +1498,52 @@ static void MX_CAN2_Init(void)
  8000bfa:	b2db      	uxtb	r3, r3
  8000bfc:	2b00      	cmp	r3, #0
  8000bfe:	d001      	beq.n	8000c04 <_ZL12MX_CAN2_Initv+0x68>
-  {
-    Error_Handler();
+		Error_Handler();
  8000c00:	f000 f8f0 	bl	8000de4 <Error_Handler>
-  }
-  /* USER CODE BEGIN CAN2_Init 2 */
-  sFilterConfig.FilterBank = 14;
+	}
+	/* USER CODE BEGIN CAN2_Init 2 */
+	sFilterConfig.FilterBank = 14;
  8000c04:	4b21      	ldr	r3, [pc, #132]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c06:	220e      	movs	r2, #14
  8000c08:	615a      	str	r2, [r3, #20]
-  		  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
  8000c0a:	4b20      	ldr	r3, [pc, #128]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c0c:	2200      	movs	r2, #0
  8000c0e:	619a      	str	r2, [r3, #24]
-  		  sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
+	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
  8000c10:	4b1e      	ldr	r3, [pc, #120]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c12:	2200      	movs	r2, #0
  8000c14:	611a      	str	r2, [r3, #16]
-  		  sFilterConfig.FilterIdHigh=0;
+	sFilterConfig.FilterIdHigh = 0;
  8000c16:	4b1d      	ldr	r3, [pc, #116]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c18:	2200      	movs	r2, #0
  8000c1a:	601a      	str	r2, [r3, #0]
-  		  sFilterConfig.FilterIdLow=0;
+	sFilterConfig.FilterIdLow = 0;
  8000c1c:	4b1b      	ldr	r3, [pc, #108]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c1e:	2200      	movs	r2, #0
  8000c20:	605a      	str	r2, [r3, #4]
-  		  sFilterConfig.FilterMaskIdHigh=0;
+	sFilterConfig.FilterMaskIdHigh = 0;
  8000c22:	4b1a      	ldr	r3, [pc, #104]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c24:	2200      	movs	r2, #0
  8000c26:	609a      	str	r2, [r3, #8]
-  		  sFilterConfig.FilterMaskIdLow=0;
+	sFilterConfig.FilterMaskIdLow = 0;
  8000c28:	4b18      	ldr	r3, [pc, #96]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c2a:	2200      	movs	r2, #0
  8000c2c:	60da      	str	r2, [r3, #12]
-  		  sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
+	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
  8000c2e:	4b17      	ldr	r3, [pc, #92]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c30:	2201      	movs	r2, #1
  8000c32:	61da      	str	r2, [r3, #28]
-  		  sFilterConfig.FilterActivation=ENABLE;
+	sFilterConfig.FilterActivation = ENABLE;
  8000c34:	4b15      	ldr	r3, [pc, #84]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c36:	2201      	movs	r2, #1
  8000c38:	621a      	str	r2, [r3, #32]
-  	      sFilterConfig.SlaveStartFilterBank = 14;
+	sFilterConfig.SlaveStartFilterBank = 14;
  8000c3a:	4b14      	ldr	r3, [pc, #80]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c3c:	220e      	movs	r2, #14
  8000c3e:	625a      	str	r2, [r3, #36]	; 0x24
 
-  	      if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+	if (HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK) {
  8000c40:	4912      	ldr	r1, [pc, #72]	; (8000c8c <_ZL12MX_CAN2_Initv+0xf0>)
  8000c42:	4810      	ldr	r0, [pc, #64]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000c44:	f000 fc66 	bl	8001514 <HAL_CAN_ConfigFilter>
@@ -1582,35 +1555,35 @@ static void MX_CAN2_Init(void)
  8000c52:	b2db      	uxtb	r3, r3
  8000c54:	2b00      	cmp	r3, #0
  8000c56:	d001      	beq.n	8000c5c <_ZL12MX_CAN2_Initv+0xc0>
-  	        {
-  	          /* Filter configuration Error */
-  	          Error_Handler();
+		/* Filter configuration Error */
+		Error_Handler();
  8000c58:	f000 f8c4 	bl	8000de4 <Error_Handler>
-  	        }
+	}
 
-  	      HAL_CAN_Start(&hcan2);
+	HAL_CAN_Start(&hcan2);
  8000c5c:	4809      	ldr	r0, [pc, #36]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000c5e:	f000 fd39 	bl	80016d4 <HAL_CAN_Start>
 
-  	        /*##-4- Activate CAN RX notification #######################################*/
-  	        if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+	/*##-4- Activate CAN RX notification #######################################*/
+	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING)
  8000c62:	2102      	movs	r1, #2
  8000c64:	4807      	ldr	r0, [pc, #28]	; (8000c84 <_ZL12MX_CAN2_Initv+0xe8>)
  8000c66:	f000 ff66 	bl	8001b36 <HAL_CAN_ActivateNotification>
  8000c6a:	4603      	mov	r3, r0
+			!= HAL_OK) {
  8000c6c:	2b00      	cmp	r3, #0
  8000c6e:	bf14      	ite	ne
  8000c70:	2301      	movne	r3, #1
  8000c72:	2300      	moveq	r3, #0
  8000c74:	b2db      	uxtb	r3, r3
+	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING)
  8000c76:	2b00      	cmp	r3, #0
  8000c78:	d001      	beq.n	8000c7e <_ZL12MX_CAN2_Initv+0xe2>
-  	        {
-  	          /* Notification Error */
-  	          Error_Handler();
+		/* Notification Error */
+		Error_Handler();
  8000c7a:	f000 f8b3 	bl	8000de4 <Error_Handler>
-  	        }
-  /* USER CODE END CAN2_Init 2 */
+	}
+	/* USER CODE END CAN2_Init 2 */
 
 }
  8000c7e:	bf00      	nop
@@ -1621,52 +1594,52 @@ static void MX_CAN2_Init(void)
  8000c8c:	200003e8 	.word	0x200003e8
 
 08000c90 <_ZL19MX_USART3_UART_Initv>:
-  * @brief USART3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART3_UART_Init(void)
-{
+/**
+ * @brief USART3 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USART3_UART_Init(void) {
  8000c90:	b580      	push	{r7, lr}
  8000c92:	af00      	add	r7, sp, #0
-  /* USER CODE END USART3_Init 0 */
+	/* USER CODE END USART3_Init 0 */
 
-  /* USER CODE BEGIN USART3_Init 1 */
+	/* USER CODE BEGIN USART3_Init 1 */
 
-  /* USER CODE END USART3_Init 1 */
-  huart3.Instance = USART3;
+	/* USER CODE END USART3_Init 1 */
+	huart3.Instance = USART3;
  8000c94:	4b13      	ldr	r3, [pc, #76]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000c96:	4a14      	ldr	r2, [pc, #80]	; (8000ce8 <_ZL19MX_USART3_UART_Initv+0x58>)
  8000c98:	601a      	str	r2, [r3, #0]
-  huart3.Init.BaudRate = 115200;
+	huart3.Init.BaudRate = 115200;
  8000c9a:	4b12      	ldr	r3, [pc, #72]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000c9c:	f44f 32e1 	mov.w	r2, #115200	; 0x1c200
  8000ca0:	605a      	str	r2, [r3, #4]
-  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+	huart3.Init.WordLength = UART_WORDLENGTH_8B;
  8000ca2:	4b10      	ldr	r3, [pc, #64]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000ca4:	2200      	movs	r2, #0
  8000ca6:	609a      	str	r2, [r3, #8]
-  huart3.Init.StopBits = UART_STOPBITS_1;
+	huart3.Init.StopBits = UART_STOPBITS_1;
  8000ca8:	4b0e      	ldr	r3, [pc, #56]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000caa:	2200      	movs	r2, #0
  8000cac:	60da      	str	r2, [r3, #12]
-  huart3.Init.Parity = UART_PARITY_NONE;
+	huart3.Init.Parity = UART_PARITY_NONE;
  8000cae:	4b0d      	ldr	r3, [pc, #52]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000cb0:	2200      	movs	r2, #0
  8000cb2:	611a      	str	r2, [r3, #16]
-  huart3.Init.Mode = UART_MODE_TX_RX;
+	huart3.Init.Mode = UART_MODE_TX_RX;
  8000cb4:	4b0b      	ldr	r3, [pc, #44]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000cb6:	220c      	movs	r2, #12
  8000cb8:	615a      	str	r2, [r3, #20]
-  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
  8000cba:	4b0a      	ldr	r3, [pc, #40]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000cbc:	2200      	movs	r2, #0
  8000cbe:	619a      	str	r2, [r3, #24]
-  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
  8000cc0:	4b08      	ldr	r3, [pc, #32]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000cc2:	2200      	movs	r2, #0
  8000cc4:	61da      	str	r2, [r3, #28]
- if (HAL_UART_Init(&huart3) != HAL_OK)
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
  8000cc6:	4807      	ldr	r0, [pc, #28]	; (8000ce4 <_ZL19MX_USART3_UART_Initv+0x54>)
  8000cc8:	f002 fc16 	bl	80034f8 <HAL_UART_Init>
  8000ccc:	4603      	mov	r3, r0
@@ -1677,13 +1650,12 @@ static void MX_USART3_UART_Init(void)
  8000cd6:	b2db      	uxtb	r3, r3
  8000cd8:	2b00      	cmp	r3, #0
  8000cda:	d001      	beq.n	8000ce0 <_ZL19MX_USART3_UART_Initv+0x50>
-  {
-    Error_Handler();
+		Error_Handler();
  8000cdc:	f000 f882 	bl	8000de4 <Error_Handler>
-  }
-  /* USER CODE BEGIN USART3_Init 2 */
+	}
+	/* USER CODE BEGIN USART3_Init 2 */
 
-  /* USER CODE END USART3_Init 2 */
+	/* USER CODE END USART3_Init 2 */
 
 }
  8000ce0:	bf00      	nop
@@ -1692,16 +1664,16 @@ static void MX_USART3_UART_Init(void)
  8000ce8:	40004800 	.word	0x40004800
 
 08000cec <_ZL12MX_GPIO_Initv>:
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
+/**
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_GPIO_Init(void) {
  8000cec:	b580      	push	{r7, lr}
  8000cee:	b088      	sub	sp, #32
  8000cf0:	af00      	add	r7, sp, #0
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
  8000cf2:	f107 030c 	add.w	r3, r7, #12
  8000cf6:	2200      	movs	r2, #0
  8000cf8:	601a      	str	r2, [r3, #0]
@@ -1710,8 +1682,8 @@ static void MX_GPIO_Init(void)
  8000cfe:	60da      	str	r2, [r3, #12]
  8000d00:	611a      	str	r2, [r3, #16]
 
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOB_CLK_ENABLE();
  8000d02:	2300      	movs	r3, #0
  8000d04:	60bb      	str	r3, [r7, #8]
  8000d06:	4b20      	ldr	r3, [pc, #128]	; (8000d88 <_ZL12MX_GPIO_Initv+0x9c>)
@@ -1724,7 +1696,7 @@ static void MX_GPIO_Init(void)
  8000d16:	f003 0302 	and.w	r3, r3, #2
  8000d1a:	60bb      	str	r3, [r7, #8]
  8000d1c:	68bb      	ldr	r3, [r7, #8]
-  __HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
  8000d1e:	2300      	movs	r3, #0
  8000d20:	607b      	str	r3, [r7, #4]
  8000d22:	4b19      	ldr	r3, [pc, #100]	; (8000d88 <_ZL12MX_GPIO_Initv+0x9c>)
@@ -1737,7 +1709,7 @@ static void MX_GPIO_Init(void)
  8000d32:	f003 0308 	and.w	r3, r3, #8
  8000d36:	607b      	str	r3, [r7, #4]
  8000d38:	687b      	ldr	r3, [r7, #4]
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
  8000d3a:	2300      	movs	r3, #0
  8000d3c:	603b      	str	r3, [r7, #0]
  8000d3e:	4b12      	ldr	r3, [pc, #72]	; (8000d88 <_ZL12MX_GPIO_Initv+0x9c>)
@@ -1751,27 +1723,28 @@ static void MX_GPIO_Init(void)
  8000d52:	603b      	str	r3, [r7, #0]
  8000d54:	683b      	ldr	r3, [r7, #0]
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Amarillo_Pin|Rojo_Pin|Azul_Pin, GPIO_PIN_RESET);
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOB, Amarillo_Pin | Rojo_Pin | Azul_Pin,
  8000d56:	2200      	movs	r2, #0
  8000d58:	f244 0181 	movw	r1, #16513	; 0x4081
  8000d5c:	480b      	ldr	r0, [pc, #44]	; (8000d8c <_ZL12MX_GPIO_Initv+0xa0>)
  8000d5e:	f001 fc5f 	bl	8002620 <HAL_GPIO_WritePin>
+			GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : Amarillo_Pin Rojo_Pin Azul_Pin */
-  GPIO_InitStruct.Pin = Amarillo_Pin|Rojo_Pin|Azul_Pin;
+	/*Configure GPIO pins : Amarillo_Pin Rojo_Pin Azul_Pin */
+	GPIO_InitStruct.Pin = Amarillo_Pin | Rojo_Pin | Azul_Pin;
  8000d62:	f244 0381 	movw	r3, #16513	; 0x4081
  8000d66:	60fb      	str	r3, [r7, #12]
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
  8000d68:	2301      	movs	r3, #1
  8000d6a:	613b      	str	r3, [r7, #16]
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
  8000d6c:	2300      	movs	r3, #0
  8000d6e:	617b      	str	r3, [r7, #20]
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
  8000d70:	2300      	movs	r3, #0
  8000d72:	61bb      	str	r3, [r7, #24]
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
  8000d74:	f107 030c 	add.w	r3, r7, #12
  8000d78:	4619      	mov	r1, r3
  8000d7a:	4804      	ldr	r0, [pc, #16]	; (8000d8c <_ZL12MX_GPIO_Initv+0xa0>)
@@ -1786,91 +1759,88 @@ static void MX_GPIO_Init(void)
  8000d8c:	40020400 	.word	0x40020400
 
 08000d90 <_Z11StartTask01PKv>:
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the Tarea_1 thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTask01 */
-void StartTask01(void const * argument)
-{
+void StartTask01(void const *argument) {
  8000d90:	b580      	push	{r7, lr}
  8000d92:	b082      	sub	sp, #8
  8000d94:	af00      	add	r7, sp, #0
  8000d96:	6078      	str	r0, [r7, #4]
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+	/* USER CODE BEGIN 5 */
+	/* Infinite loop */
+	for (;;) {
+		osDelay(1);
  8000d98:	2001      	movs	r0, #1
  8000d9a:	f003 fc90 	bl	80046be <osDelay>
  8000d9e:	e7fb      	b.n	8000d98 <_Z11StartTask01PKv+0x8>
 
 08000da0 <_Z11StartTask02PKv>:
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Tarea_2 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTask02 */
-void StartTask02(void const * argument)
-{
+void StartTask02(void const *argument) {
  8000da0:	b580      	push	{r7, lr}
  8000da2:	b082      	sub	sp, #8
  8000da4:	af00      	add	r7, sp, #0
  8000da6:	6078      	str	r0, [r7, #4]
-  /* USER CODE BEGIN StartTask02 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+	/* USER CODE BEGIN StartTask02 */
+	/* Infinite loop */
+	for (;;) {
+		osDelay(1);
  8000da8:	2001      	movs	r0, #1
  8000daa:	f003 fc88 	bl	80046be <osDelay>
  8000dae:	e7fb      	b.n	8000da8 <_Z11StartTask02PKv+0x8>
 
 08000db0 <_Z11StartTask03PKv>:
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Tarea_3 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTask03 */
-void StartTask03(void const * argument)
-{
+void StartTask03(void const *argument) {
  8000db0:	b580      	push	{r7, lr}
  8000db2:	b082      	sub	sp, #8
  8000db4:	af00      	add	r7, sp, #0
  8000db6:	6078      	str	r0, [r7, #4]
-  /* USER CODE BEGIN StartTask03 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+	/* USER CODE BEGIN StartTask03 */
+	/* Infinite loop */
+	for (;;) {
+		osDelay(1);
  8000db8:	2001      	movs	r0, #1
  8000dba:	f003 fc80 	bl	80046be <osDelay>
  8000dbe:	e7fb      	b.n	8000db8 <_Z11StartTask03PKv+0x8>
 
 08000dc0 <HAL_TIM_PeriodElapsedCallback>:
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
  8000dc0:	b580      	push	{r7, lr}
  8000dc2:	b082      	sub	sp, #8
  8000dc4:	af00      	add	r7, sp, #0
  8000dc6:	6078      	str	r0, [r7, #4]
-  /* USER CODE BEGIN Callback 0 */
+	/* USER CODE BEGIN Callback 0 */
 
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM7) {
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM7) {
  8000dc8:	687b      	ldr	r3, [r7, #4]
  8000dca:	681b      	ldr	r3, [r3, #0]
  8000dcc:	4a04      	ldr	r2, [pc, #16]	; (8000de0 <HAL_TIM_PeriodElapsedCallback+0x20>)
  8000dce:	4293      	cmp	r3, r2
  8000dd0:	d101      	bne.n	8000dd6 <HAL_TIM_PeriodElapsedCallback+0x16>
-    HAL_IncTick();
+		HAL_IncTick();
  8000dd2:	f000 fa83 	bl	80012dc <HAL_IncTick>
-  }
-  /* USER CODE BEGIN Callback 1 */
+	}
+	/* USER CODE BEGIN Callback 1 */
 
-  /* USER CODE END Callback 1 */
+	/* USER CODE END Callback 1 */
 }
  8000dd6:	bf00      	nop
  8000dd8:	3708      	adds	r7, #8
@@ -1880,12 +1850,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8000de0:	40001400 	.word	0x40001400
 
 08000de4 <Error_Handler>:
+
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void) {
  8000de4:	b480      	push	{r7}
  8000de6:	af00      	add	r7, sp, #0
   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
@@ -1897,17 +1867,16 @@ __STATIC_FORCEINLINE void __disable_irq(void)
  8000de8:	b672      	cpsid	i
 }
  8000dea:	bf00      	nop
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
+	/* USER CODE BEGIN Error_Handler_Debug */
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
  8000dec:	e7fe      	b.n	8000dec <Error_Handler+0x8>
 	...
 
 08000df0 <_Z41__static_initialization_and_destruction_0ii>:
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
+	}
+	/* USER CODE END Error_Handler_Debug */
 }
  8000df0:	b580      	push	{r7, lr}
  8000df2:	b082      	sub	sp, #8

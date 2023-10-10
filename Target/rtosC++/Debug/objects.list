@@ -1,5 +1,5 @@
-"./Core/Src/can_service.o"
 "./Core/Src/freertos.o"
+"./Core/Src/interface.o"
 "./Core/Src/main.o"
 "./Core/Src/printscreen.o"
 "./Core/Src/protocol.o"
