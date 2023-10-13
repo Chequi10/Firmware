@@ -1,7 +1,7 @@
 Archive member included to satisfy reference by file (symbol)
 
 /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libstdc++_nano.a(pure.o)
-                              ./Core/Src/can_service.o (__cxa_pure_virtual)
+                              ./Core/Src/interface.o (__cxa_pure_virtual)
 /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libstdc++_nano.a(eh_terminate.o)
                               /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libstdc++_nano.a(pure.o) (std::terminate())
 /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libstdc++_nano.a(eh_unex_handler.o)
@@ -61,229 +61,6 @@ Discarded input sections
  .ARM.exidx     0x0000000000000000       0x10 /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/crt0.o
  .ARM.attributes
                 0x0000000000000000       0x1c /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/crt0.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .group         0x0000000000000000        0xc ./Core/Src/can_service.o
- .text          0x0000000000000000        0x0 ./Core/Src/can_service.o
- .data          0x0000000000000000        0x0 ./Core/Src/can_service.o
- .bss           0x0000000000000000        0x0 ./Core/Src/can_service.o
- .rodata._ZN8protocolL18PACKET_SYNC_0_CHARE
-                0x0000000000000000        0x1 ./Core/Src/can_service.o
- .rodata._ZN8protocolL18PACKET_SYNC_1_CHARE
-                0x0000000000000000        0x1 ./Core/Src/can_service.o
- .rodata._ZN8protocolL18PACKET_SYNC_2_CHARE
-                0x0000000000000000        0x1 ./Core/Src/can_service.o
- .rodata._ZN8protocolL18PACKET_SYNC_3_CHARE
-                0x0000000000000000        0x1 ./Core/Src/can_service.o
- .rodata._ZN8protocolL22PACKET_TERMINATOR_CHARE
-                0x0000000000000000        0x1 ./Core/Src/can_service.o
- .text._ZN11can_serviceC2Ev
-                0x0000000000000000       0x5c ./Core/Src/can_service.o
- .bss._ZZN11can_service5setupEvE3buf
-                0x0000000000000000       0x20 ./Core/Src/can_service.o
- .text._ZN11can_service5setupEv
-                0x0000000000000000       0x28 ./Core/Src/can_service.o
- .text._ZN11can_service22can1_send_sync_messageEv
-                0x0000000000000000       0xd0 ./Core/Src/can_service.o
- .text._ZN11can_service16can_read_messageEv
-                0x0000000000000000      0x15e ./Core/Src/can_service.o
- .bss._ZZN11can_service19serial_read_commandEvE3buf
-                0x0000000000000000       0x20 ./Core/Src/can_service.o
- .text._ZN11can_service19serial_read_commandEv
-                0x0000000000000000       0x60 ./Core/Src/can_service.o
- .text._ZN11can_service13handle_packetEPKhh
-                0x0000000000000000       0xb4 ./Core/Src/can_service.o
- .text._ZThn108_N11can_service13handle_packetEPKhh
-                0x0000000000000000        0x8 ./Core/Src/can_service.o
- .text._ZN11can_service9send_implEPKhh
-                0x0000000000000000       0x2a ./Core/Src/can_service.o
- .text._ZN11can_service16cmd_send_messageEPKhh
-                0x0000000000000000       0x6c ./Core/Src/can_service.o
- .rodata._ZTV11can_service
-                0x0000000000000000       0x24 ./Core/Src/can_service.o
- .debug_info    0x0000000000000000     0x17ee ./Core/Src/can_service.o
- .debug_abbrev  0x0000000000000000      0x477 ./Core/Src/can_service.o
- .debug_aranges
-                0x0000000000000000       0x60 ./Core/Src/can_service.o
- .debug_ranges  0x0000000000000000       0x50 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x46f ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0xb50 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x2a1 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x2e ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x28 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x22 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x8e ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x51 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x103 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x6a ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x1df ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x22 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xd9 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000     0x102d ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x11f ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000    0x17fc0 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x6d ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000     0x36f5 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x17b ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x5c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0xca5 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x9fe ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x115 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x156 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xa5 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x182 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x287 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x5f ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x236 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x40f ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x132 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x41d ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x2e ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x11a ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xe2 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x89 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x8e6 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x47 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x295 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x134 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x28 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xea ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x15a ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xde ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x26 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x504 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xb5 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xaa ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x91 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x8d ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x7e ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x19 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xf2 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x34 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x10 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x52 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1e ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x3c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x34 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x16 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x43 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x34 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x10 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x58 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x71 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x16 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x12a ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x23b ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x35 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x364 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x10 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x10 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x52 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x22 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x10 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x52 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0xd5 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x3d ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x16 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000      0x137 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x16 ./Core/Src/can_service.o
- .debug_macro   0x0000000000000000       0x20 ./Core/Src/can_service.o
- .debug_line    0x0000000000000000      0xcac ./Core/Src/can_service.o
- .debug_str     0x0000000000000000    0xe076c ./Core/Src/can_service.o
- .comment       0x0000000000000000       0x51 ./Core/Src/can_service.o
- .debug_frame   0x0000000000000000      0x148 ./Core/Src/can_service.o
- .ARM.attributes
-                0x0000000000000000       0x34 ./Core/Src/can_service.o
  .group         0x0000000000000000        0xc ./Core/Src/freertos.o
  .group         0x0000000000000000        0xc ./Core/Src/freertos.o
  .group         0x0000000000000000        0xc ./Core/Src/freertos.o
@@ -336,51 +113,229 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./Core/Src/freertos.o
  .data          0x0000000000000000        0x0 ./Core/Src/freertos.o
  .bss           0x0000000000000000        0x0 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x22 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x8e ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x51 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x103 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x6a ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x1df ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x15a ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xde ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x26 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x504 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xb5 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xaa ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x2a1 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x2e ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x28 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x1c ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x22 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xd9 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x11f ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000    0x17fc0 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x6d ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000     0x36f5 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x5c ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0xca5 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x9fe ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x115 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x156 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xa5 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x182 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x287 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x5f ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x236 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x40f ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x132 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x41d ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x2e ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x11a ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0xe2 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x89 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x8e6 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x47 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x295 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000      0x134 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000000       0x28 ./Core/Src/freertos.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .group         0x0000000000000000        0xc ./Core/Src/interface.o
+ .text          0x0000000000000000        0x0 ./Core/Src/interface.o
+ .data          0x0000000000000000        0x0 ./Core/Src/interface.o
+ .bss           0x0000000000000000        0x0 ./Core/Src/interface.o
+ .rodata._ZN8protocolL18PACKET_SYNC_0_CHARE
+                0x0000000000000000        0x1 ./Core/Src/interface.o
+ .rodata._ZN8protocolL18PACKET_SYNC_1_CHARE
+                0x0000000000000000        0x1 ./Core/Src/interface.o
+ .rodata._ZN8protocolL18PACKET_SYNC_2_CHARE
+                0x0000000000000000        0x1 ./Core/Src/interface.o
+ .rodata._ZN8protocolL18PACKET_SYNC_3_CHARE
+                0x0000000000000000        0x1 ./Core/Src/interface.o
+ .rodata._ZN8protocolL22PACKET_TERMINATOR_CHARE
+                0x0000000000000000        0x1 ./Core/Src/interface.o
+ .text._ZN9interfaceC2Ev
+                0x0000000000000000       0x5c ./Core/Src/interface.o
+ .bss._ZZN9interface5setupEvE3buf
+                0x0000000000000000       0x20 ./Core/Src/interface.o
+ .text._ZN9interface5setupEv
+                0x0000000000000000       0x28 ./Core/Src/interface.o
+ .text._ZN9interface22can1_send_sync_messageEv
+                0x0000000000000000       0xd0 ./Core/Src/interface.o
+ .text._ZN9interface16can_read_messageEv
+                0x0000000000000000      0x15e ./Core/Src/interface.o
+ .bss._ZZN9interface19serial_read_commandEvE3buf
+                0x0000000000000000       0x20 ./Core/Src/interface.o
+ .text._ZN9interface19serial_read_commandEv
+                0x0000000000000000       0x60 ./Core/Src/interface.o
+ .text._ZN9interface13handle_packetEPKhh
+                0x0000000000000000       0xb4 ./Core/Src/interface.o
+ .text._ZThn108_N9interface13handle_packetEPKhh
+                0x0000000000000000        0x8 ./Core/Src/interface.o
+ .text._ZN9interface9send_implEPKhh
+                0x0000000000000000       0x2a ./Core/Src/interface.o
+ .text._ZN9interface16cmd_send_messageEPKhh
+                0x0000000000000000       0x6c ./Core/Src/interface.o
+ .rodata._ZTV9interface
+                0x0000000000000000       0x24 ./Core/Src/interface.o
+ .debug_info    0x0000000000000000     0x17ee ./Core/Src/interface.o
+ .debug_abbrev  0x0000000000000000      0x477 ./Core/Src/interface.o
+ .debug_aranges
+                0x0000000000000000       0x60 ./Core/Src/interface.o
+ .debug_ranges  0x0000000000000000       0x50 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x46f ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0xb50 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x2a1 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x2e ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x28 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x22 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x8e ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x51 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x103 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x6a ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x1df ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x22 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xd9 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000     0x102d ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x11f ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000    0x17fc0 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x6d ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000     0x36f5 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x17b ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x5c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0xca5 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x9fe ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x115 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x156 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xa5 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x182 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x287 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x5f ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x236 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x40f ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x132 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x41d ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x2e ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x11a ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xe2 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x89 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x8e6 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x47 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x295 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x134 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x28 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xea ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x15a ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xde ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x26 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x504 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xb5 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xaa ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x91 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x8d ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x7e ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x19 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xf2 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x10 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x52 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1e ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x3c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x34 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x16 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x43 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x34 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x10 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x58 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x71 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x16 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x12a ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x23b ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x34 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x35 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x364 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x10 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x10 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x52 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x22 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x10 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x52 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0xd5 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x1c ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x3d ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x16 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000      0x137 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x16 ./Core/Src/interface.o
+ .debug_macro   0x0000000000000000       0x20 ./Core/Src/interface.o
+ .debug_line    0x0000000000000000      0xca8 ./Core/Src/interface.o
+ .debug_str     0x0000000000000000    0xe0745 ./Core/Src/interface.o
+ .comment       0x0000000000000000       0x51 ./Core/Src/interface.o
+ .debug_frame   0x0000000000000000      0x148 ./Core/Src/interface.o
+ .ARM.attributes
+                0x0000000000000000       0x34 ./Core/Src/interface.o
  .group         0x0000000000000000        0xc ./Core/Src/main.o
  .group         0x0000000000000000        0xc ./Core/Src/main.o
  .group         0x0000000000000000        0xc ./Core/Src/main.o
@@ -4935,8 +4890,8 @@ Linker script and memory map
 LOAD /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crti.o
 LOAD /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 LOAD /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/crt0.o
-LOAD ./Core/Src/can_service.o
 LOAD ./Core/Src/freertos.o
+LOAD ./Core/Src/interface.o
 LOAD ./Core/Src/main.o
 LOAD ./Core/Src/printscreen.o
 LOAD ./Core/Src/protocol.o
@@ -6062,64 +6017,109 @@ LOAD /opt/st/stm32cubeide_1.9.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .debug_ranges  0x00000000000011e0       0x70 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
  .debug_ranges  0x0000000000001250       0x48 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
 
-.debug_macro    0x0000000000000000     0x4cf4
+.debug_macro    0x0000000000000000    0x25049
  .debug_macro   0x0000000000000000      0x24f ./Core/Src/freertos.o
  .debug_macro   0x000000000000024f      0xa78 ./Core/Src/freertos.o
  .debug_macro   0x0000000000000cc7      0x174 ./Core/Src/freertos.o
- .debug_macro   0x0000000000000e3b       0xea ./Core/Src/freertos.o
- .debug_macro   0x0000000000000f25     0x102d ./Core/Src/freertos.o
- .debug_macro   0x0000000000001f52      0x476 ./Core/Src/main.o
- .debug_macro   0x00000000000023c8       0x16 ./Core/Src/main.o
- .debug_macro   0x00000000000023de       0x16 ./Core/Src/main.o
- .debug_macro   0x00000000000023f4      0x380 ./Core/Src/printscreen.o
- .debug_macro   0x0000000000002774       0x10 ./Core/Src/printscreen.o
- .debug_macro   0x0000000000002784      0x1e7 ./Core/Src/stm32f4xx_hal_msp.o
- .debug_macro   0x000000000000296b      0x1d8 ./Core/Src/stm32f4xx_hal_timebase_tim.o
- .debug_macro   0x0000000000002b43      0x1f1 ./Core/Src/stm32f4xx_it.o
- .debug_macro   0x0000000000002d34      0x1d8 ./Core/Src/system_stm32f4xx.o
- .debug_macro   0x0000000000002f0c      0x238 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
- .debug_macro   0x0000000000003144      0x1e0 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
- .debug_macro   0x0000000000003324      0x1d8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
- .debug_macro   0x00000000000034fc      0x1de ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
- .debug_macro   0x00000000000036da      0x1de ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
- .debug_macro   0x00000000000038b8      0x1fc ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
- .debug_macro   0x0000000000003ab4      0x1d9 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
- .debug_macro   0x0000000000003c8d      0x1d8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
- .debug_macro   0x0000000000003e65      0x1d9 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
- .debug_macro   0x000000000000403e      0x1fe ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
- .debug_macro   0x000000000000423c       0xc7 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
- .debug_macro   0x0000000000004303      0x187 ./Middlewares/Third_Party/FreeRTOS/Source/list.o
- .debug_macro   0x000000000000448a      0x216 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
- .debug_macro   0x00000000000046a0       0x87 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
- .debug_macro   0x0000000000004727      0x279 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
- .debug_macro   0x00000000000049a0       0x10 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
- .debug_macro   0x00000000000049b0      0x196 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
- .debug_macro   0x0000000000004b46      0x1ae ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .debug_macro   0x0000000000000e3b       0x22 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000000e5d       0x8e ./Core/Src/freertos.o
+ .debug_macro   0x0000000000000eeb       0x51 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000000f3c      0x103 ./Core/Src/freertos.o
+ .debug_macro   0x000000000000103f       0x6a ./Core/Src/freertos.o
+ .debug_macro   0x00000000000010a9      0x1df ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001288       0xea ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001372      0x15a ./Core/Src/freertos.o
+ .debug_macro   0x00000000000014cc       0xde ./Core/Src/freertos.o
+ .debug_macro   0x00000000000015aa       0x1c ./Core/Src/freertos.o
+ .debug_macro   0x00000000000015c6       0x26 ./Core/Src/freertos.o
+ .debug_macro   0x00000000000015ec      0x504 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001af0       0xb5 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001ba5       0xaa ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001c4f      0x2a1 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001ef0       0x2e ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001f1e       0x28 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001f46       0x1c ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001f62       0x22 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000001f84       0xd9 ./Core/Src/freertos.o
+ .debug_macro   0x000000000000205d     0x102d ./Core/Src/freertos.o
+ .debug_macro   0x000000000000308a      0x11f ./Core/Src/freertos.o
+ .debug_macro   0x00000000000031a9    0x17fc0 ./Core/Src/freertos.o
+ .debug_macro   0x000000000001b169       0x6d ./Core/Src/freertos.o
+ .debug_macro   0x000000000001b1d6     0x36f5 ./Core/Src/freertos.o
+ .debug_macro   0x000000000001e8cb       0x5c ./Core/Src/freertos.o
+ .debug_macro   0x000000000001e927      0xca5 ./Core/Src/freertos.o
+ .debug_macro   0x000000000001f5cc      0x9fe ./Core/Src/freertos.o
+ .debug_macro   0x000000000001ffca      0x115 ./Core/Src/freertos.o
+ .debug_macro   0x00000000000200df      0x156 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000020235       0xa5 ./Core/Src/freertos.o
+ .debug_macro   0x00000000000202da      0x182 ./Core/Src/freertos.o
+ .debug_macro   0x000000000002045c      0x287 ./Core/Src/freertos.o
+ .debug_macro   0x00000000000206e3       0x5f ./Core/Src/freertos.o
+ .debug_macro   0x0000000000020742      0x236 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000020978      0x40f ./Core/Src/freertos.o
+ .debug_macro   0x0000000000020d87      0x132 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000020eb9      0x41d ./Core/Src/freertos.o
+ .debug_macro   0x00000000000212d6       0x2e ./Core/Src/freertos.o
+ .debug_macro   0x0000000000021304      0x11a ./Core/Src/freertos.o
+ .debug_macro   0x000000000002141e       0xe2 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000021500       0x89 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000021589      0x8e6 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000021e6f       0x47 ./Core/Src/freertos.o
+ .debug_macro   0x0000000000021eb6      0x295 ./Core/Src/freertos.o
+ .debug_macro   0x000000000002214b      0x134 ./Core/Src/freertos.o
+ .debug_macro   0x000000000002227f       0x28 ./Core/Src/freertos.o
+ .debug_macro   0x00000000000222a7      0x476 ./Core/Src/main.o
+ .debug_macro   0x000000000002271d       0x16 ./Core/Src/main.o
+ .debug_macro   0x0000000000022733       0x16 ./Core/Src/main.o
+ .debug_macro   0x0000000000022749      0x380 ./Core/Src/printscreen.o
+ .debug_macro   0x0000000000022ac9       0x10 ./Core/Src/printscreen.o
+ .debug_macro   0x0000000000022ad9      0x1e7 ./Core/Src/stm32f4xx_hal_msp.o
+ .debug_macro   0x0000000000022cc0      0x1d8 ./Core/Src/stm32f4xx_hal_timebase_tim.o
+ .debug_macro   0x0000000000022e98      0x1f1 ./Core/Src/stm32f4xx_it.o
+ .debug_macro   0x0000000000023089      0x1d8 ./Core/Src/system_stm32f4xx.o
+ .debug_macro   0x0000000000023261      0x238 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_macro   0x0000000000023499      0x1e0 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
+ .debug_macro   0x0000000000023679      0x1d8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_macro   0x0000000000023851      0x1de ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
+ .debug_macro   0x0000000000023a2f      0x1de ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_macro   0x0000000000023c0d      0x1fc ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_macro   0x0000000000023e09      0x1d9 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
+ .debug_macro   0x0000000000023fe2      0x1d8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
+ .debug_macro   0x00000000000241ba      0x1d9 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
+ .debug_macro   0x0000000000024393      0x1fe ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
+ .debug_macro   0x0000000000024591       0xc7 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
+ .debug_macro   0x0000000000024658      0x187 ./Middlewares/Third_Party/FreeRTOS/Source/list.o
+ .debug_macro   0x00000000000247df      0x216 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
+ .debug_macro   0x00000000000249f5       0x87 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
+ .debug_macro   0x0000000000024a7c      0x279 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+ .debug_macro   0x0000000000024cf5       0x10 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+ .debug_macro   0x0000000000024d05      0x196 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+ .debug_macro   0x0000000000024e9b      0x1ae ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
 
-.debug_line     0x0000000000000000    0x15d38
+.debug_line     0x0000000000000000    0x15d36
  .debug_line    0x0000000000000000      0x7a9 ./Core/Src/freertos.o
- .debug_line    0x00000000000007a9      0xf3f ./Core/Src/main.o
- .debug_line    0x00000000000016e8      0x9fd ./Core/Src/printscreen.o
- .debug_line    0x00000000000020e5      0x7ab ./Core/Src/stm32f4xx_hal_msp.o
- .debug_line    0x0000000000002890      0x707 ./Core/Src/stm32f4xx_hal_timebase_tim.o
- .debug_line    0x0000000000002f97      0x777 ./Core/Src/stm32f4xx_it.o
- .debug_line    0x000000000000370e      0x72c ./Core/Src/system_stm32f4xx.o
- .debug_line    0x0000000000003e3a       0x88 ./Core/Startup/startup_stm32f429zitx.o
- .debug_line    0x0000000000003ec2      0x9c8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
- .debug_line    0x000000000000488a     0x10fe ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
- .debug_line    0x0000000000005988      0xc41 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
- .debug_line    0x00000000000065c9      0xef6 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
- .debug_line    0x00000000000074bf      0xb2e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
- .debug_line    0x0000000000007fed      0xd0c ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
- .debug_line    0x0000000000008cf9     0x3686 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
- .debug_line    0x000000000000c37f     0x198f ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
- .debug_line    0x000000000000dd0e     0x2a37 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
- .debug_line    0x0000000000010745     0x1190 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
- .debug_line    0x00000000000118d5      0x6cb ./Middlewares/Third_Party/FreeRTOS/Source/list.o
- .debug_line    0x0000000000011fa0     0x144c ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
- .debug_line    0x00000000000133ec     0x18db ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
- .debug_line    0x0000000000014cc7      0x77c ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
- .debug_line    0x0000000000015443      0x8f5 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .debug_line    0x00000000000007a9      0xf3d ./Core/Src/main.o
+ .debug_line    0x00000000000016e6      0x9fd ./Core/Src/printscreen.o
+ .debug_line    0x00000000000020e3      0x7ab ./Core/Src/stm32f4xx_hal_msp.o
+ .debug_line    0x000000000000288e      0x707 ./Core/Src/stm32f4xx_hal_timebase_tim.o
+ .debug_line    0x0000000000002f95      0x777 ./Core/Src/stm32f4xx_it.o
+ .debug_line    0x000000000000370c      0x72c ./Core/Src/system_stm32f4xx.o
+ .debug_line    0x0000000000003e38       0x88 ./Core/Startup/startup_stm32f429zitx.o
+ .debug_line    0x0000000000003ec0      0x9c8 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_line    0x0000000000004888     0x10fe ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
+ .debug_line    0x0000000000005986      0xc41 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_line    0x00000000000065c7      0xef6 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
+ .debug_line    0x00000000000074bd      0xb2e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_line    0x0000000000007feb      0xd0c ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_line    0x0000000000008cf7     0x3686 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
+ .debug_line    0x000000000000c37d     0x198f ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
+ .debug_line    0x000000000000dd0c     0x2a37 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
+ .debug_line    0x0000000000010743     0x1190 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
+ .debug_line    0x00000000000118d3      0x6cb ./Middlewares/Third_Party/FreeRTOS/Source/list.o
+ .debug_line    0x0000000000011f9e     0x144c ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
+ .debug_line    0x00000000000133ea     0x18db ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+ .debug_line    0x0000000000014cc5      0x77c ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+ .debug_line    0x0000000000015441      0x8f5 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
 
 .debug_str      0x0000000000000000    0xe66d3
  .debug_str     0x0000000000000000    0xd845b ./Core/Src/freertos.o

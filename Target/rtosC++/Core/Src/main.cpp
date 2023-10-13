@@ -41,7 +41,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-interface stm32_interface;
+//interface stm32_interface;
 printer imprime;
 /* USER CODE END PM */
 
@@ -91,7 +91,7 @@ uint8_t RxData[1];
 typedef struct {
 	//  keys_ButtonState_t state;   //variables
 
-	TickType_t time_down; //timestamp of the last High to Low transition of the key
+	TickType_t time_down;//timestamp of the last High to Low transition of the key
 	TickType_t time_up;	//timestamp of the last Low to High transition of the key
 	TickType_t time_diff;	    //variables
 } t_key_data;
@@ -264,6 +264,7 @@ int main(void) {
 	HAL_UART_Receive_IT(&huart3, cadena, 10);
 	/* USER CODE BEGIN 2 */
 	//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
+
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.StdId = 146;
 	TxHeader.RTR = CAN_RTR_DATA;
