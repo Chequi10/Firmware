@@ -221,7 +221,7 @@ namespace protocol
 	uint8_t *packet_encoder::get_payload_buffer()
 		
 	{	
-	    buffer[5] = 'X';  //prende led
+	    buffer[5] = '3';  //prende led
 		buffer[6] = 'L';  //resetea
 		buffer[7] = 'R';  //prende led
         buffer[8] = 'V';  //prende led
