@@ -5,7 +5,7 @@
  *      Author: ezequiel
  */
 #include "protocol.h"
-
+#include <iostream>
 namespace protocol {
 
 
@@ -58,7 +58,7 @@ void packet_decoder::handle_pkt_state_expecting_start_sync1()
 	}
 	else
 	{
-		this->set_error(error_code::bad_sync);
+		//this->set_error(error_code::bad_sync);
 		this->reset();
 	}
 }
@@ -72,7 +72,7 @@ void packet_decoder::handle_pkt_state_expecting_start_sync2()
 	}
 	else
 	{
-		this->set_error(error_code::bad_sync);
+		//this->set_error(error_code::bad_sync);
 		this->reset();
 	}
 }
@@ -85,7 +85,7 @@ void packet_decoder::handle_pkt_state_expecting_start_sync3()
 	}
 	else
 	{
-		this->set_error(error_code::bad_sync);
+		//this->set_error(error_code::bad_sync);
 		this->reset();
 	}
 }
@@ -95,11 +95,12 @@ void packet_decoder::handle_pkt_state_expecting_length()
 	this->payload_length = this->last_received_char;
 	if (this->payload_length && (this->payload_length <= PAYLOAD_BUFFER_SIZE))
 	{
+
 		this->current_state = pkt_state::pkt_state_expecting_payload;
 	}
 	else
 	{
-		this->set_error(error_code::invalid_length);
+		//this->set_error(error_code::invalid_length);
 		this->reset();
 	}
 }
@@ -124,19 +125,20 @@ void packet_decoder::handle_pkt_state_expecting_crc1()
 {
 	this->crc16 = this->last_received_char << 8;
 	this->current_state = pkt_state::pkt_state_expecting_crc2;
+
 }
 
 void packet_decoder::handle_pkt_state_expecting_crc2()
 {
 	this->crc16 |= this->last_received_char;
 
-	if (this->expected_crc16 == this->crc16)
+	if (this->expected_crc16 != this->crc16)
 	{
 		this->current_state = pkt_state::pkt_state_expecting_terminator;
 	}
 	else
 	{
-		this->set_error(error_code::bad_crc);
+		//this->set_error(error_code::bad_crc);
 		this->reset();
 	}
 }
@@ -151,7 +153,7 @@ void packet_decoder::handle_pkt_state_expecting_terminator()
 	}
 	else
 	{
-		this->set_error(error_code::bad_terminator);
+		//this->set_error(error_code::bad_terminator);
 	}
 	this->reset();
 }

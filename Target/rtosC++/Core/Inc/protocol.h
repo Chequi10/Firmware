@@ -124,7 +124,7 @@ public:
 
     /** Establecer un código de error de aplicación luego de procesar el paquete (0=éxito).
     */
-	virtual void set_error(error_code ec) = 0;
+//virtual void set_error(error_code ec) = 0;
 
     /** El protocolo de comunicación establece que debe existir algún mensaje períodico enviado
      *  por la aplicación de control para asegurar que la comunicación está sana.
@@ -132,7 +132,7 @@ public:
      *  al que se califica como HEARTBEAT. Cuando se deja de recibir este mensaje, se invoca esta callback
      *  que la aplicación debe usar para gestionar una reconexión o pasar a un estado seguro (apagar motores, etc.).
      */
-	virtual void handle_connection_lost() = 0;
+	//virtual void handle_connection_lost() = 0;
 
 private:
     /** Estados de la FSM para reconocer paquetes */

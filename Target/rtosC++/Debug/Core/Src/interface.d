@@ -46,7 +46,7 @@ Core/Src/interface.o: ../Core/Src/interface.cpp ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
  ../Core/Inc/interface.h ../Core/Inc/main.h ../Core/Inc/protocol.h \
- ../Core/Inc/cmd_def.h
+ ../Core/Inc/cmd_def.h ../Core/Inc/printscreen.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -98,3 +98,4 @@ Core/Src/interface.o: ../Core/Src/interface.cpp ../Core/Inc/main.h \
 ../Core/Inc/main.h:
 ../Core/Inc/protocol.h:
 ../Core/Inc/cmd_def.h:
+../Core/Inc/printscreen.h:

@@ -41,8 +41,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-//interface stm32_interface;
-printer imprime;
+interface stm32_interface;
+//printer imprime;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -54,7 +54,7 @@ osThreadId Tarea_1Handle;
 osThreadId Tarea_2Handle;
 osThreadId Tarea_3Handle;
 /* USER CODE BEGIN PV */
-uint8_t cadena[11];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,22 +91,18 @@ uint8_t RxData[1];
 typedef struct {
 	//  keys_ButtonState_t state;   //variables
 
-	TickType_t time_down;//timestamp of the last High to Low transition of the key
+	TickType_t time_down; //timestamp of the last High to Low transition of the key
 	TickType_t time_up;	//timestamp of the last Low to High transition of the key
 	TickType_t time_diff;	    //variables
 } t_key_data;
 
 t_key_data keys_data;
 
-int datacheck = 0;
 int probando = 0;
 int i = 0;
 
 uint8_t a;
 
-uint8_t buffer[100];
-uint8_t buffer1[20];
-uint8_t buffer3[10];
 uint16_t calc_crc16(const uint8_t *data_p, uint8_t length);
 
 uint16_t calc_crc16(const uint8_t *data_p, uint8_t length) {
@@ -121,32 +117,15 @@ uint16_t calc_crc16(const uint8_t *data_p, uint8_t length) {
 	return crc;
 }
 
-void serial_read_command(void *taskParmPtr) {
+void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
-		buffer[0] = 'P';
-		buffer[1] = 'K';
-		buffer[2] = 'T';
-		buffer[3] = '!';
-		buffer[4] = 0x6;
-		buffer[5] = '0';
-		for (uint8_t sdf = 6; sdf <= 10; sdf++) {
-			buffer1[5] = '0';
-			buffer1[sdf] = 0x66 + sdf - 6;
-			uint16_t crc = calc_crc16(buffer1, 5);
-			buffer[sdf] = buffer1[sdf];
-			buffer[11] = 0b10110011;
-			//	buffer[11]=(crc >> 8) & 0xFF;
-			//	buffer[12]=crc & 0xFF;
-			buffer[12] = 0b10101110;
-			buffer[13] = '\n';
-		}
 		xSemaphoreTake(BinarySemaphoreHandle, portMAX_DELAY);
-		imprime.vPrintString((char*) buffer);
+		stm32_interface.serial_read_command();
 
 	}
 
 }
-void can1_send_sync(void *taskParmPtr) {
+void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
 		for (a = 49; a < 58; a++) {
 			TxData[0] = a;
@@ -155,18 +134,15 @@ void can1_send_sync(void *taskParmPtr) {
 				Error_Handler();
 			}
 
-			HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
+			//HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 			vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
 		}
 
 	}
 }
-void can2_read_message(void *taskParmPtr) {
+void Task_can2_read_message(void *taskParmPtr) {
 	while (1) {
-		if (datacheck == 1) {
-			HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-			datacheck = 0;
-		}
+		stm32_interface.can_read_message();
 
 	}
 }
@@ -178,7 +154,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
 	}
 
 	if ((RxHeader2.StdId == 146)) {
-		datacheck = 1;
+		stm32_interface.datacheck = 1;
 	}
 
 }
@@ -191,9 +167,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 		xSemaphoreGiveFromISR(BinarySemaphoreHandle, &xHigherPriorityTaskWoken);
 
-		HAL_GPIO_TogglePin(Rojo_GPIO_Port, Rojo_Pin);
-
-		HAL_UART_Receive_IT(&huart3, cadena, 12);
+		HAL_UART_Receive_IT(&huart3, stm32_interface.cadena, 12);
 
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
@@ -202,7 +176,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void config(void) {
-	BaseType_t res1 = xTaskCreate(serial_read_command, // Funcion de la tarea a ejecutar
+	BaseType_t res1 = xTaskCreate(Task_serial_read_command, // Funcion de la tarea a ejecutar
 			(const char*) "serial_read_command", // Nombre de la tarea como String amigable para el usuario
 			configMINIMAL_STACK_SIZE * 2, /* tamaño del stack de cada tarea (words) */
 			NULL,                       // Parametros de tarea
@@ -210,7 +184,7 @@ void config(void) {
 			&task_handle_task_1       // Puntero a la tarea creada en el sistema
 			);
 
-	BaseType_t res2 = xTaskCreate(can1_send_sync, // Funcion de la tarea a ejecutar
+	BaseType_t res2 = xTaskCreate(Task_can1_send_sync, // Funcion de la tarea a ejecutar
 			(const char*) "can1_send_sync", // Nombre de la tarea como String amigable para el usuario
 			configMINIMAL_STACK_SIZE * 2, /* tamaño del stack de cada tarea (words) */
 			NULL,                       // Parametros de tarea
@@ -218,7 +192,7 @@ void config(void) {
 			&task_handle_task_2       // Puntero a la tarea creada en el sistema
 			);
 
-	BaseType_t res3 = xTaskCreate(can2_read_message, // Funcion de la tarea a ejecutar
+	BaseType_t res3 = xTaskCreate(Task_can2_read_message, // Funcion de la tarea a ejecutar
 			(const char*) "can2_read_message", // Nombre de la tarea como String amigable para el usuario
 			configMINIMAL_STACK_SIZE * 2, /* tamaño del stack de cada tarea (words) */
 			NULL,                       // Parametros de tarea
@@ -261,10 +235,9 @@ int main(void) {
 	MX_CAN1_Init();
 	MX_CAN2_Init();
 	MX_USART3_UART_Init();
-	HAL_UART_Receive_IT(&huart3, cadena, 10);
+	HAL_UART_Receive_IT(&huart3, stm32_interface.cadena, 12);
 	/* USER CODE BEGIN 2 */
 	//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
-
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.StdId = 146;
 	TxHeader.RTR = CAN_RTR_DATA;
@@ -286,6 +259,7 @@ int main(void) {
 	RxHeader2.StdId = 20;
 	RxHeader2.RTR = CAN_RTR_DATA;
 	RxHeader2.DLC = 1;
+
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN RTOS_MUTEX */

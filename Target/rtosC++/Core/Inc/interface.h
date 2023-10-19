@@ -15,7 +15,6 @@
 #endif
 
 #include "main.h"
-//#include "config.h"
 #include "protocol.h"
 #include "cmd_def.h"
 #include "cmsis_os.h"
@@ -29,7 +28,8 @@ public:
 	interface();
     ~interface(){};
     void setup();
-
+    uint8_t cadena[0];
+    int datacheck = 0;
     void serial_read_command();
     void can_read_message();
     void can1_send_sync_message();
@@ -44,14 +44,15 @@ public:
     CAN_RxHeaderTypeDef RxHeader2;
     uint32_t TxMailbox;
 
-    /* Cola de eventos de acceso a dispositivo CAN (prioridad alta) */
- //   EventQueue can_dev_queue;
+   /* Structura para para los tiempos del ticker del procesador */
 
-    /* Hilo de alta prioridad para manejo de dispositivos. */
- //   Thread can_event_thread;
+    typedef struct {
+		TickType_t time_down;
+		TickType_t time_up;
+		TickType_t time_diff;
+	} t_key_data;
 
-    /* Ticker para mensajes SYNC */
- //   Ticker can_sync_ticker;
+	t_key_data keys_data;
 
     /* Protocolo de comunicación serie */
 	using opcode_callback = interface::error_code(interface::*)(const uint8_t* payload, uint8_t n);
