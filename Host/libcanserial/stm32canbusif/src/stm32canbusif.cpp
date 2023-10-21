@@ -77,7 +77,7 @@ void stm32canbus_serialif::handle_packet(const uint8_t *payload, size_t n)
         ev.len = payload[3];
         ev.data[8];
 
-        for (size_t i = 0; i < 8; i++)
+        for (size_t i = 0; i < 5; i++)
         {
             ev.data[i] = payload[i + 1];
             // std::cout << boost::format(" %d") % ev.data[i];

@@ -98,25 +98,6 @@ typedef struct {
 
 t_key_data keys_data;
 
-int probando = 0;
-int i = 0;
-
-uint8_t a;
-
-uint16_t calc_crc16(const uint8_t *data_p, uint8_t length);
-
-uint16_t calc_crc16(const uint8_t *data_p, uint8_t length) {
-	uint8_t x;
-	uint16_t crc = 0xFFFF;
-	while (length--) {
-		x = crc >> 8 ^ *data_p++;
-		x ^= x >> 4;
-		crc = (crc << 8) ^ ((uint16_t) (x << 12)) ^ ((uint16_t) (x << 5))
-				^ ((uint16_t) x);
-	}
-	return crc;
-}
-
 void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
 		xSemaphoreTake(BinarySemaphoreHandle, portMAX_DELAY);
@@ -127,7 +108,8 @@ void Task_serial_read_command(void *taskParmPtr) {
 }
 void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
-		for (a = 49; a < 58; a++) {
+
+		for (uint8_t a = 49; a < 58; a++) {
 			TxData[0] = a;
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
 					!= HAL_OK) {

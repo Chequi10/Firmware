@@ -3,8 +3,8 @@
 ../Core/Src/interface.cpp:44:6:void interface::can1_send_sync_message()	16	static
 ../Core/Src/interface.cpp:49:6:void interface::can_read_message()	16	static
 ../Core/Src/interface.cpp:57:6:void interface::serial_read_command()	24	static
-../Core/Src/interface.cpp:65:6:virtual void interface::handle_packet(const uint8_t*, uint8_t)	168	static
-../Core/Src/interface.cpp:116:6:virtual void interface::send_impl(const uint8_t*, uint8_t)	32	static
-../Core/Src/interface.cpp:125:23:protocol::packet_decoder::error_code interface::cmd_send_message(const uint8_t*, uint8_t)	24	static
-../Core/Src/interface.cpp:132:1:void __static_initialization_and_destruction_0(int, int)	16	static
-../Core/Src/interface.cpp:132:1:cpp)	8	static
+../Core/Src/interface.cpp:65:6:virtual void interface::handle_packet(const uint8_t*, uint8_t)	40	static
+../Core/Src/interface.cpp:94:6:virtual void interface::send_impl(const uint8_t*, uint8_t)	32	static
+../Core/Src/interface.cpp:103:23:protocol::packet_decoder::error_code interface::cmd_send_message(const uint8_t*, uint8_t)	24	static
+../Core/Src/interface.cpp:110:1:void __static_initialization_and_destruction_0(int, int)	16	static
+../Core/Src/interface.cpp:110:1:cpp)	8	static

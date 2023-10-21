@@ -69,30 +69,8 @@ void interface::handle_packet(const uint8_t *payload, uint8_t n) {
 	// Event 0: envio mensaje can.
 	case '0': {
 		HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-		uint8_t buffer[100];
-		uint8_t buffer1[20];
-		uint8_t buffer3[10];
+		::protocol::packet_encoder::send(0x4);
 
-		buffer[0] = 'P';
-		buffer[1] = 'K';
-		buffer[2] = 'T';
-		buffer[3] = '!';
-		buffer[4] = 0x6;
-		buffer[5] = '0';
-		for (uint8_t sdf = 6; sdf <= 10; sdf++) {
-			buffer1[5] = '0';
-			buffer1[sdf] = 0x66 + sdf - 6;
-			//	uint16_t crc = calc_crc16(buffer1, 5);
-			buffer[sdf] = buffer1[sdf];
-			buffer[11] = 0b10110011;
-			//	buffer[11]=(crc >> 8) & 0xFF;
-			//	buffer[12]=crc & 0xFF;
-			buffer[12] = 0b10101110;
-			buffer[13] = '\n';
-
-		}
-		send_impl(buffer, 12);
-		//imp.vPrintString((char*) buffer);
 	}
 		break;
 		// Event 1: enciende led rojo.
@@ -117,7 +95,7 @@ void interface::send_impl(const uint8_t *buf, uint8_t n) {
 	taskENTER_CRITICAL();
 
 	HAL_UART_Transmit(&huart3, (uint8_t*) buf, (uint16_t) strlen((char*) buf),
-			HAL_MAX_DELAY);
+	HAL_MAX_DELAY);
 
 	taskEXIT_CRITICAL();
 }
