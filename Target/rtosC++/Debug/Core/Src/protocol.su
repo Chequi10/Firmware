@@ -17,9 +17,9 @@
 ../Core/Src/protocol.cpp:164:1:protocol::packet_encoder::packet_encoder()	16	static
 ../Core/Src/protocol.cpp:171:6:void protocol::packet_encoder::calc_crc_and_close_packet(uint8_t)	24	static
 ../Core/Src/protocol.cpp:179:10:uint8_t* protocol::packet_encoder::get_payload_buffer()	16	static
-../Core/Src/protocol.cpp:188:16:const uint8_t* protocol::packet_encoder::get_packet() const	16	static
-../Core/Src/protocol.cpp:192:6:void protocol::packet_encoder::send(uint8_t)	24	static
-../Core/Src/protocol.cpp:198:10:uint16_t protocol::calc_crc16(const uint8_t*, uint8_t)	24	static
-../Core/Src/protocol.cpp:210:1:void __static_initialization_and_destruction_0(int, int)	16	static
-../Core/Src/protocol.cpp:210:1:cpp)	8	static
-../Core/Src/protocol.cpp:210:1:cpp)	8	static
+../Core/Src/protocol.cpp:184:16:const uint8_t* protocol::packet_encoder::get_packet() const	16	static
+../Core/Src/protocol.cpp:188:6:void protocol::packet_encoder::send(uint8_t)	24	static
+../Core/Src/protocol.cpp:194:10:uint16_t protocol::calc_crc16(const uint8_t*, uint8_t)	24	static
+../Core/Src/protocol.cpp:206:1:void __static_initialization_and_destruction_0(int, int)	16	static
+../Core/Src/protocol.cpp:206:1:cpp)	8	static
+../Core/Src/protocol.cpp:206:1:cpp)	8	static

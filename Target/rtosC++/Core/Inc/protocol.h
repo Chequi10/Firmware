@@ -124,7 +124,7 @@ public:
 
     /** Establecer un código de error de aplicación luego de procesar el paquete (0=éxito).
     */
-//virtual void set_error(error_code ec) = 0;
+    //virtual void set_error(error_code ec) = 0;
 
     /** El protocolo de comunicación establece que debe existir algún mensaje períodico enviado
      *  por la aplicación de control para asegurar que la comunicación está sana.
@@ -224,11 +224,6 @@ private:
 
     /** Tamaño del payload. */
 	uint8_t payload_length;
-
-
-
-
-
 
     /** Handler de FSM para estado inicial. */
 	void handle_pkt_state_idle();

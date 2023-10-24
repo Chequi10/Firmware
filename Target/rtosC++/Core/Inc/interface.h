@@ -29,12 +29,15 @@ public:
     ~interface(){};
     void setup();
     uint8_t cadena[0];
+    uint8_t RxData[1];
     int datacheck = 0;
     void serial_read_command();
     void can_read_message();
     void can1_send_sync_message();
     /* Contador de mensajes de SYNC enviados por canal 1. */
+
     char sync_counter;
+
     CAN_HandleTypeDef hcan1;
     CAN_HandleTypeDef hcan2;
     UART_HandleTypeDef huart3;

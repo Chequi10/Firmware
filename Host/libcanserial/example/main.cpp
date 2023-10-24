@@ -7,7 +7,7 @@
 void on_can_message( const stm32canbus_serialif::can_message_event& ev )
 {
     std::cout << boost::format("Device %d CANID: %d Len: %d Data: ") % ev.device_id % ev.canid % ev.len;
-        for(size_t i=0;i<=4;i++)
+        for(size_t i=0;i<7;i++)
     {
         std::cout << boost::format(" %c") % ev.data[i];
        //std::cout << boost::format(" Longitud%d") % ev.len;

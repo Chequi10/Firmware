@@ -52,6 +52,19 @@ void interface::can_read_message() {
 		HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
 		datacheck = 0;
 	}
+
+	        get_payload_buffer()[0] = '0'; //
+	        get_payload_buffer()[1] = 'A';
+	        get_payload_buffer()[2] = 'B';
+	        get_payload_buffer()[3] = 'C';
+	        get_payload_buffer()[4] = 'D';
+	        get_payload_buffer()[5] = 'E';
+	      	get_payload_buffer()[6] = 'F';
+	        for(size_t i=0;i<7;i++)
+	        {
+	            get_payload_buffer()[7+i] = i;
+	        }
+
 }
 
 void interface::serial_read_command() {
@@ -69,7 +82,7 @@ void interface::handle_packet(const uint8_t *payload, uint8_t n) {
 	// Event 0: envio mensaje can.
 	case '0': {
 		HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-		::protocol::packet_encoder::send(0x4);
+		send(0x7);
 
 	}
 		break;

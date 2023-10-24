@@ -86,7 +86,7 @@ CAN_FilterTypeDef sFilterConfig;
 
 uint32_t TxMailbox;
 uint8_t TxData[1];
-uint8_t RxData[1];
+
 
 typedef struct {
 	//  keys_ButtonState_t state;   //variables
@@ -97,7 +97,8 @@ typedef struct {
 } t_key_data;
 
 t_key_data keys_data;
-
+/* Contador de mensajes de SYNC enviados por canal 1. */
+   char sync_counter;
 void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
 		xSemaphoreTake(BinarySemaphoreHandle, portMAX_DELAY);
@@ -108,17 +109,20 @@ void Task_serial_read_command(void *taskParmPtr) {
 }
 void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
+		   char data[2];
+		    TxData[0] = 0;
+		    TxData[1] = sync_counter;
 
-		for (uint8_t a = 49; a < 58; a++) {
-			TxData[0] = a;
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
 					!= HAL_OK) {
 				Error_Handler();
 			}
-
+			  // Incrementar contador con rollover en 19.
+			    sync_counter++;
+			    sync_counter%=19;
 			//HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 			vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
-		}
+
 
 	}
 }
@@ -130,7 +134,7 @@ void Task_can2_read_message(void *taskParmPtr) {
 }
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
 
-	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, RxData)
+	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, stm32_interface.RxData)
 			!= HAL_OK) {
 		Error_Handler();
 	}
