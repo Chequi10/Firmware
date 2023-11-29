@@ -54,12 +54,13 @@ void interface::can_read_message() {
 	}
 
 	        get_payload_buffer()[0] = '0'; //
-	        get_payload_buffer()[1] = 'A';
-	        get_payload_buffer()[2] = 'B';
-	        get_payload_buffer()[3] = 'C';
-	        get_payload_buffer()[4] = 'D';
-	        get_payload_buffer()[5] = 'E';
-	      	get_payload_buffer()[6] = 'F';
+
+	        get_payload_buffer()[1] = RxData[0];
+	        get_payload_buffer()[2] = 'H';
+	        get_payload_buffer()[3] = 'E';
+	        get_payload_buffer()[4] = 'Q';
+	        get_payload_buffer()[5] = 'U';
+	      	get_payload_buffer()[6] = 'I';
 	        for(size_t i=0;i<7;i++)
 	        {
 	            get_payload_buffer()[7+i] = i;

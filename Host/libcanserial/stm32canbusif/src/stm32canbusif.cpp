@@ -105,7 +105,12 @@ void stm32canbus_serialif::send_impl(const uint8_t *buf, uint8_t n)
         tx_buffer[i] = *buf++;
 
         std::cout << boost::format("%d ") % tx_buffer[i];
-    }
+    
+    }  
+        get_payload_buffer()[5] = opcodi; 
+	    get_payload_buffer()[6] = 'L';
+	    get_payload_buffer()[7] = 'E';
+	    get_payload_buffer()[8] = 'D';
    
 }
 
@@ -127,6 +132,7 @@ void stm32canbus_serialif::write_handler(const boost::system::error_code &error,
     {
         ::protocol::packet_encoder::send(0x4);
         ::protocol::packet_decoder::check_timeouts();
+        
     }
   
     

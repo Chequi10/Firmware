@@ -174,7 +174,7 @@ namespace protocol
 
 		if (dt >= PACKET_TIMEOUT_IN_MS)
 		{	
-			std::cout << boost::format("Reseteo el tiempo")<< std::endl;
+			std::cout << boost::format("Reset tiemp")<< std::endl;
 	     	this->set_error(error_code::timeout);
 			this->reset();
 		}
@@ -221,10 +221,7 @@ namespace protocol
 	uint8_t *packet_encoder::get_payload_buffer()
 		
 	{	
-	    buffer[5] = '0';  //prende led
-		buffer[6] = 'L';  //resetea
-		buffer[7] = 'R';  //prende led
-        buffer[8] = 'V';  //prende led
+	   
 		return this->buffer;
 	}
 

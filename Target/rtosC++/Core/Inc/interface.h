@@ -30,7 +30,7 @@ public:
     void setup();
     uint8_t cadena[0];
     uint8_t RxData[1];
-    int datacheck = 0;
+    uint8_t datacheck = 0;
     void serial_read_command();
     void can_read_message();
     void can1_send_sync_message();

@@ -98,6 +98,7 @@ typedef struct {
 
 t_key_data keys_data;
 /* Contador de mensajes de SYNC enviados por canal 1. */
+
    char sync_counter;
 void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
@@ -109,9 +110,8 @@ void Task_serial_read_command(void *taskParmPtr) {
 }
 void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
-		   char data[2];
-		    TxData[0] = 0;
-		    TxData[1] = sync_counter;
+
+		    TxData[0] = sync_counter;
 
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
 					!= HAL_OK) {
@@ -119,7 +119,7 @@ void Task_can1_send_sync(void *taskParmPtr) {
 			}
 			  // Incrementar contador con rollover en 19.
 			    sync_counter++;
-			    sync_counter%=19;
+			    sync_counter%=8;
 			//HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
 			vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
 
@@ -139,8 +139,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
 		Error_Handler();
 	}
 
-	if ((RxHeader2.StdId == 146)) {
-		stm32_interface.datacheck = 1;
+
+	if (stm32_interface.RxData[0]== 3) {
+		stm32_interface.datacheck=1;
 	}
 
 }

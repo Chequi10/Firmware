@@ -63,6 +63,8 @@ public:
     void stop();
 
     void write_some();
+    uint opcodi{0};
+
 private:
     boost::asio::io_service io;
     boost::asio::serial_port port;
@@ -76,7 +78,7 @@ private:
     void read_handler(const boost::system::error_code &error, size_t bytes_transferred);
     void write_handler(const boost::system::error_code &error, size_t bytes_transferred);
     void read_some();
-   // void write_some();
+    // void write_some();
     std::string response_get(std::size_t length);
     void run();
 
