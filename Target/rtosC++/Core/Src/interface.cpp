@@ -48,14 +48,14 @@ void interface::can1_send_sync_message() {
 /* Leer mensaje de CAN e imprimir en pantalla */
 void interface::can_read_message() {
 
-	if (datacheck == 1) {
+	if(datacheck == 0)
+	{
 		HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
-		datacheck = 0;
+        datacheck=1;
 	}
-
 	        get_payload_buffer()[0] = '0'; //
 
-	        get_payload_buffer()[1] = RxData[0];
+	        get_payload_buffer()[1] = RxData[0]-32;
 	        get_payload_buffer()[2] = 'H';
 	        get_payload_buffer()[3] = 'E';
 	        get_payload_buffer()[4] = 'Q';

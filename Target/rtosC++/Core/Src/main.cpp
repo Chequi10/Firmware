@@ -71,8 +71,8 @@ void StartTask03(void const *argument);
 TaskHandle_t task_handle_task_1;
 TaskHandle_t task_handle_task_2;
 TaskHandle_t task_handle_task_3;
-SemaphoreHandle_t BinarySemaphoreHandle;
-SemaphoreHandle_t BinarySemaphoreHandle2;
+SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
+SemaphoreHandle_t BinarySemaphoreHandle_CAN;
 
 /* USER CODE END PFP */
 
@@ -86,7 +86,7 @@ CAN_FilterTypeDef sFilterConfig;
 
 uint32_t TxMailbox;
 uint8_t TxData[1];
-
+uint8_t ant;
 
 typedef struct {
 	//  keys_ButtonState_t state;   //variables
@@ -99,10 +99,10 @@ typedef struct {
 t_key_data keys_data;
 /* Contador de mensajes de SYNC enviados por canal 1. */
 
-   char sync_counter;
+char sync_counter;
 void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
-		xSemaphoreTake(BinarySemaphoreHandle, portMAX_DELAY);
+		xSemaphoreTake(BinarySemaphoreHandle_SERIAL, portMAX_DELAY);
 		stm32_interface.serial_read_command();
 
 	}
@@ -111,51 +111,49 @@ void Task_serial_read_command(void *taskParmPtr) {
 void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
 
-		    TxData[0] = sync_counter;
+		TxData[0] = sync_counter;
 
-			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
-					!= HAL_OK) {
-				Error_Handler();
-			}
-			  // Incrementar contador con rollover en 19.
-			    sync_counter++;
-			    sync_counter%=8;
-			//HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-			vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
-
+		if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
+				!= HAL_OK) {
+			Error_Handler();
+		}
+		sync_counter++;
+		sync_counter %= 9;
+		vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
 
 	}
 }
 void Task_can2_read_message(void *taskParmPtr) {
 	while (1) {
+		xSemaphoreTake(BinarySemaphoreHandle_CAN, portMAX_DELAY);
 		stm32_interface.can_read_message();
 
 	}
 }
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
-
-	if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2, stm32_interface.RxData)
-			!= HAL_OK) {
-		Error_Handler();
+	if (hcan2->Instance == CAN2) {
+		BaseType_t xHigherPriorityTaskWoken;
+		xHigherPriorityTaskWoken = pdFALSE;
+		xSemaphoreGiveFromISR(BinarySemaphoreHandle_CAN,
+				&xHigherPriorityTaskWoken);
+		if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2,
+				stm32_interface.RxData) != HAL_OK) {
+			Error_Handler();
+		}
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 	}
-
-
-	if (stm32_interface.RxData[0]== 3) {
-		stm32_interface.datacheck=1;
-	}
-
 }
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 	if (huart->Instance == USART3) {
 		BaseType_t xHigherPriorityTaskWoken;
-
 		xHigherPriorityTaskWoken = pdFALSE;
-
-		xSemaphoreGiveFromISR(BinarySemaphoreHandle, &xHigherPriorityTaskWoken);
-
-		HAL_UART_Receive_IT(&huart3, stm32_interface.cadena, 12);
-
+		xSemaphoreGiveFromISR(BinarySemaphoreHandle_SERIAL,
+				&xHigherPriorityTaskWoken);
+		if (HAL_UART_Receive_IT(&huart3, stm32_interface.cadena, 12)
+				!= HAL_OK) {
+			Error_Handler();
+		}
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 	}
@@ -255,8 +253,12 @@ int main(void) {
 
 	/* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
-	BinarySemaphoreHandle = xSemaphoreCreateBinary();
-	configASSERT(BinarySemaphoreHandle != NULL);
+	BinarySemaphoreHandle_SERIAL = xSemaphoreCreateBinary();
+	configASSERT(BinarySemaphoreHandle_SERIAL != NULL);
+
+	BinarySemaphoreHandle_CAN = xSemaphoreCreateBinary();
+	configASSERT(BinarySemaphoreHandle_CAN != NULL);
+
 	/* USER CODE END RTOS_SEMAPHORES */
 
 	/* USER CODE BEGIN RTOS_TIMERS */
