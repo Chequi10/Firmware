@@ -72,16 +72,17 @@ void stm32canbus_serialif::handle_packet(const uint8_t *payload, size_t n)
 
         can_message_event ev;
 
-        ev.device_id = payload[1];
-        ev.canid = payload[2];
-        ev.len = payload[3];
-        ev.data[8];
+            ev.device_id = payload[1];
+            ev.canid = (payload[2] << 24) | (payload[3] << 16) | (payload[4] << 8) | (payload[5] << 0);
+            ev.len = payload[6];
+            ev.data[8];
 
-        for (size_t i = 0; i < 7; i++)
-        {
-            ev.data[i] = payload[i + 1];
-            // std::cout << boost::format(" %d") % ev.data[i];
-        }
+
+  for(size_t i=0;i<ev.len;i++)
+            {
+                ev.data[i] = payload[7+i];
+            }
+
         on_event_callback(ev);
     }
     break;

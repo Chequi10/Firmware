@@ -174,7 +174,7 @@ namespace protocol
 
 		if (dt >= PACKET_TIMEOUT_IN_MS)
 		{	
-			std::cout << boost::format("Reset tiemp")<< std::endl;
+			std::cout << boost::format("Reset time")<< std::endl;
 	     	this->set_error(error_code::timeout);
 			this->reset();
 		}

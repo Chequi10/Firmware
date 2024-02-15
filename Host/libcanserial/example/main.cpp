@@ -5,11 +5,11 @@
 
 void on_can_message(const stm32canbus_serialif::can_message_event &ev)
 {
-    std::cout << boost::format("Device %d CANID: %d Len: %d Data: ") % ev.device_id % ev.canid % ev.len;
-    for (size_t i = 0; i < 7; i++)
+    std::cout << boost::format("Device %d CANID: 0x%08x Length: %d Data: ") % ev.device_id % ev.canid % ev.len;
+    for (size_t i = 0; i < ev.len; i++)
     {
-        std::cout << boost::format(" %d") % ev.data[i];
-        // std::cout << boost::format(" Longitud%d") % ev.len;
+
+        std::cout << boost::format(" %d ") % uint32_t{ev.data[i]};
     }
     std::cout << std::endl;
 }
@@ -23,27 +23,35 @@ int main(int argc, const char *argv[])
     }
     std::cout << "Port: " << argv[1] << std::endl;
     stm32canbus_serialif can(argv[1], 115200, on_can_message);
-  
-    std::cout << "Ingrese menor a 3 para ver mensajes can y mayor a 3 para encender led rojo" << std::endl;
+
+    std::cout << "Ingrese menor a 3 para ver mensajes CAN:\nIngrese mayor a 3 para encender led rojo:" << std::endl;
     char entrada{};
     can.start();
     while (1)
     {
-
         std::cin >> entrada;
         std::cin.ignore();
+        std::cout << "Ingrese menor a 0 para ver mensajes CAN:\nIngrese mayor a 3 para encender led rojo:" << std::endl;
 
-        if (entrada < '3')
+        switch (entrada)
+        {
+        case '0': // Event 0: envio mensaje can y enciende led azul.
+        { 
+            can.write_some();
+            can.opcodi = '0';
+        }
+        break;
+
+        case '3': // Event 1: enciende led rojo.
         {
             can.write_some();
-            can.opcodi='3';
-            entrada = 0;
+            can.opcodi = '3';
         }
-        if(entrada > '3')
-        {   
-            can.write_some();
-            std::cout << "Ingrese menor 5 para ver mensajes can" << std::endl;
-            can.opcodi='0';
+        break;
+
+        default:
+        { can.opcodi = '0';
+        }
         }
 
         // Wait for key
