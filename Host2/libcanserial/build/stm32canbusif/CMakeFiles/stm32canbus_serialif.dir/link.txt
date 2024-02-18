@@ -1,0 +1,2 @@
+/usr/bin/ar qc libstm32canbus_serialif.a CMakeFiles/stm32canbus_serialif.dir/src/stm32canbusif.cpp.o CMakeFiles/stm32canbus_serialif.dir/src/protocol.cpp.o
+/usr/bin/ranlib libstm32canbus_serialif.a
