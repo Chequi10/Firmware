@@ -40,4 +40,7 @@
 		<item key="width" value="619"/>
 		<item key="height" value="728"/>
 	</section>
+	<section name="CResourceRenameRefactoringInputPage">
+		<item key="updateReferences" value="true"/>
+	</section>
 </section>

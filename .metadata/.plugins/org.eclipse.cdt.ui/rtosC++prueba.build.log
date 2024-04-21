@@ -1,0 +1,77 @@
+10:39:44 **** Incremental Build of configuration Debug for project rtosC++prueba ****
+make -j2 all 
+arm-none-eabi-g++ "../Core/Src/interface.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I"/home/ezequiel/Firmware/Firmware/Target/rtosC++prueba/Core" -I../Drivers/STM32F4xx_HAL_Driver/Inc -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/interface.d" -MT"Core/Src/interface.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/interface.o"
+arm-none-eabi-g++ "../Core/Src/main.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I"/home/ezequiel/Firmware/Firmware/Target/rtosC++prueba/Core" -I../Drivers/STM32F4xx_HAL_Driver/Inc -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.cpp: In function 'void Task_can2_read_message(void*)':
+../Core/Src/main.cpp:128:23: error: invalid conversion from 'uint8_t*' {aka 'unsigned char*'} to 'const char*' [-fpermissive]
+  128 |  imprime.vPrintString(TxData);
+      |                       ^~~~~~
+      |                       |
+      |                       uint8_t* {aka unsigned char*}
+In file included from ../Core/Src/main.cpp:27:
+../Core/Inc/printscreen.h:21:33: note:   initializing argument 1 of 'void printer::vPrintString(const char*)'
+   21 |  void vPrintString( const char *pcString );
+      |                     ~~~~~~~~~~~~^~~~~~~~
+../Core/Src/main.cpp: In function 'void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)':
+../Core/Src/main.cpp:137:60: error: invalid conversion from 'char*' to 'uint8_t*' {aka 'unsigned char*'} [-fpermissive]
+  137 |   if (HAL_CAN_GetRxMessage(hcan2, CAN_RX_FIFO0, &RxHeader2,RxData) != HAL_OK) {
+      |                                                            ^~~~~~
+      |                                                            |
+      |                                                            char*
+In file included from ../Core/Inc/stm32f4xx_hal_conf.h:299,
+                 from ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.cpp:20:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h:683:120: note:   initializing argument 4 of 'HAL_StatusTypeDef HAL_CAN_GetRxMessage(CAN_HandleTypeDef*, uint32_t, CAN_RxHeaderTypeDef*, uint8_t*)'
+  683 | HAL_StatusTypeDef HAL_CAN_GetRxMessage(CAN_HandleTypeDef *hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef *pHeader, uint8_t aData[]);
+      |                                                                                                                ~~~~~~~~^~~~~~~
+In file included from ../Core/Src/main.cpp:21:
+../Core/Src/main.cpp: In function 'int main()':
+../Core/Src/main.cpp:270:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  270 |  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:274:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  274 |  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:278:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  278 |  osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+make: *** [Core/Src/subdir.mk:55: Core/Src/main.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from ../Core/Src/interface.cpp:10:
+../Core/Inc/interface.h:25:1: error: expected class-name before '{' token
+   25 | {
+      | ^
+../Core/Src/interface.cpp: In member function 'void interface::serial_read_command()':
+../Core/Src/interface.cpp:62:3: error: 'feed' was not declared in this scope
+   62 |   feed(cadena[i]);
+      |   ^~~~
+../Core/Src/interface.cpp: At global scope:
+../Core/Src/interface.cpp:69:1: error: expected declaration before '}' token
+   69 | }
+      | ^
+../Core/Src/interface.cpp:71:6: error: no declaration matches 'void interface::send_impl(const uint8_t*, uint8_t)'
+   71 | void interface::send_impl(const uint8_t *buf, uint8_t n) {
+      |      ^~~~~~~~~
+../Core/Src/interface.cpp:71:6: note: no functions named 'void interface::send_impl(const uint8_t*, uint8_t)'
+In file included from ../Core/Src/interface.cpp:10:
+../Core/Inc/interface.h:23:7: note: 'class interface' defined here
+   23 | class interface:
+      |       ^~~~~~~~~
+../Core/Src/interface.cpp:81:1: error: expected declaration before '}' token
+   81 | }
+      | ^
+make: *** [Core/Src/subdir.mk:55: Core/Src/interface.o] Error 1
+"make -j2 all" terminated with exit code 2. Build might be incomplete.
+
+10:39:45 Build Failed. 10 errors, 3 warnings. (took 947ms)
+

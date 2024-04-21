@@ -1,7 +1,154 @@
-04:54:01 **** Incremental Build of configuration Debug for project RtosC++ ****
+19:44:34 **** Incremental Build of configuration Debug for project rtosC++ ****
 make -j2 all 
-arm-none-eabi-size   RtosC++.elf 
+arm-none-eabi-size   rtosC++.elf 
    text	   data	    bss	    dec	    hex	filename
-  24552	    124	  18252	  42928	   a7b0	RtosC++.elf
+ 187612	    780	  24620	 213012	  34014	rtosC++.elf
 Finished building: default.size.stdout
+ 
+19:44:38 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-size   rtosC++.elf 
+   text	   data	    bss	    dec	    hex	filename
+ 187612	    780	  24620	 213012	  34014	rtosC++.elf
+Finished building: default.size.stdout
+ 
+19:44:51 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-size   rtosC++.elf 
+   text	   data	    bss	    dec	    hex	filename
+ 187612	    780	  24620	 213012	  34014	rtosC++.elf
+Finished building: default.size.stdout
+ 
+19:46:50 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-g++ "../Core/Src/main.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I"/home/ezequiel/Firmware/Firmware/Target/rtosC++/Core" -I../Drivers/STM32F4xx_HAL_Driver/Inc -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.cpp:39: warning: "LED_RATE_MS" redefined
+   39 | #define LED_RATE_MS 50
+      | 
+In file included from ../Core/Inc/interface.h:18,
+                 from ../Core/Src/main.cpp:27:
+../Core/Inc/protocol.h:17: note: this is the location of the previous definition
+   17 | #define LED_RATE_MS 1000
+      | 
+In file included from ../Core/Src/main.cpp:21:
+../Core/Src/main.cpp: In function 'int main()':
+../Core/Src/main.cpp:271:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  271 |  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:275:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  275 |  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:279:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  279 |  osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+arm-none-eabi-g++ -o "rtosC++.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/Target/rtosC++/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="rtosC++.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: rtosC++.elf
+ 
+arm-none-eabi-size   rtosC++.elf 
+arm-none-eabi-objdump -h -S  rtosC++.elf  > "rtosC++.list"
+   text	   data	    bss	    dec	    hex	filename
+ 187596	    780	  24620	 212996	  34004	rtosC++.elf
+Finished building: default.size.stdout
+ 
+Finished building: rtosC++.list
+ 
+19:47:25 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-size   rtosC++.elf 
+   text	   data	    bss	    dec	    hex	filename
+ 187596	    780	  24620	 212996	  34004	rtosC++.elf
+Finished building: default.size.stdout
+ 
+19:51:31 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-g++ "../Core/Src/main.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I"/home/ezequiel/Firmware/Firmware/Target/rtosC++/Core" -I../Drivers/STM32F4xx_HAL_Driver/Inc -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.cpp:39: warning: "LED_RATE_MS" redefined
+   39 | #define LED_RATE_MS 50
+      | 
+In file included from ../Core/Inc/interface.h:18,
+                 from ../Core/Src/main.cpp:27:
+../Core/Inc/protocol.h:17: note: this is the location of the previous definition
+   17 | #define LED_RATE_MS 1000
+      | 
+In file included from ../Core/Src/main.cpp:21:
+../Core/Src/main.cpp: In function 'int main()':
+../Core/Src/main.cpp:271:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  271 |  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:275:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  275 |  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:279:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  279 |  osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+arm-none-eabi-g++ -o "rtosC++.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/Target/rtosC++/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="rtosC++.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: rtosC++.elf
+ 
+arm-none-eabi-size   rtosC++.elf 
+arm-none-eabi-objdump -h -S  rtosC++.elf  > "rtosC++.list"
+   text	   data	    bss	    dec	    hex	filename
+ 187612	    780	  24620	 213012	  34014	rtosC++.elf
+Finished building: default.size.stdout
+ 
+Finished building: rtosC++.list
+ 
+20:24:25 **** Incremental Build of configuration Debug for project rtosC++ ****
+make -j2 all 
+arm-none-eabi-g++ "../Core/Src/main.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I"/home/ezequiel/Firmware/Firmware/Target/rtosC++/Core" -I../Drivers/STM32F4xx_HAL_Driver/Inc -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.cpp:39: warning: "LED_RATE_MS" redefined
+   39 | #define LED_RATE_MS 50
+      | 
+In file included from ../Core/Inc/interface.h:18,
+                 from ../Core/Src/main.cpp:27:
+../Core/Inc/protocol.h:17: note: this is the location of the previous definition
+   17 | #define LED_RATE_MS 1000
+      | 
+In file included from ../Core/Src/main.cpp:21:
+../Core/Src/main.cpp: In function 'int main()':
+../Core/Src/main.cpp:271:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  271 |  osThreadDef(Tarea_1, StartTask01, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:275:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  275 |  osThreadDef(Tarea_2, StartTask02, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+../Core/Src/main.cpp:279:60: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+  279 |  osThreadDef(Tarea_3, StartTask03, osPriorityNormal, 0, 128);
+      |                                                            ^
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:416:4: note: in definition of macro 'osThreadDef'
+  416 | { #name, (thread), (priority), (instances), (stacksz), NULL, NULL }
+      |    ^~~~
+arm-none-eabi-g++ -o "rtosC++.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/Target/rtosC++/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="rtosC++.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: rtosC++.elf
+ 
+arm-none-eabi-size   rtosC++.elf 
+arm-none-eabi-objdump -h -S  rtosC++.elf  > "rtosC++.list"
+   text	   data	    bss	    dec	    hex	filename
+ 187628	    780	  24620	 213028	  34024	rtosC++.elf
+Finished building: default.size.stdout
+ 
+Finished building: rtosC++.list
  

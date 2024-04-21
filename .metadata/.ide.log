@@ -33659,3 +33659,98 @@
 2023-02-17 11:49:00,737 [ERROR] ApiDbMcu:1585 - Can't use Application install path:
 2023-02-17 11:49:00,743 [WARN] RulesReader:59 - Compatibility file://mcu/compatibility.xml not found
 2023-02-17 11:49:05,153 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-19 10:19:33,310 [INFO] Activator:177 - 
+
+
+2024-02-19 10:19:33,316 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-19 10:19:44,904 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-19 11:05:54,374 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:05:56,377 [ERROR] ConfigurationRetriever:139 - IOException on connection: connect timed out
+2024-02-19 11:05:59,435 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:06:08,163 [ERROR] ConfigurationRetriever:139 - IOException on connection: connect timed out
+2024-02-19 11:06:11,208 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:06:13,246 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:29:57,041 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:29:59,044 [ERROR] ConfigurationRetriever:139 - IOException on connection: connect timed out
+2024-02-19 11:53:09,307 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:53:11,309 [ERROR] ConfigurationRetriever:139 - IOException on connection: connect timed out
+2024-02-19 11:53:13,344 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:53:15,397 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:53:17,431 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-19 11:53:19,469 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-20 19:59:51,013 [INFO] Activator:177 - 
+
+
+2024-02-20 19:59:51,016 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-20 20:00:02,096 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-20 21:23:15,004 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-02-21 08:03:31,635 [INFO] Activator:177 - 
+
+
+2024-02-21 08:03:31,640 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-21 08:03:43,357 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-21 15:21:27,756 [INFO] Activator:177 - 
+
+
+2024-02-21 15:21:27,760 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-21 15:21:38,766 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-23 14:49:53,406 [INFO] Activator:177 - 
+
+
+2024-02-23 14:49:53,410 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-23 14:50:04,818 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-26 12:43:06,494 [INFO] Activator:177 - 
+
+
+2024-02-26 12:43:06,497 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-26 12:43:18,360 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-02-26 12:48:18,948 [INFO] Activator:177 - 
+
+
+2024-02-26 12:48:18,951 [INFO] Activator:178 - !SESSION log4j initialized
+2024-02-26 12:48:29,142 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-03-08 11:14:46,768 [INFO] Activator:177 - 
+
+
+2024-03-08 11:14:46,772 [INFO] Activator:178 - !SESSION log4j initialized
+2024-03-08 11:14:57,642 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-03-08 11:15:05,245 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-08 11:15:07,384 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-08 11:16:55,255 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-08 11:44:42,453 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-08 11:44:44,514 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-10 16:07:33,904 [INFO] Activator:177 - 
+
+
+2024-03-10 16:07:33,911 [INFO] Activator:178 - !SESSION log4j initialized
+2024-03-10 16:07:46,058 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-03-10 17:00:51,403 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-10 17:00:53,492 [ERROR] ConfigurationRetriever:139 - IOException on connection: Read timed out
+2024-03-10 18:48:34,115 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SWT SessionManagerDBus: Failed to UnregisterClient: GDBus.Error:org.freedesktop.DBus.Error.NoReply: Message recipient disconnected from message bus without replying
+2024-03-26 21:40:58,599 [INFO] Activator:177 - 
+
+
+2024-03-26 21:40:58,603 [INFO] Activator:178 - !SESSION log4j initialized
+2024-03-26 21:41:09,340 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-04-03 22:28:00,324 [INFO] Activator:177 - 
+
+
+2024-04-03 22:28:00,328 [INFO] Activator:178 - !SESSION log4j initialized
+2024-04-03 22:28:14,737 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-04-03 22:59:21,872 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SWT SessionManagerDBus: Failed to UnregisterClient: GDBus.Error:org.freedesktop.DBus.Error.UnknownMethod: No such interface “org.gnome.SessionManager” on object at path /org/gnome/SessionManager
+2024-04-04 09:45:13,498 [INFO] Activator:177 - 
+
+
+2024-04-04 09:45:13,504 [INFO] Activator:178 - !SESSION log4j initialized
+2024-04-04 09:45:24,922 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-04-05 20:11:42,405 [INFO] Activator:177 - 
+
+
+2024-04-05 20:11:42,409 [INFO] Activator:178 - !SESSION log4j initialized
+2024-04-05 20:11:53,952 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-04-07 18:03:31,727 [INFO] Activator:177 - 
+
+
+2024-04-07 18:03:31,730 [INFO] Activator:178 - !SESSION log4j initialized
+2024-04-07 18:03:42,742 [ERROR] AnalyticsContext:980 - The ST intranet updater server is unknown: mcucrossselector.codex.cro.st.com
+2024-04-07 20:41:46,500 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] SWT SessionManagerDBus: Failed to UnregisterClient: GDBus.Error:org.freedesktop.DBus.Error.NoReply: Message recipient disconnected from message bus without replying

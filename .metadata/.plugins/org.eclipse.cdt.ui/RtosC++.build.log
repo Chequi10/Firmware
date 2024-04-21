@@ -1,10 +1,16 @@
-04:54:01 **** Incremental Build of configuration Debug for project RtosC++ ****
+10:20:09 **** Build of configuration Debug for project RtosC++ ****
 make -j2 all 
+arm-none-eabi-g++ -o "RtosC++.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/ezequiel/Firmware/Firmware/Target/rtosC/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RtosC++.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: RtosC++.elf
+ 
 arm-none-eabi-size   RtosC++.elf 
+arm-none-eabi-objdump -h -S  RtosC++.elf  > "RtosC++.list"
    text	   data	    bss	    dec	    hex	filename
-  24552	    124	  18252	  42928	   a7b0	RtosC++.elf
+  25480	    124	  18260	  43864	   ab58	RtosC++.elf
 Finished building: default.size.stdout
  
+Finished building: RtosC++.list
+ 
 
-04:54:01 Build Finished. 0 errors, 0 warnings. (took 946ms)
+10:20:11 Build Finished. 0 errors, 0 warnings. (took 1s.520ms)
 

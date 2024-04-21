@@ -1,10 +1,10 @@
 #include <boost/format.hpp>
 #include "stm32canbusif.h"
 
-stm32canbus_serialif::stm32canbus_serialif(const char *dev_name, int baudrate, on_can_message_callback on_event_callback)
+stm32canbus_serialif::stm32canbus_serialif(const char *dev_name, int baudrate)
     : io(),
-      port(io, dev_name),
-      on_event_callback(on_event_callback)
+      port(io, "/dev/ttyACM0")
+     
 {
     port.set_option(boost::asio::serial_port_base::parity()); // default none
     port.set_option(boost::asio::serial_port_base::character_size(8));
@@ -45,10 +45,9 @@ void stm32canbus_serialif::read_handler(const boost::system::error_code &error, 
         // can_message_event ev;
         for (size_t i = 0; i < bytes_transferred; i++)
         {
-            ::protocol::packet_decoder::feed(rx_buffer[i]);
-            ::protocol::packet_decoder::check_timeouts();
+            
 
-            // std::cout << rx_buffer[i];
+             std::cout<<"caracteres recibidos " << rx_buffer[i]<< std::endl;
         }
         read_some();
     }
@@ -61,64 +60,12 @@ void stm32canbus_serialif::read_some()
                                                                               boost::asio::placeholders::bytes_transferred));
 }
 
-void stm32canbus_serialif::handle_packet(const uint8_t *payload, size_t n)
-{
 
-    switch (payload[0])
-    {
-    // Event 0: received message.
-    case '0':
-    {
-
-        can_message_event ev;
-
-            ev.device_id = payload[1];
-            ev.canid = (payload[2] << 24) | (payload[3] << 16) | (payload[4] << 8) | (payload[5] << 0);
-            ev.len = payload[6];
-            ev.data[8];
-
-
-  for(size_t i=0;i<ev.len;i++)
-            {
-                ev.data[i] = payload[7+i];
-            }
-
-        on_event_callback(ev);
-    }
-    break;
-
-    default:
-    {
-
-        // error, unknown packet
-        this->set_error(error_code::unknown_opcode);
-        this->reset();
-    }
-    }
-}
-
-// para enviar datos por el puerto serie
-void stm32canbus_serialif::send_impl(const uint8_t *buf, uint8_t n)
-{
-
-    for (size_t i = 0; i < n; i++)
-    {
-        tx_buffer[i] = *buf++;
-
-        std::cout << boost::format("%d ") % tx_buffer[i];
-    
-    }  
-        get_payload_buffer()[5] = opcodi; 
-	    get_payload_buffer()[6] = 'L';
-	    get_payload_buffer()[7] = 'E';
-	    get_payload_buffer()[8] = 'D';
-   
-}
 
 
 void stm32canbus_serialif::write_some()
 {
-    port.async_write_some(boost::asio::buffer(tx_buffer, 12), boost::bind(&stm32canbus_serialif::write_handler, this,
+    port.async_write_some(boost::asio::buffer(tx_buffer, 2), boost::bind(&stm32canbus_serialif::write_handler, this,
                                                                          boost::asio::placeholders::error,
                                                                   boost::asio::placeholders::bytes_transferred));
 }
@@ -131,21 +78,28 @@ void stm32canbus_serialif::write_handler(const boost::system::error_code &error,
     }
     else
     {
-        ::protocol::packet_encoder::send(0x4);
-        ::protocol::packet_decoder::check_timeouts();
-        
-    }
-  
+
+        tx_buffer[0] = 'P';
+        tx_buffer[1] = opcodi;
+         
+
+   for (size_t i = 0; i < 2; i++)
+    {
+      
+
+     //   std::cout << boost::format("%d ") % tx_buffer[i];
     
+    }    
+    
+  
+    }
+}
+void stm32canbus_serialif::itera()
+{
+    
+     
+        opcodi='P';
+        write_some();
 }
 
-// para ver errores y estado de la conexion
-void stm32canbus_serialif::set_error(error_code ec)
-{
-    std::cout << boost::format("Error debido a: %c ") % ec << std::endl;
-}
 
-void stm32canbus_serialif::handle_connection_lost()
-{
-    // std::cout << boost::format("Se perdio la conexion") << std::endl;
-}

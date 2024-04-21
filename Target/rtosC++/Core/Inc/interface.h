@@ -30,6 +30,7 @@ public:
     void setup();
     uint8_t cadena[0];
     uint8_t RxData[1];
+    uint8_t TxData[1];
     uint8_t datacheck = 0;
     void serial_read_command();
     void can_read_message();
@@ -41,12 +42,16 @@ public:
     CAN_HandleTypeDef hcan1;
     CAN_HandleTypeDef hcan2;
     UART_HandleTypeDef huart3;
-    CAN_TxHeaderTypeDef TxHeader;
-    CAN_TxHeaderTypeDef TxHeader2;
-    CAN_RxHeaderTypeDef RxHeader;
-    CAN_RxHeaderTypeDef RxHeader2;
+//    CAN_TxHeaderTypeDef TxHeader;
+//    CAN_TxHeaderTypeDef TxHeader2;
+//    CAN_RxHeaderTypeDef RxHeader;
+//    CAN_RxHeaderTypeDef RxHeader2;
     uint32_t TxMailbox;
-
+    uint32_t canid;
+    uint32_t device;
+    uint32_t longitud;
+    uint32_t id_NODO_1;
+    uint32_t payload_NODO_1;
    /* Structura para para los tiempos del ticker del procesador */
 
     typedef struct {

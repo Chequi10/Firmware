@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 find_package(Boost COMPONENTS system REQUIRED)
 
 # set the project name
-project(stm32canbus_serial_example)
+project(pruebaserie)
 
 # add the executable
 add_executable(${PROJECT_NAME}

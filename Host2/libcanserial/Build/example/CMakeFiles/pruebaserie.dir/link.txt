@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/pruebaserie.dir/main.cpp.o -o pruebaserie  ../stm32canbusif/libstm32canbus_serialif.a /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0 -lpthread /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0 

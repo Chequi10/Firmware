@@ -8,7 +8,6 @@ project(stm32canbus_serialif)
 # add the executable
 add_library(${PROJECT_NAME} 
     src/stm32canbusif.cpp 
-    src/protocol.cpp 
 )
 
 target_link_libraries(${PROJECT_NAME} 

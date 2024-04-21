@@ -15,13 +15,12 @@
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 
-#include "protocol.h"
+
 
 /**
  * @brief Clase para controlar la interfaz CAN implementada en STM32 a través de puerto serie.
  */
-class stm32canbus_serialif : private protocol::packet_decoder,
-                             private protocol::packet_encoder
+class stm32canbus_serialif 
 {
 public:
     /**
@@ -50,7 +49,7 @@ public:
      * @param baudrate Baudrate (recomendado 115200).
      * @param on_event_callback Callback definido por el usuario para responder cuando llega un mensaje.
      */
-    stm32canbus_serialif(const char *dev_name, int baudrate, on_can_message_callback on_event_callback);
+    stm32canbus_serialif(const char *dev_name, int baudrate);
 
     /**
      * @brief Iniciar monitor/controlador. Cuando el controlador está arrancado, se habilita el monitoreo y capacidad de envío de mensajes.
@@ -61,9 +60,10 @@ public:
      * @brief Detener monitor/controlador.
      */
     void stop();
-
+    void read_some();
     void write_some();
     uint opcodi{0};
+    void itera();
 
 private:
     boost::asio::io_service io;
@@ -77,18 +77,9 @@ private:
 
     void read_handler(const boost::system::error_code &error, size_t bytes_transferred);
     void write_handler(const boost::system::error_code &error, size_t bytes_transferred);
-    void read_some();
+    
     // void write_some();
     std::string response_get(std::size_t length);
     void run();
 
-    // Protocolo de paquetes (receptor)
-    void handle_packet(const uint8_t *payload, size_t n) override;
-
-    // Protocolo de paquetes (emisor)
-    void send_impl(const uint8_t *buf, uint8_t n) override;
-
-    // Para ver el estado de la conexion y errores
-    void set_error(error_code ec) override;
-    void handle_connection_lost() override;
 };

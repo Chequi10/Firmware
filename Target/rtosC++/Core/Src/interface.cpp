@@ -20,7 +20,9 @@ interface::interface() :
 
 		},
 
-		sync_counter(0)
+		sync_counter(0),
+		canid(0),
+		device(0)
 //    can_event_thread(osPriorityHigh)
 {
 	huart3.Instance = USART3;
@@ -53,17 +55,18 @@ void interface::can_read_message() {
 		HAL_GPIO_TogglePin(Amarillo_GPIO_Port, Amarillo_Pin);
         datacheck=1;
 	}
-	        get_payload_buffer()[0] = '0'; //
 
-	        get_payload_buffer()[1] = RxData[0]-32;
-	        get_payload_buffer()[2] = 'H';
-	        get_payload_buffer()[3] = 'E';
-	        get_payload_buffer()[4] = 'Q';
-	        get_payload_buffer()[5] = 'U';
-	      	get_payload_buffer()[6] = 'I';
-	        for(size_t i=0;i<7;i++)
+        	        get_payload_buffer()[0] = '0'; //
+	     	        get_payload_buffer()[1] = device;
+	     	        get_payload_buffer()[2] = canid >> 24;
+	     	        get_payload_buffer()[3] = canid >> 16;
+	     	        get_payload_buffer()[4] = canid >> 8;
+	     	        get_payload_buffer()[5] = canid >> 0;
+	     	      	get_payload_buffer()[6] = longitud;
+
+	      	for(size_t i=0;i<longitud;i++)
 	        {
-	            get_payload_buffer()[7+i] = i;
+	            get_payload_buffer()[7+i] = RxData[0];
 	        }
 
 }
@@ -83,8 +86,9 @@ void interface::handle_packet(const uint8_t *payload, uint8_t n) {
 	// Event 0: envio mensaje can.
 	case '0': {
 		HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-		send(0x7);
-
+		send(7+longitud);
+		id_NODO_1=payload[1];
+        payload_NODO_1=payload[2];
 	}
 		break;
 		// Event 1: enciende led rojo.
@@ -116,10 +120,10 @@ void interface::send_impl(const uint8_t *buf, uint8_t n) {
 
 interface::error_code interface::cmd_send_message(const uint8_t *payload,
 		uint8_t n) {
-	TxHeader2.StdId = (payload[1] << 24) | (payload[2] << 16)
-			| (payload[3] << 8) | (payload[4] << 0);
-	TxHeader.DLC = payload[5];
-	HAL_CAN_AddTxMessage(&hcan1, &TxHeader, (uint8_t*) &payload[6], &TxMailbox);
+//	TxHeader2.StdId = (payload[1] << 24) | (payload[2] << 16)
+//			| (payload[3] << 8) | (payload[4] << 0);
+//	TxHeader.DLC = payload[5];
+//	HAL_CAN_AddTxMessage(&hcan1, &TxHeader, (uint8_t*) &payload[6], &TxMailbox);
 	return error_code::success;
 }
 

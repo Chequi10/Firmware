@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/stm32canbus_serial_example.dir/main.cpp.o -o stm32canbus_serial_example  ../stm32canbusif/libstm32canbus_serialif.a /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0 -lpthread /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0 

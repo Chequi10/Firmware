@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;rtosC++2prueba/rtosC++.ioc&apos; to &apos;rtosC++2prueba.ioc&apos;" description="Rename resource &apos;rtosC++.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="rtosC++.ioc" name="rtosC++2prueba.ioc" stamp="1708350112161" updateReferences="true"/>
+</session>

@@ -1,0 +1,3 @@
+../Core/Src/printscreen.cpp:14:1:printer::printer()	16	static
+../Core/Src/printscreen.cpp:29:6:void printer::vPrintString(const char*)	24	static
+../Core/Src/printscreen.cpp:41:9:uint8_t printer::uartRecvString(uint8_t*, uint8_t)	24	static

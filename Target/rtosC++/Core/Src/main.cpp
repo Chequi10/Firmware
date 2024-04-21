@@ -88,6 +88,7 @@ uint32_t TxMailbox;
 uint8_t TxData[1];
 uint8_t ant;
 
+
 typedef struct {
 	//  keys_ButtonState_t state;   //variables
 
@@ -104,30 +105,27 @@ void Task_serial_read_command(void *taskParmPtr) {
 	while (1) {
 		xSemaphoreTake(BinarySemaphoreHandle_SERIAL, portMAX_DELAY);
 		stm32_interface.serial_read_command();
-
 	}
-
 }
 void Task_can1_send_sync(void *taskParmPtr) {
 	while (1) {
-
 		TxData[0] = sync_counter;
-
 		if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox)
 				!= HAL_OK) {
 			Error_Handler();
 		}
 		sync_counter++;
-		sync_counter %= 9;
+		sync_counter %= stm32_interface.payload_NODO_1;
+		stm32_interface.canid=TxHeader.StdId;
+		stm32_interface.device=stm32_interface.id_NODO_1;
+		stm32_interface.longitud=TxHeader.DLC;
 		vTaskDelay( LED_RATE_MS / portTICK_RATE_MS);
-
 	}
 }
 void Task_can2_read_message(void *taskParmPtr) {
 	while (1) {
 		xSemaphoreTake(BinarySemaphoreHandle_CAN, portMAX_DELAY);
 		stm32_interface.can_read_message();
-
 	}
 }
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan2) {
@@ -155,9 +153,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			Error_Handler();
 		}
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
 	}
-
 }
 
 void config(void) {
@@ -224,26 +220,26 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 	//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 	TxHeader.IDE = CAN_ID_STD;
-	TxHeader.StdId = 146;
+	TxHeader.StdId = 111111111;
 	TxHeader.RTR = CAN_RTR_DATA;
-	TxHeader.DLC = 1;
+	TxHeader.DLC = 2;
 	TxHeader.TransmitGlobalTime = DISABLE;
 
 	RxHeader.IDE = CAN_ID_STD;
-	RxHeader.StdId = 146;
+	RxHeader.StdId = 100000001;
 	RxHeader.RTR = CAN_RTR_DATA;
-	RxHeader.DLC = 1;
+	RxHeader.DLC = 2;
 
 	TxHeader2.IDE = CAN_ID_STD;
-	TxHeader2.StdId = 20;
+	TxHeader2.StdId = 100000024;
 	TxHeader2.RTR = CAN_RTR_DATA;
-	TxHeader2.DLC = 1;
+	TxHeader2.DLC = 2;
 	TxHeader2.TransmitGlobalTime = DISABLE;
 
 	RxHeader2.IDE = CAN_ID_STD;
-	RxHeader2.StdId = 20;
+	RxHeader2.StdId = 100000024;
 	RxHeader2.RTR = CAN_RTR_DATA;
-	RxHeader2.DLC = 1;
+	RxHeader2.DLC = 2;
 
 	/* USER CODE END 2 */
 
