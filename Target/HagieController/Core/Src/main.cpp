@@ -53,6 +53,7 @@ interface stm32_interface;
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 UART_HandleTypeDef huart3;
+DMA_HandleTypeDef hdma_usart3_rx;
 
 osThreadId Tarea_1Handle;
 osThreadId Tarea_2Handle;
@@ -113,6 +114,7 @@ static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM8_Init(void);
+static void MX_DMA_Init(void);
 void StartTask01(void const *argument);
 void StartTask02(void const *argument);
 void StartTask03(void const *argument);
@@ -130,7 +132,10 @@ SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
 QueueHandle_t AxiomaticRxQueueHandle;
 QueueHandle_t JetsonRxQueueHandle;
 
-uint8_t jetson_rx_byte;
+
+#define JETSON_DMA_RX_BUFFER_SIZE 256
+
+uint8_t jetson_dma_rx_buffer[JETSON_DMA_RX_BUFFER_SIZE];
 
 
 /* USER CODE END PFP */
@@ -633,43 +638,117 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     {
         jetson_uart_error_count++;
 
+        /*
+         * Detener la recepción DMA actual.
+         */
+        HAL_UART_DMAStop(huart);
+
+        /*
+         * Limpiar errores UART.
+         */
         __HAL_UART_CLEAR_OREFLAG(huart);
         __HAL_UART_CLEAR_NEFLAG(huart);
         __HAL_UART_CLEAR_FEFLAG(huart);
         __HAL_UART_CLEAR_PEFLAG(huart);
 
-        HAL_UART_Receive_IT(
-            &huart3,
-            &jetson_rx_byte,
-            1
-        );
+        /*
+         * Reiniciar recepción DMA + IDLE.
+         */
+        if (HAL_UARTEx_ReceiveToIdle_DMA(
+                &huart3,
+                jetson_dma_rx_buffer,
+                JETSON_DMA_RX_BUFFER_SIZE) == HAL_OK)
+        {
+            /*
+             * No queremos interrupción
+             * de Half Transfer.
+             */
+            __HAL_DMA_DISABLE_IT(
+                huart3.hdmarx,
+                DMA_IT_HT
+            );
+        }
     }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UARTEx_RxEventCallback(
+    UART_HandleTypeDef *huart,
+    uint16_t Size)
 {
-    if (huart->Instance == USART3)
+    if (huart->Instance != USART3)
     {
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        return;
+    }
 
-        if (xQueueSendFromISR(
-                JetsonRxQueueHandle,
-                &jetson_rx_byte,
-                &xHigherPriorityTaskWoken) != pdPASS)
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    /*
+     * Posición anterior dentro del buffer circular DMA.
+     */
+    static uint16_t old_pos = 0;
+
+    /*
+     * Caso normal:
+     * los nuevos bytes están entre old_pos y Size.
+     */
+    if (Size > old_pos)
+    {
+        for (uint16_t i = old_pos; i < Size; i++)
         {
-            jetson_rx_queue_dropped++;
+            uint8_t byte = jetson_dma_rx_buffer[i];
+
+            if (xQueueSendFromISR(
+                    JetsonRxQueueHandle,
+                    &byte,
+                    &xHigherPriorityTaskWoken) != pdPASS)
+            {
+                jetson_rx_queue_dropped++;
+            }
+        }
+    }
+
+    /*
+     * El DMA circular dio la vuelta al buffer.
+     */
+    else if (Size < old_pos)
+    {
+        for (uint16_t i = old_pos;
+             i < JETSON_DMA_RX_BUFFER_SIZE;
+             i++)
+        {
+            uint8_t byte = jetson_dma_rx_buffer[i];
+
+            if (xQueueSendFromISR(
+                    JetsonRxQueueHandle,
+                    &byte,
+                    &xHigherPriorityTaskWoken) != pdPASS)
+            {
+                jetson_rx_queue_dropped++;
+            }
         }
 
-        HAL_UART_Receive_IT(
-            &huart3,
-            &jetson_rx_byte,
-            1
-        );
+        for (uint16_t i = 0; i < Size; i++)
+        {
+            uint8_t byte = jetson_dma_rx_buffer[i];
 
-        portYIELD_FROM_ISR(
-            xHigherPriorityTaskWoken
-        );
+            if (xQueueSendFromISR(
+                    JetsonRxQueueHandle,
+                    &byte,
+                    &xHigherPriorityTaskWoken) != pdPASS)
+            {
+                jetson_rx_queue_dropped++;
+            }
+        }
     }
+
+    old_pos = Size;
+
+    if (old_pos >= JETSON_DMA_RX_BUFFER_SIZE)
+    {
+        old_pos = 0;
+    }
+
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void config(void) {
@@ -753,6 +832,7 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_CAN1_Init();
 
+
 	MX_USART3_UART_Init();
 	MX_TIM1_Init();
 	MX_TIM2_Init();
@@ -805,13 +885,22 @@ int main(void) {
 	    JetsonRxQueueHandle != NULL
 	);
 
-	if (HAL_UART_Receive_IT(
+	if (HAL_UARTEx_ReceiveToIdle_DMA(
 	        &huart3,
-	        &jetson_rx_byte,
-	        1) != HAL_OK)
+	        jetson_dma_rx_buffer,
+	        JETSON_DMA_RX_BUFFER_SIZE) != HAL_OK)
 	{
 	    Error_Handler();
 	}
+
+	/*
+	 * No necesitamos interrupción
+	 * de mitad de transferencia.
+	 */
+	__HAL_DMA_DISABLE_IT(
+	    huart3.hdmarx,
+	    DMA_IT_HT
+	);
 
 
 
@@ -1049,7 +1138,20 @@ static void MX_USART3_UART_Init(void) {
 	/* USER CODE END USART3_Init 2 */
 
 }
+static void MX_DMA_Init(void)
+{
+    /*
+     * Habilitar clock del controlador DMA1.
+     */
+    __HAL_RCC_DMA1_CLK_ENABLE();
 
+    /*
+     * Interrupción DMA1 Stream 1
+     * utilizada por USART3_RX.
+     */
+    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+}
 /**
  * @brief GPIO Initialization Function
  * @param None
