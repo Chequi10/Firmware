@@ -169,6 +169,10 @@ volatile uint32_t jetson_watchdog_trip_count = 0;
 volatile TickType_t jetson_last_watchdog_elapsed = 0;
 volatile TickType_t jetson_max_packet_gap = 0;
 
+volatile uint32_t jetson_dma_event_count = 0;
+volatile uint32_t jetson_dma_byte_count = 0;
+volatile uint16_t jetson_dma_last_size = 0;
+
 
 /*
  * Cantidad de heartbeats válidos recibidos
@@ -680,6 +684,10 @@ void HAL_UARTEx_RxEventCallback(
         return;
     }
 
+    jetson_dma_event_count++;
+    jetson_dma_byte_count += Size;
+    jetson_dma_last_size = Size;
+
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     /*
@@ -830,7 +838,9 @@ int main(void) {
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	MX_DMA_Init();
 	MX_CAN1_Init();
+
 
 
 	MX_USART3_UART_Init();
