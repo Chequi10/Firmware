@@ -30,6 +30,7 @@
 #include "encoder.h"
 #include "valve_controller.h"
 #include "control_types.h"
+#include "imu_types.h"
 
 
 /* USER CODE END Includes */
@@ -129,6 +130,7 @@ TaskHandle_t task_handle_can1_axiomatic_tx;
 TaskHandle_t task_handle_can1_axiomatic_rx;
 TaskHandle_t task_handle_jetson_telemetry_tx;
 TaskHandle_t task_handle_height_control;
+TaskHandle_t task_handle_imu_watchdog;
 SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
 
 QueueHandle_t AxiomaticRxQueueHandle;
@@ -175,6 +177,26 @@ volatile TickType_t jetson_max_packet_gap = 0;
 volatile uint32_t jetson_dma_event_count = 0;
 volatile uint32_t jetson_dma_byte_count = 0;
 volatile uint16_t jetson_dma_last_size = 0;
+
+volatile ImuState_t imu_state =
+{
+    0.0f,  // roll
+    0.0f,  // pitch
+    0.0f,  // yaw
+
+    0.0f,  // gyro x
+    0.0f,  // gyro y
+    0.0f,  // gyro z
+
+    0.0f,  // accel x
+    0.0f,  // accel y
+    0.0f,  // accel z
+
+    false, // valid
+    0      // timestamp
+};
+const TickType_t IMU_TIMEOUT =
+    pdMS_TO_TICKS(500);
 
 
 /*
@@ -281,6 +303,8 @@ void Task_jetson_telemetry_tx(void *taskParmPtr)
          */
         stm32_interface.send_stm32_state();
         jetson_stm32_state_tx_count++;
+
+        stm32_interface.send_imu_state();
 
         /*
          * Telemetría a 10 Hz.
@@ -704,6 +728,42 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
     }
 }
 
+void Task_imu_watchdog(void *taskParmPtr)
+{
+    (void)taskParmPtr;
+
+    while (1)
+    {
+        if (imu_state.valid)
+        {
+            TickType_t now =
+                xTaskGetTickCount();
+
+            TickType_t elapsed =
+                now -
+                static_cast<TickType_t>(
+                    imu_state.timestamp_ms
+                );
+
+            if (elapsed >= IMU_TIMEOUT)
+            {
+                /*
+                 * La IMU dejó de actualizarse.
+                 * Los valores quedan almacenados
+                 * solamente para diagnóstico,
+                 * pero ya no deben utilizarse.
+                 */
+                imu_state.valid = false;
+            }
+        }
+
+        /*
+         * No hace falta revisar esto muy rápido.
+         */
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+}
+
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -926,7 +986,17 @@ void config(void) {
 					&task_handle_jetson_telemetry_tx
 				);
 
-	configASSERT(res1 == pdPASS  && res4 == pdPASS  && res5 == pdPASS && res6 == pdPASS && res7 == pdPASS && res_height == pdPASS );
+	BaseType_t res_imu =
+	    xTaskCreate(
+	        Task_imu_watchdog,
+	        "imu_watchdog",
+	        configMINIMAL_STACK_SIZE * 2,
+	        NULL,
+	        tskIDLE_PRIORITY + 1,
+	        &task_handle_imu_watchdog
+	    );
+
+	configASSERT(res1 == pdPASS  && res4 == pdPASS  && res5 == pdPASS && res6 == pdPASS && res7 == pdPASS && res_height == pdPASS && res_imu == pdPASS);
 }
 
 /* USER CODE END 0 */

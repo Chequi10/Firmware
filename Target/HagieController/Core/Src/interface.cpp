@@ -11,7 +11,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "control_types.h"
+#include "imu_types.h"
 
+extern volatile ImuState_t imu_state;
 extern UART_HandleTypeDef huart3;
 extern volatile uint32_t jetson_heartbeat_count;
 extern void setBodyValveCommand(uint8_t body, int16_t command);
@@ -35,6 +37,69 @@ void interface::serial_read_command() {
 		feed(cadena[i]);
 
 	}
+}
+
+void interface::send_imu_state()
+{
+    uint8_t *payload = get_payload_buffer();
+
+    payload[0] = 'I';
+    payload[1] = imu_state.valid ? 1 : 0;
+
+    int16_t values[9] =
+    {
+        static_cast<int16_t>(imu_state.roll_deg * 100.0f),
+        static_cast<int16_t>(imu_state.pitch_deg * 100.0f),
+        static_cast<int16_t>(imu_state.yaw_deg * 100.0f),
+
+        static_cast<int16_t>(imu_state.gyro_x_dps * 100.0f),
+        static_cast<int16_t>(imu_state.gyro_y_dps * 100.0f),
+        static_cast<int16_t>(imu_state.gyro_z_dps * 100.0f),
+
+        static_cast<int16_t>(imu_state.accel_x_mps2 * 1000.0f),
+        static_cast<int16_t>(imu_state.accel_y_mps2 * 1000.0f),
+        static_cast<int16_t>(imu_state.accel_z_mps2 * 1000.0f)
+    };
+
+    for (uint8_t i = 0; i < 9; i++)
+    {
+        uint16_t raw =
+            static_cast<uint16_t>(values[i]);
+
+        uint8_t index =
+            2 + (i * 2);
+
+        payload[index] =
+            static_cast<uint8_t>(
+                (raw >> 8) & 0xFF
+            );
+
+        payload[index + 1] =
+            static_cast<uint8_t>(
+                raw & 0xFF
+            );
+    }
+
+    /*
+     * Payload:
+     *
+     * [0]      = 'I'
+     * [1]      = valid
+     *
+     * [2..3]   = roll       x100
+     * [4..5]   = pitch      x100
+     * [6..7]   = yaw        x100
+     *
+     * [8..9]   = gyro_x     x100
+     * [10..11] = gyro_y     x100
+     * [12..13] = gyro_z     x100
+     *
+     * [14..15] = accel_x    x1000
+     * [16..17] = accel_y    x1000
+     * [18..19] = accel_z    x1000
+     */
+
+    send(20);
 }
 
 void interface::handle_packet(
