@@ -12,6 +12,7 @@
 #include <string.h>
 #include "control_types.h"
 #include "imu_types.h"
+#include "jetson_tx.h"
 
 extern volatile ImuState_t imu_state;
 extern UART_HandleTypeDef huart3;
@@ -24,6 +25,8 @@ extern volatile uint32_t axiomatic_rx_dropped;
 extern volatile bool jetson_connection_ok;
 extern volatile uint32_t jetson_uart_error_count;
 extern volatile BodyControlMode_t body_control_mode[6];
+extern volatile uint32_t jetson_tx_queue_dropped;
+extern volatile uint32_t jetson_tx_dma_errors;
 
 
 interface::interface()
@@ -483,7 +486,36 @@ void interface::send_diagnostic_state()
     payload[10] =
         static_cast<uint8_t>(uartErrors & 0xFF);
 
-    send(11);
+    uint32_t txDropped = jetson_tx_queue_dropped;
+
+    payload[11] =
+        static_cast<uint8_t>((txDropped >> 24) & 0xFF);
+
+    payload[12] =
+        static_cast<uint8_t>((txDropped >> 16) & 0xFF);
+
+    payload[13] =
+        static_cast<uint8_t>((txDropped >> 8) & 0xFF);
+
+    payload[14] =
+        static_cast<uint8_t>(txDropped & 0xFF);
+
+
+    uint32_t txDmaErrors = jetson_tx_dma_errors;
+
+    payload[15] =
+        static_cast<uint8_t>((txDmaErrors >> 24) & 0xFF);
+
+    payload[16] =
+        static_cast<uint8_t>((txDmaErrors >> 16) & 0xFF);
+
+    payload[17] =
+        static_cast<uint8_t>((txDmaErrors >> 8) & 0xFF);
+
+    payload[18] =
+        static_cast<uint8_t>(txDmaErrors & 0xFF);
+
+    send(19);
 }
 
 void interface::serial_feed_byte(uint8_t byte)
@@ -491,18 +523,43 @@ void interface::serial_feed_byte(uint8_t byte)
     feed(byte);
 }
 
-void interface::send_impl(const uint8_t *buf, uint8_t n)
+void interface::send_impl(
+    const uint8_t *buf,
+    uint8_t n)
 {
+    if (buf == nullptr || n == 0)
+    {
+        return;
+    }
 
+    if (n > JETSON_TX_BUFFER_SIZE)
+    {
+        return;
+    }
 
-    HAL_UART_Transmit(
-        &huart3,
-        const_cast<uint8_t*>(buf),
-        static_cast<uint16_t>(n),
-        HAL_MAX_DELAY
+    JetsonTxMessage_t message;
+
+    message.length = n;
+
+    memcpy(
+        message.data,
+        buf,
+        n
     );
 
-
+    /*
+     * No bloquear al productor.
+     *
+     * La tarea Task_jetson_serial_tx
+     * se encargará de transmitir por DMA.
+     */
+    if (xQueueSend(
+            JetsonTxQueueHandle,
+            &message,
+            0) != pdPASS)
+    {
+        jetson_tx_queue_dropped++;
+    }
 }
 
 

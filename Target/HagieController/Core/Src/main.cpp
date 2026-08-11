@@ -31,6 +31,7 @@
 #include "valve_controller.h"
 #include "control_types.h"
 #include "imu_types.h"
+#include "jetson_tx.h"
 
 
 /* USER CODE END Includes */
@@ -56,6 +57,7 @@ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart3_rx;
+DMA_HandleTypeDef hdma_usart3_tx;
 
 osThreadId Tarea_1Handle;
 osThreadId Tarea_2Handle;
@@ -129,12 +131,14 @@ TaskHandle_t task_handle_encoder;
 TaskHandle_t task_handle_can1_axiomatic_tx;
 TaskHandle_t task_handle_can1_axiomatic_rx;
 TaskHandle_t task_handle_jetson_telemetry_tx;
+TaskHandle_t task_handle_jetson_serial_tx;
 TaskHandle_t task_handle_height_control;
 TaskHandle_t task_handle_imu_watchdog;
 SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
 
 QueueHandle_t AxiomaticRxQueueHandle;
 QueueHandle_t JetsonRxQueueHandle;
+QueueHandle_t JetsonTxQueueHandle;
 void setBodyValveCommand(uint8_t body, int16_t command);
 
 
@@ -177,6 +181,10 @@ volatile TickType_t jetson_max_packet_gap = 0;
 volatile uint32_t jetson_dma_event_count = 0;
 volatile uint32_t jetson_dma_byte_count = 0;
 volatile uint16_t jetson_dma_last_size = 0;
+
+
+volatile uint32_t jetson_tx_queue_dropped = 0;
+volatile uint32_t jetson_tx_dma_errors = 0;
 
 volatile ImuState_t imu_state =
 {
@@ -223,7 +231,6 @@ typedef struct
     CAN_RxHeaderTypeDef header;
     uint8_t data[8];
 } CanRxFrame_t;
-
 
 
 
@@ -847,6 +854,71 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     }
 }
 
+
+void Task_jetson_serial_tx(void *taskParmPtr)
+{
+    (void)taskParmPtr;
+
+    JetsonTxMessage_t message;
+
+    while (1)
+    {
+        /*
+         * Esperar hasta que haya un paquete completo
+         * para transmitir.
+         */
+        if (xQueueReceive(
+                JetsonTxQueueHandle,
+                &message,
+                portMAX_DELAY) == pdPASS)
+				{
+					HAL_StatusTypeDef status =
+						HAL_UART_Transmit_DMA(
+							&huart3,
+							message.data,
+							message.length
+						);
+
+					if (status == HAL_OK)
+					{
+						ulTaskNotifyTake(
+							pdTRUE,
+							portMAX_DELAY
+						);
+					}
+					else
+					{
+						jetson_tx_dma_errors++;
+
+						/*
+						 * Evitar un loop agresivo si el UART/DMA
+						 * estuviera temporalmente ocupado.
+						 */
+						vTaskDelay(pdMS_TO_TICKS(1));
+					}
+        }
+    }
+}
+
+void HAL_UART_TxCpltCallback(
+    UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART3)
+    {
+        BaseType_t xHigherPriorityTaskWoken =
+            pdFALSE;
+
+        vTaskNotifyGiveFromISR(
+            task_handle_jetson_serial_tx,
+            &xHigherPriorityTaskWoken
+        );
+
+        portYIELD_FROM_ISR(
+            xHigherPriorityTaskWoken
+        );
+    }
+}
+
 void HAL_UARTEx_RxEventCallback(
     UART_HandleTypeDef *huart,
     uint16_t Size)
@@ -996,7 +1068,24 @@ void config(void) {
 	        &task_handle_imu_watchdog
 	    );
 
-	configASSERT(res1 == pdPASS  && res4 == pdPASS  && res5 == pdPASS && res6 == pdPASS && res7 == pdPASS && res_height == pdPASS && res_imu == pdPASS);
+	BaseType_t res_tx =
+	    xTaskCreate(
+	        Task_jetson_serial_tx,
+	        "jetson_serial_tx",
+	        configMINIMAL_STACK_SIZE * 2,
+	        NULL,
+	        tskIDLE_PRIORITY + 2,
+	        &task_handle_jetson_serial_tx
+	    );
+
+	configASSERT(res1 == pdPASS  &&
+			res4 == pdPASS  &&
+			res5 == pdPASS  &&
+			res6 == pdPASS &&
+			res7 == pdPASS &&
+			res_height == pdPASS &&
+			res_imu == pdPASS &&
+			res_tx == pdPASS);
 }
 
 /* USER CODE END 0 */
@@ -1083,6 +1172,16 @@ int main(void) {
 
 	configASSERT(
 	    JetsonRxQueueHandle != NULL
+	);
+
+	JetsonTxQueueHandle =
+	    xQueueCreate(
+	        16,
+	        sizeof(JetsonTxMessage_t)
+	    );
+
+	configASSERT(
+	    JetsonTxQueueHandle != NULL
 	);
 
 	if (HAL_UARTEx_ReceiveToIdle_DMA(
@@ -1351,6 +1450,13 @@ static void MX_DMA_Init(void)
      */
     HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+
+    /*
+     * Interrupción DMA1 Stream 3
+     * utilizada por USART3_TX.
+     */
+    HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 }
 /**
  * @brief GPIO Initialization Function
