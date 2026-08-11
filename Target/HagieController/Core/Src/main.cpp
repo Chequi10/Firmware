@@ -29,6 +29,7 @@
 #include "printscreen.h"
 #include "encoder.h"
 #include "valve_controller.h"
+#include "control_types.h"
 
 
 /* USER CODE END Includes */
@@ -127,10 +128,12 @@ TaskHandle_t task_handle_encoder;
 TaskHandle_t task_handle_can1_axiomatic_tx;
 TaskHandle_t task_handle_can1_axiomatic_rx;
 TaskHandle_t task_handle_jetson_telemetry_tx;
+TaskHandle_t task_handle_height_control;
 SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
 
 QueueHandle_t AxiomaticRxQueueHandle;
 QueueHandle_t JetsonRxQueueHandle;
+void setBodyValveCommand(uint8_t body, int16_t command);
 
 
 #define JETSON_DMA_RX_BUFFER_SIZE 256
@@ -209,6 +212,31 @@ typedef struct
 } ValveCommand_t;
 
 volatile ValveCommand_t valve_command[VALVE_COUNT] = {};
+
+
+
+/*
+ * Modo de control de cada cuerpo.
+ *
+ * MANUAL:
+ *   la Jetson manda directamente el comando de válvula con 'B'.
+ *
+ * AUTO:
+ *   la Jetson manda altura objetivo con 'D' y la STM32
+ *   controla la válvula usando el encoder.
+ */
+volatile BodyControlMode_t body_control_mode[VALVE_COUNT] =
+{
+    BODY_CONTROL_MANUAL,
+    BODY_CONTROL_MANUAL,
+    BODY_CONTROL_MANUAL,
+    BODY_CONTROL_MANUAL,
+    BODY_CONTROL_MANUAL,
+    BODY_CONTROL_MANUAL
+};
+
+
+
 
 
 typedef struct {
@@ -359,6 +387,84 @@ void Task_encoder(void *taskParmPtr)
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
+
+void Task_height_control(void *taskParmPtr)
+{
+    (void)taskParmPtr;
+
+    /*
+     * Parámetros iniciales del controlador.
+     * Después se ajustarán con la hidráulica real.
+     */
+    const float KP = 5.0f;
+    const float DEADBAND_MM = 10.0f;
+
+    while (1)
+    {
+        for (uint8_t body = 0; body < BODY_COUNT; body++)
+        {
+            /*
+             * Solamente controlar automáticamente
+             * los cuerpos que estén en AUTO.
+             */
+        	if ((body_control_mode[body] == BODY_CONTROL_AUTO) &&
+        	    jetson_connection_ok)
+            {
+                float target =
+                    static_cast<float>(target_height_mm[body]);
+
+                float actual =
+                    encoder_height_mm[body];
+
+                float error = target - actual;
+
+                int16_t command = 0;
+
+                /*
+                 * Zona muerta:
+                 * si estamos suficientemente cerca
+                 * de la altura objetivo, detener.
+                 */
+                if (error > DEADBAND_MM)
+                {
+                    float output = KP * error;
+
+                    if (output > 1000.0f)
+                    {
+                        output = 1000.0f;
+                    }
+
+                    command =
+                        static_cast<int16_t>(output);
+                }
+                else if (error < -DEADBAND_MM)
+                {
+                    float output = KP * error;
+
+                    if (output < -1000.0f)
+                    {
+                        output = -1000.0f;
+                    }
+
+                    command =
+                        static_cast<int16_t>(output);
+                }
+                else
+                {
+                    command = 0;
+                }
+
+                setBodyValveCommand(body, command);
+            }
+        }
+
+        /*
+         * Control a 100 Hz.
+         */
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
 
 void setBodyValveCommand(uint8_t body, int16_t command)
 {
@@ -775,7 +881,15 @@ void config(void) {
 					&task_handle_jetson_serial_rx
 				);
 
-
+	BaseType_t res_height =
+	    xTaskCreate(
+	        Task_height_control,
+	        "height_control",
+	        configMINIMAL_STACK_SIZE * 2,
+	        NULL,
+	        tskIDLE_PRIORITY + 2,
+	        &task_handle_height_control
+	    );
 
 
 
@@ -812,7 +926,7 @@ void config(void) {
 					&task_handle_jetson_telemetry_tx
 				);
 
-	configASSERT(res1 == pdPASS  && res4 == pdPASS  && res5 == pdPASS && res6 == pdPASS && res7 == pdPASS);
+	configASSERT(res1 == pdPASS  && res4 == pdPASS  && res5 == pdPASS && res6 == pdPASS && res7 == pdPASS && res_height == pdPASS );
 }
 
 /* USER CODE END 0 */

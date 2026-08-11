@@ -10,6 +10,7 @@
 #include <interface.h>
 #include <stdio.h>
 #include <string.h>
+#include "control_types.h"
 
 extern UART_HandleTypeDef huart3;
 extern volatile uint32_t jetson_heartbeat_count;
@@ -20,6 +21,7 @@ extern int16_t getBodyValveCommand(uint8_t body);
 extern volatile uint32_t axiomatic_rx_dropped;
 extern volatile bool jetson_connection_ok;
 extern volatile uint32_t jetson_uart_error_count;
+extern volatile BodyControlMode_t body_control_mode[6];
 
 
 interface::interface()
@@ -61,40 +63,52 @@ void interface::handle_packet(
 			break;
 		}
 
-        case 'B':
-        {
-            if (n != 4)
-            {
-                break;
-            }
+		case 'B':
+		{
+		    if (n != 4)
+		    {
+		        break;
+		    }
 
-            uint8_t body = payload[1];
+		    uint8_t body = payload[1];
 
-            int16_t command =
-                static_cast<int16_t>(
-                    (static_cast<uint16_t>(payload[2]) << 8) |
-                     static_cast<uint16_t>(payload[3])
-                );
+		    if (body >= BODY_COUNT)
+		    {
+		        break;
+		    }
 
-            setBodyValveCommand(body, command);
+		    int16_t command =
+		        static_cast<int16_t>(
+		            (static_cast<uint16_t>(payload[2]) << 8) |
+		             static_cast<uint16_t>(payload[3])
+		        );
 
-            break;
-        }
+		    /*
+		     * Un comando directo de válvula
+		     * coloca ese cuerpo en modo manual.
+		     */
+		    body_control_mode[body] = BODY_CONTROL_MANUAL;
 
-        case 'C':
-        {
-            if (n != 1)
-            {
-                break;
-            }
+		    setBodyValveCommand(body, command);
 
-            for (uint8_t body = 0; body < 6; body++)
-            {
-                setBodyValveCommand(body, 0);
-            }
+		    break;
+		}
 
-            break;
-        }
+		case 'C':
+		{
+		    if (n != 1)
+		    {
+		        break;
+		    }
+
+		    for (uint8_t body = 0; body < BODY_COUNT; body++)
+		    {
+		        body_control_mode[body] = BODY_CONTROL_MANUAL;
+		        setBodyValveCommand(body, 0);
+		    }
+
+		    break;
+		}
         /*
          * OPCODE 'D'
          *
@@ -115,7 +129,7 @@ void interface::handle_packet(
 
             uint8_t body = payload[1];
 
-            if (body >= 6)
+            if (body >= BODY_COUNT)
             {
                 break;
             }
@@ -127,6 +141,7 @@ void interface::handle_packet(
                 );
 
             target_height_mm[body] = heightMm;
+            body_control_mode[body] = BODY_CONTROL_AUTO;
 
             break;
         }
