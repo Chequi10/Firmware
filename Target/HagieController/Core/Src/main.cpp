@@ -520,6 +520,12 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
                  */
                 jetson_connection_ok = false;
 
+                HAL_GPIO_WritePin(
+                    Amarillo_GPIO_Port,
+                    Amarillo_Pin,
+                    GPIO_PIN_RESET
+                );
+
             }
         }
 
