@@ -140,8 +140,33 @@ void interface::handle_packet(
                      static_cast<uint16_t>(payload[3])
                 );
 
+            /*
+             * Segunda barrera de seguridad.
+             *
+             * Aunque la Jetson mande una consigna incorrecta,
+             * la STM32 no acepta alturas fuera del recorrido
+             * permitido para ese cuerpo.
+             */
+            if (heightMm < BODY_MIN_HEIGHT_MM[body] ||
+                heightMm > BODY_MAX_HEIGHT_MM[body])
+            {
+                /*
+                 * Consigna inválida:
+                 * detener el cuerpo y salir de AUTO.
+                 */
+                body_control_mode[body] = BODY_CONTROL_MANUAL;
+                setBodyValveCommand(body, 0);
+
+                break;
+            }
+
+            /*
+             * Consigna válida.
+             */
             target_height_mm[body] = heightMm;
             body_control_mode[body] = BODY_CONTROL_AUTO;
+
+            break;
 
             break;
         }
