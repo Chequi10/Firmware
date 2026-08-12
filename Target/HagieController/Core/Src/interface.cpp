@@ -13,6 +13,7 @@
 #include "control_types.h"
 #include "imu_types.h"
 #include "jetson_tx.h"
+#include "fault_types.h"
 
 extern volatile ImuState_t imu_state;
 extern UART_HandleTypeDef huart3;
@@ -27,6 +28,8 @@ extern volatile uint32_t jetson_uart_error_count;
 extern volatile BodyControlMode_t body_control_mode[6];
 extern volatile uint32_t jetson_tx_queue_dropped;
 extern volatile uint32_t jetson_tx_dma_errors;
+extern volatile uint32_t system_faults;
+extern volatile uint32_t body_faults[6];
 
 
 interface::interface()
@@ -516,7 +519,39 @@ void interface::send_diagnostic_state()
     payload[18] =
         static_cast<uint8_t>(txDmaErrors & 0xFF);
 
-    send(19);
+    uint32_t systemFaults = system_faults;
+
+    payload[19] =
+        static_cast<uint8_t>((systemFaults >> 24) & 0xFF);
+    payload[20] =
+        static_cast<uint8_t>((systemFaults >> 16) & 0xFF);
+    payload[21] =
+        static_cast<uint8_t>((systemFaults >> 8) & 0xFF);
+    payload[22] =
+        static_cast<uint8_t>(systemFaults & 0xFF);
+
+
+    for (uint8_t body = 0; body < 6; body++)
+    {
+        uint32_t faults = body_faults[body];
+
+        uint8_t index =
+            23 + (body * 4);
+
+        payload[index] =
+            static_cast<uint8_t>((faults >> 24) & 0xFF);
+
+        payload[index + 1] =
+            static_cast<uint8_t>((faults >> 16) & 0xFF);
+
+        payload[index + 2] =
+            static_cast<uint8_t>((faults >> 8) & 0xFF);
+
+        payload[index + 3] =
+            static_cast<uint8_t>(faults & 0xFF);
+    }
+
+    send(47);
 }
 
 void interface::serial_feed_byte(uint8_t byte)
@@ -560,6 +595,12 @@ void interface::send_impl(
             0) != pdPASS)
     {
         jetson_tx_queue_dropped++;
+
+        /*
+         * La cola TX se llenó y se perdió
+         * un paquete hacia la Jetson.
+         */
+        system_faults |= SYSTEM_FAULT_UART_TX;
     }
 }
 

@@ -692,7 +692,19 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
              i < VALVE_MODULE_COUNT;
              i++)
         {
-            valveModules[i]->send();
+            HAL_StatusTypeDef status =
+                valveModules[i]->send();
+
+            if (status != HAL_OK)
+            {
+                /*
+                 * No se pudo colocar la trama
+                 * en el periférico CAN.
+                 *
+                 * Registrar la falla global CAN.
+                 */
+                system_faults |= SYSTEM_FAULT_CAN;
+            }
         }
         /*
          * Heartbeat de la tarea CAN1.
@@ -833,6 +845,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     {
         jetson_uart_error_count++;
 
+
+        system_faults |= SYSTEM_FAULT_UART_RX;
+
         /*
          * Detener la recepción DMA actual.
          */
@@ -903,6 +918,8 @@ void Task_jetson_serial_tx(void *taskParmPtr)
 					    {
 					        jetson_tx_dma_errors++;
 
+					        system_faults |= SYSTEM_FAULT_UART_TX;
+
 					        HAL_UART_AbortTransmit(&huart3);
 
 					        vTaskDelay(pdMS_TO_TICKS(1));
@@ -911,6 +928,8 @@ void Task_jetson_serial_tx(void *taskParmPtr)
 					else
 					{
 					    jetson_tx_dma_errors++;
+
+					    system_faults |= SYSTEM_FAULT_UART_TX;
 
 					    vTaskDelay(pdMS_TO_TICKS(1));
 					}
