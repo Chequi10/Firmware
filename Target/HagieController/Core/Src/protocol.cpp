@@ -7,7 +7,9 @@
 #include "protocol.h"
 #include "jetson_watchdog.h"
 #include <iostream>
+#include "fault_types.h"
 extern volatile uint32_t jetson_valid_packet_count;
+extern volatile uint32_t system_faults;
 
 namespace protocol {
 
@@ -119,6 +121,11 @@ void packet_decoder::handle_pkt_state_expecting_terminator()
         jetson_last_valid_packet_tick = now;
         jetson_connection_ok = true;
         jetson_valid_packet_count++;
+        /*
+         * La comunicación volvió a ser válida.
+         * Limpiar la falla activa de timeout Jetson.
+         */
+        system_faults &= ~SYSTEM_FAULT_JETSON_TIMEOUT;
         /*
 		* Actividad UART:
 		* cambia el estado del LED amarillo

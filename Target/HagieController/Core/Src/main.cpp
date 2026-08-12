@@ -32,6 +32,8 @@
 #include "control_types.h"
 #include "imu_types.h"
 #include "jetson_tx.h"
+#include "fault_types.h"
+#include "imu_can.h"
 
 
 /* USER CODE END Includes */
@@ -186,6 +188,13 @@ volatile uint16_t jetson_dma_last_size = 0;
 volatile uint32_t jetson_tx_queue_dropped = 0;
 volatile uint32_t jetson_tx_dma_errors = 0;
 
+volatile uint32_t body_faults[6] =
+{
+    0, 0, 0, 0, 0, 0
+};
+
+volatile uint32_t system_faults = 0;
+
 volatile ImuState_t imu_state =
 {
     0.0f,  // roll
@@ -203,6 +212,11 @@ volatile ImuState_t imu_state =
     false, // valid
     0      // timestamp
 };
+
+ImuCan imuCan(
+    &hcan1,
+    &imu_state
+);
 const TickType_t IMU_TIMEOUT =
     pdMS_TO_TICKS(500);
 
@@ -657,6 +671,10 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
                  */
                 jetson_connection_ok = false;
 
+                system_faults |= SYSTEM_FAULT_JETSON_TIMEOUT;
+
+
+
                 HAL_GPIO_WritePin(
                     Amarillo_GPIO_Port,
                     Amarillo_Pin,
@@ -711,26 +729,19 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
                 &frame,
                 portMAX_DELAY) == pdPASS)
         {
-            /*
-             * Acá procesaremos los mensajes recibidos
-             * desde los módulos Axiomatic.
-             *
-             * frame.header.ExtId  -> identificador J1939
-             * frame.header.DLC    -> cantidad de bytes
-             * frame.data[0..7]    -> datos recibidos
-             */
-
-            /*
-             * Por ahora no hacemos nada con el mensaje.
-             * Más adelante interpretaremos:
-             *
-             * - corriente real de cada salida;
-             * - circuito abierto;
-             * - cortocircuito;
-             * - sobretemperatura;
-             * - estado del módulo;
-             * - confirmación de comandos.
-             */
+        	/*
+        	 * Las tramas J1939 usan identificador extendido.
+        	 * El driver de IMU decidirá internamente
+        	 * si el mensaje pertenece al AX060900.
+        	 */
+        	if (frame.header.IDE == CAN_ID_EXT)
+        	{
+        	    imuCan.processMessage(
+        	        frame.header.ExtId,
+        	        frame.data,
+        	        frame.header.DLC
+        	    );
+        	}
         }
     }
 }
@@ -761,6 +772,7 @@ void Task_imu_watchdog(void *taskParmPtr)
                  * pero ya no deben utilizarse.
                  */
                 imu_state.valid = false;
+                system_faults |= SYSTEM_FAULT_IMU_TIMEOUT;
             }
         }
 

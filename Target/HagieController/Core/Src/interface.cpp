@@ -53,11 +53,11 @@ void interface::send_imu_state()
     {
         static_cast<int16_t>(imu_state.roll_deg * 100.0f),
         static_cast<int16_t>(imu_state.pitch_deg * 100.0f),
-        static_cast<int16_t>(imu_state.yaw_deg * 100.0f),
+        static_cast<int16_t>(imu_state.gravity_deg * 100.0f),
 
-        static_cast<int16_t>(imu_state.gyro_x_dps * 100.0f),
-        static_cast<int16_t>(imu_state.gyro_y_dps * 100.0f),
-        static_cast<int16_t>(imu_state.gyro_z_dps * 100.0f),
+        static_cast<int16_t>(imu_state.gyro_roll_dps * 100.0f),
+        static_cast<int16_t>(imu_state.gyro_pitch_dps * 100.0f),
+        static_cast<int16_t>(imu_state.gyro_yaw_dps * 100.0f),
 
         static_cast<int16_t>(imu_state.accel_x_mps2 * 1000.0f),
         static_cast<int16_t>(imu_state.accel_y_mps2 * 1000.0f),
@@ -89,13 +89,14 @@ void interface::send_imu_state()
      * [0]      = 'I'
      * [1]      = valid
      *
-     * [2..3]   = roll       x100
-     * [4..5]   = pitch      x100
-     * [6..7]   = yaw        x100
-     *
-     * [8..9]   = gyro_x     x100
-     * [10..11] = gyro_y     x100
-     * [12..13] = gyro_z     x100
+
+	 [2..3]   = roll          x100
+	 [4..5]   = pitch         x100
+	 [6..7]   = gravity angle x100
+
+     [8..9]   = gyro roll     x100
+     [10..11] = gyro pitch    x100
+	 [12..13] = gyro yaw      x100
      *
      * [14..15] = accel_x    x1000
      * [16..17] = accel_y    x1000

@@ -7,35 +7,33 @@
 typedef struct
 {
     /*
-     * Orientación
+     * Ángulos entregados por AX060900.
      */
     float roll_deg;
     float pitch_deg;
-    float yaw_deg;
+    float gravity_deg;
 
     /*
-     * Velocidad angular
+     * Velocidades angulares.
      */
-    float gyro_x_dps;
-    float gyro_y_dps;
-    float gyro_z_dps;
+    float gyro_roll_dps;
+    float gyro_pitch_dps;
+    float gyro_yaw_dps;
 
     /*
-     * Aceleración lineal
+     * Aceleraciones en los tres ejes.
      */
     float accel_x_mps2;
     float accel_y_mps2;
     float accel_z_mps2;
 
     /*
-     * Estado
+     * Estado de validez.
      */
     bool valid;
 
     /*
      * Momento de la última actualización.
-     * Lo vamos a usar después para detectar
-     * si la IMU dejó de entregar datos.
      */
     uint32_t timestamp_ms;
 
