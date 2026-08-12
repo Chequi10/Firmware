@@ -881,20 +881,26 @@ void Task_jetson_serial_tx(void *taskParmPtr)
 
 					if (status == HAL_OK)
 					{
-						ulTaskNotifyTake(
-							pdTRUE,
-							portMAX_DELAY
-						);
+					    uint32_t notified =
+					        ulTaskNotifyTake(
+					            pdTRUE,
+					            pdMS_TO_TICKS(100)
+					        );
+
+					    if (notified == 0)
+					    {
+					        jetson_tx_dma_errors++;
+
+					        HAL_UART_AbortTransmit(&huart3);
+
+					        vTaskDelay(pdMS_TO_TICKS(1));
+					    }
 					}
 					else
 					{
-						jetson_tx_dma_errors++;
+					    jetson_tx_dma_errors++;
 
-						/*
-						 * Evitar un loop agresivo si el UART/DMA
-						 * estuviera temporalmente ocupado.
-						 */
-						vTaskDelay(pdMS_TO_TICKS(1));
+					    vTaskDelay(pdMS_TO_TICKS(1));
 					}
         }
     }
