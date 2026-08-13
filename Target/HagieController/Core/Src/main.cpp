@@ -36,6 +36,7 @@
 #include "imu_can.h"
 
 
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -136,6 +137,8 @@ TaskHandle_t task_handle_jetson_telemetry_tx;
 TaskHandle_t task_handle_jetson_serial_tx;
 TaskHandle_t task_handle_height_control;
 TaskHandle_t task_handle_imu_watchdog;
+TaskHandle_t task_handle_body_fault_monitor;
+
 SemaphoreHandle_t BinarySemaphoreHandle_SERIAL;
 
 QueueHandle_t AxiomaticRxQueueHandle;
@@ -188,10 +191,35 @@ volatile uint16_t jetson_dma_last_size = 0;
 volatile uint32_t jetson_tx_queue_dropped = 0;
 volatile uint32_t jetson_tx_dma_errors = 0;
 
+
+
+volatile uint32_t jetson_clear_fault_count = 0;
+
 volatile uint32_t body_faults[6] =
 {
     0, 0, 0, 0, 0, 0
 };
+
+/*
+ * Supervisión de movimiento de los cuerpos.
+ *
+ * Solo se espera movimiento cuando la orden
+ * de válvula supera MOVE_COMMAND_THRESHOLD.
+ */
+constexpr int16_t MOVE_COMMAND_THRESHOLD = 100;
+
+/*
+ * Movimiento mínimo que consideramos real.
+ * Después se ajustará en la máquina.
+ */
+constexpr float MIN_BODY_MOVEMENT_MM = 2.0f;
+
+/*
+ * Tiempo máximo durante el cual podemos mandar
+ * movimiento sin observar desplazamiento.
+ */
+const TickType_t NO_MOVEMENT_TIMEOUT =
+    pdMS_TO_TICKS(1000);
 
 volatile uint32_t system_faults = 0;
 
@@ -453,8 +481,9 @@ void Task_height_control(void *taskParmPtr)
              * los cuerpos que estén en AUTO.
              */
         	if ((body_control_mode[body] == BODY_CONTROL_AUTO) &&
-        	    jetson_connection_ok)
-            {
+        	    jetson_connection_ok &&
+        	    ((body_faults[body] & BODY_FAULT_NO_MOVEMENT) == 0))
+        	{
                 float target =
                     static_cast<float>(target_height_mm[body]);
 
@@ -511,6 +540,141 @@ void Task_height_control(void *taskParmPtr)
 }
 
 
+void Task_body_fault_monitor(void *taskParmPtr)
+{
+    (void)taskParmPtr;
+
+    float referenceHeight[BODY_COUNT] =
+    {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+    };
+
+    TickType_t movementStartTick[BODY_COUNT] =
+    {
+        0, 0, 0, 0, 0, 0
+    };
+
+    bool monitoring[BODY_COUNT] =
+    {
+        false, false, false,
+        false, false, false
+    };
+
+    int8_t previousDirection[BODY_COUNT] =
+    {
+        0, 0, 0, 0, 0, 0
+    };
+
+    while (1)
+    {
+        TickType_t now = xTaskGetTickCount();
+
+
+
+        for (uint8_t body = 0;
+             body < BODY_COUNT;
+             body++)
+        {
+            int16_t command =
+                valve_command[body].command;
+
+            /*
+             * Determinar si realmente estamos
+             * ordenando movimiento.
+             */
+            bool movementRequested =
+                (command >= MOVE_COMMAND_THRESHOLD) ||
+                (command <= -MOVE_COMMAND_THRESHOLD);
+
+            if (!movementRequested)
+            {
+                /*
+                 * Si la válvula está quieta,
+                 * NO es una falla que el cuerpo
+                 * tampoco se mueva.
+                 */
+                monitoring[body] = false;
+                previousDirection[body] = 0;
+
+                continue;
+            }
+
+            int8_t commandDirection =
+                (command > 0) ? 1 : -1;
+
+            /*
+             * Comenzó una nueva orden de movimiento
+             * o cambió el sentido.
+             */
+            if (!monitoring[body] ||
+                commandDirection != previousDirection[body])
+            {
+                referenceHeight[body] =
+                    encoder_height_mm[body];
+
+                movementStartTick[body] = now;
+
+                previousDirection[body] =
+                    commandDirection;
+
+                monitoring[body] = true;
+
+                continue;
+            }
+
+            float movement =
+                encoder_height_mm[body] -
+                referenceHeight[body];
+
+            if (movement < 0.0f)
+            {
+                movement = -movement;
+            }
+
+            /*
+             * Hubo movimiento suficiente.
+             *
+             * Reiniciamos la ventana de vigilancia.
+             */
+            if (movement >= MIN_BODY_MOVEMENT_MM)
+            {
+                referenceHeight[body] =
+                    encoder_height_mm[body];
+
+                movementStartTick[body] = now;
+
+                continue;
+            }
+
+            /*
+             * Hay una orden significativa de movimiento
+             * pero el encoder sigue prácticamente quieto.
+             */
+            if ((now - movementStartTick[body]) >=
+                NO_MOVEMENT_TIMEOUT)
+            {
+                body_faults[body] |=
+                    BODY_FAULT_NO_MOVEMENT;
+
+                /*
+                 * Seguridad:
+                 * detener solamente el cuerpo afectado.
+                 */
+                setBodyValveCommand(body, 0);
+
+                monitoring[body] = false;
+                previousDirection[body] = 0;
+            }
+        }
+
+        /*
+         * Supervisión a 50 Hz.
+         */
+        vTaskDelay(pdMS_TO_TICKS(20));
+    }
+}
+
 void setBodyValveCommand(uint8_t body, int16_t command)
 {
     /*
@@ -529,6 +693,18 @@ void setBodyValveCommand(uint8_t body, int16_t command)
     if (body >= VALVE_COUNT)
     {
         return;
+    }
+
+    /*
+     * Si el cuerpo tiene una falla crítica de no movimiento,
+     * no permitir nuevas órdenes de movimiento.
+     *
+     * Sí permitimos command = 0 para poder detenerlo.
+     */
+    if ((body_faults[body] & BODY_FAULT_NO_MOVEMENT) != 0 &&
+        command != 0)
+    {
+        command = 0;
     }
 
     /*
@@ -1115,6 +1291,16 @@ void config(void) {
 	        &task_handle_jetson_serial_tx
 	    );
 
+	BaseType_t res_body_fault =
+	    xTaskCreate(
+	        Task_body_fault_monitor,
+	        "body_fault_monitor",
+	        configMINIMAL_STACK_SIZE * 2,
+	        NULL,
+	        tskIDLE_PRIORITY + 1,
+	        &task_handle_body_fault_monitor
+	    );
+
 	configASSERT(res1 == pdPASS  &&
 			res4 == pdPASS  &&
 			res5 == pdPASS  &&
@@ -1122,7 +1308,8 @@ void config(void) {
 			res7 == pdPASS &&
 			res_height == pdPASS &&
 			res_imu == pdPASS &&
-			res_tx == pdPASS);
+			res_tx == pdPASS &&
+			res_body_fault == pdPASS);
 }
 
 /* USER CODE END 0 */

@@ -30,6 +30,7 @@ extern volatile uint32_t jetson_tx_queue_dropped;
 extern volatile uint32_t jetson_tx_dma_errors;
 extern volatile uint32_t system_faults;
 extern volatile uint32_t body_faults[6];
+extern volatile uint32_t jetson_clear_fault_count;
 
 
 interface::interface()
@@ -243,6 +244,41 @@ void interface::handle_packet(
             break;
         }
 
+
+        /*
+         * OPCODE 'J'
+         *
+         * Reconocer / borrar la falla
+         * NO_MOVEMENT de un cuerpo.
+         *
+         * Payload:
+         * [0] = 'J'
+         * [1] = cuerpo 0..5
+         */
+        case 'J':
+        {
+            if (n != 2)
+            {
+                break;
+            }
+
+            uint8_t body = payload[1];
+
+            if (body >= BODY_COUNT)
+            {
+                break;
+            }
+
+            body_faults[body] &=
+                ~BODY_FAULT_NO_MOVEMENT;
+
+            body_control_mode[body] =
+                BODY_CONTROL_MANUAL;
+
+            setBodyValveCommand(body, 0);
+
+            break;
+        }
         default:
         {
             break;
