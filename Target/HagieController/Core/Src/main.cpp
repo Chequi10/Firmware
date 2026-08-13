@@ -191,6 +191,10 @@ volatile uint16_t jetson_dma_last_size = 0;
 volatile uint32_t jetson_tx_queue_dropped = 0;
 volatile uint32_t jetson_tx_dma_errors = 0;
 
+volatile TickType_t target_last_update_tick[BODY_COUNT] =
+{
+    0, 0, 0, 0, 0, 0
+};
 
 
 volatile uint32_t jetson_clear_fault_count = 0;
@@ -268,6 +272,8 @@ volatile bool jetson_connection_ok = false;
 const TickType_t JETSON_WATCHDOG_TIMEOUT =
     pdMS_TO_TICKS(500);
 
+const TickType_t TARGET_TIMEOUT =
+    pdMS_TO_TICKS(1000);
 typedef struct
 {
     CAN_RxHeaderTypeDef header;
@@ -576,7 +582,43 @@ void Task_body_fault_monitor(void *taskParmPtr)
              body < BODY_COUNT;
              body++)
         {
-            int16_t command =
+        	/*
+        	 * Timeout individual de consigna AUTO.
+        	 *
+        	 * Si este cuerpo está en AUTO y dejó de recibir
+        	 * una consigna 'D' durante demasiado tiempo,
+        	 * detener solamente este cuerpo.
+        	 */
+        	if (body_control_mode[body] == BODY_CONTROL_AUTO)
+        	{
+        	    TickType_t targetElapsed =
+        	        now - target_last_update_tick[body];
+
+        	    if (targetElapsed >= TARGET_TIMEOUT)
+        	    {
+        	        body_faults[body] |=
+        	            BODY_FAULT_TARGET_TIMEOUT;
+
+        	        /*
+        	         * Salir de AUTO y detener el cuerpo.
+        	         */
+        	        body_control_mode[body] =
+        	            BODY_CONTROL_MANUAL;
+
+        	        setBodyValveCommand(body, 0);
+
+        	        /*
+        	         * No evaluar NO_MOVEMENT en este ciclo.
+        	         */
+        	        monitoring[body] = false;
+        	        previousDirection[body] = 0;
+
+        	        continue;
+        	    }
+        	}
+
+
+        	int16_t command =
                 valve_command[body].command;
 
             /*
@@ -696,12 +738,24 @@ void setBodyValveCommand(uint8_t body, int16_t command)
     }
 
     /*
-     * Si el cuerpo tiene una falla crítica de no movimiento,
-     * no permitir nuevas órdenes de movimiento.
+     * Fallas críticas que bloquean movimiento.
      *
-     * Sí permitimos command = 0 para poder detenerlo.
+     * NO_MOVEMENT:
+     * hay orden de movimiento pero el cuerpo
+     * no responde.
+     *
+     * TARGET_TIMEOUT:
+     * se perdió la actualización de consigna
+     * automática para este cuerpo.
+     *
+     * command = 0 siempre se permite para
+     * poder detener el cuerpo.
      */
-    if ((body_faults[body] & BODY_FAULT_NO_MOVEMENT) != 0 &&
+    const uint32_t blockingFaults =
+        BODY_FAULT_NO_MOVEMENT |
+        BODY_FAULT_TARGET_TIMEOUT;
+
+    if ((body_faults[body] & blockingFaults) != 0 &&
         command != 0)
     {
         command = 0;

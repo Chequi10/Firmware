@@ -31,6 +31,7 @@ extern volatile uint32_t jetson_tx_dma_errors;
 extern volatile uint32_t system_faults;
 extern volatile uint32_t body_faults[6];
 extern volatile uint32_t jetson_clear_fault_count;
+extern volatile TickType_t target_last_update_tick[6];
 
 
 interface::interface()
@@ -130,58 +131,71 @@ void interface::handle_packet(
 
     switch (opcode)
     {
-		case 'A':
-		{
-			jetson_heartbeat_count++;
-			break;
-		}
+        case 'A':
+        {
+            jetson_heartbeat_count++;
+            break;
+        }
 
-		case 'B':
-		{
-		    if (n != 4)
-		    {
-		        break;
-		    }
+        case 'B':
+        {
+            if (n != 4)
+            {
+                break;
+            }
 
-		    uint8_t body = payload[1];
+            uint8_t body = payload[1];
 
-		    if (body >= BODY_COUNT)
-		    {
-		        break;
-		    }
+            if (body >= BODY_COUNT)
+            {
+                break;
+            }
 
-		    int16_t command =
-		        static_cast<int16_t>(
-		            (static_cast<uint16_t>(payload[2]) << 8) |
-		             static_cast<uint16_t>(payload[3])
-		        );
+            int16_t command =
+                static_cast<int16_t>(
+                    (static_cast<uint16_t>(payload[2]) << 8) |
+                     static_cast<uint16_t>(payload[3])
+                );
 
-		    /*
-		     * Un comando directo de válvula
-		     * coloca ese cuerpo en modo manual.
-		     */
-		    body_control_mode[body] = BODY_CONTROL_MANUAL;
+            /*
+             * Un comando directo de válvula
+             * coloca ese cuerpo en modo manual.
+             */
+            body_control_mode[body] =
+                BODY_CONTROL_MANUAL;
 
-		    setBodyValveCommand(body, command);
+            setBodyValveCommand(
+                body,
+                command
+            );
 
-		    break;
-		}
+            break;
+        }
 
-		case 'C':
-		{
-		    if (n != 1)
-		    {
-		        break;
-		    }
+        case 'C':
+        {
+            if (n != 1)
+            {
+                break;
+            }
 
-		    for (uint8_t body = 0; body < BODY_COUNT; body++)
-		    {
-		        body_control_mode[body] = BODY_CONTROL_MANUAL;
-		        setBodyValveCommand(body, 0);
-		    }
+            for (uint8_t body = 0;
+                 body < BODY_COUNT;
+                 body++)
+            {
+                body_control_mode[body] =
+                    BODY_CONTROL_MANUAL;
 
-		    break;
-		}
+                setBodyValveCommand(
+                    body,
+                    0
+                );
+            }
+
+            break;
+        }
+
+
         /*
          * OPCODE 'D'
          *
@@ -200,7 +214,8 @@ void interface::handle_packet(
                 break;
             }
 
-            uint8_t body = payload[1];
+            uint8_t body =
+                payload[1];
 
             if (body >= BODY_COUNT)
             {
@@ -209,8 +224,12 @@ void interface::handle_packet(
 
             uint16_t heightMm =
                 static_cast<uint16_t>(
-                    (static_cast<uint16_t>(payload[2]) << 8) |
-                     static_cast<uint16_t>(payload[3])
+                    (static_cast<uint16_t>(
+                        payload[2]
+                    ) << 8) |
+                    static_cast<uint16_t>(
+                        payload[3]
+                    )
                 );
 
             /*
@@ -220,15 +239,22 @@ void interface::handle_packet(
              * la STM32 no acepta alturas fuera del recorrido
              * permitido para ese cuerpo.
              */
-            if (heightMm < BODY_MIN_HEIGHT_MM[body] ||
-                heightMm > BODY_MAX_HEIGHT_MM[body])
+            if (heightMm <
+                    BODY_MIN_HEIGHT_MM[body] ||
+                heightMm >
+                    BODY_MAX_HEIGHT_MM[body])
             {
                 /*
                  * Consigna inválida:
                  * detener el cuerpo y salir de AUTO.
                  */
-                body_control_mode[body] = BODY_CONTROL_MANUAL;
-                setBodyValveCommand(body, 0);
+                body_control_mode[body] =
+                    BODY_CONTROL_MANUAL;
+
+                setBodyValveCommand(
+                    body,
+                    0
+                );
 
                 break;
             }
@@ -236,10 +262,30 @@ void interface::handle_packet(
             /*
              * Consigna válida.
              */
-            target_height_mm[body] = heightMm;
-            body_control_mode[body] = BODY_CONTROL_AUTO;
+            target_height_mm[body] =
+                heightMm;
 
-            break;
+            /*
+             * Guardar cuándo llegó la última
+             * consigna válida de este cuerpo.
+             */
+            target_last_update_tick[body] =
+                xTaskGetTickCount();
+
+            /*
+             * Si este cuerpo había entrado en
+             * TARGET_TIMEOUT, una nueva consigna
+             * válida recupera automáticamente
+             * esa condición.
+             */
+            body_faults[body] &=
+                ~BODY_FAULT_TARGET_TIMEOUT;
+
+            /*
+             * Volver / mantener control automático.
+             */
+            body_control_mode[body] =
+                BODY_CONTROL_AUTO;
 
             break;
         }
@@ -262,30 +308,42 @@ void interface::handle_packet(
                 break;
             }
 
-            uint8_t body = payload[1];
+            uint8_t body =
+                payload[1];
 
             if (body >= BODY_COUNT)
             {
                 break;
             }
 
+            /*
+             * Borrar solamente NO_MOVEMENT.
+             */
             body_faults[body] &=
                 ~BODY_FAULT_NO_MOVEMENT;
 
+            /*
+             * Después de reconocer la falla,
+             * dejar el cuerpo detenido y en MANUAL.
+             */
             body_control_mode[body] =
                 BODY_CONTROL_MANUAL;
 
-            setBodyValveCommand(body, 0);
+            setBodyValveCommand(
+                body,
+                0
+            );
 
             break;
         }
+
+
         default:
         {
             break;
         }
     }
 }
-
 void interface::send_encoder_state()
 {
     /*
