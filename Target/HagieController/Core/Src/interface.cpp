@@ -14,6 +14,7 @@
 #include "imu_types.h"
 #include "jetson_tx.h"
 #include "fault_types.h"
+#include "control_config.h"
 
 extern volatile ImuState_t imu_state;
 extern UART_HandleTypeDef huart3;
@@ -240,9 +241,9 @@ void interface::handle_packet(
              * permitido para ese cuerpo.
              */
             if (heightMm <
-                    BODY_MIN_HEIGHT_MM[body] ||
+            		body_control_config.min_height_mm[body] ||
                 heightMm >
-                    BODY_MAX_HEIGHT_MM[body])
+                    body_control_config.max_height_mm[body])
             {
                 /*
                  * Consigna inválida:
@@ -334,6 +335,436 @@ void interface::handle_packet(
                 0
             );
 
+            break;
+        }
+
+        /*
+         * ========================================================
+         * OPCODE 'K'
+         *
+         * Configuración runtime desde Jetson.
+         *
+         * payload[0] = 'K'
+         * payload[1] = subcomando
+         * ========================================================
+         */
+        case 'K':
+        {
+            if (n < 2)
+            {
+                break;
+            }
+
+            uint8_t subcommand =
+                payload[1];
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x01
+             *
+             * Límites de altura de un cuerpo.
+             *
+             * [0] = 'K'
+             * [1] = 0x01
+             * [2] = body
+             * [3] = min MSB
+             * [4] = min LSB
+             * [5] = max MSB
+             * [6] = max LSB
+             *
+             * Total: 7 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x01)
+            {
+                if (n != 7)
+                {
+                    break;
+                }
+
+                uint8_t body =
+                    payload[2];
+
+                if (body >= BODY_COUNT)
+                {
+                    break;
+                }
+
+                uint16_t minHeight =
+                    static_cast<uint16_t>(
+                        (static_cast<uint16_t>(
+                            payload[3]
+                        ) << 8) |
+                        static_cast<uint16_t>(
+                            payload[4]
+                        )
+                    );
+
+                uint16_t maxHeight =
+                    static_cast<uint16_t>(
+                        (static_cast<uint16_t>(
+                            payload[5]
+                        ) << 8) |
+                        static_cast<uint16_t>(
+                            payload[6]
+                        )
+                    );
+
+                /*
+                 * Validación básica.
+                 */
+                if (minHeight >= maxHeight)
+                {
+                    break;
+                }
+
+                /*
+                 * Mismo rango que permitimos
+                 * actualmente desde la GUI.
+                 */
+                if (maxHeight > 2000)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .min_height_mm[body] =
+                    minHeight;
+
+                body_control_config
+                    .max_height_mm[body] =
+                    maxHeight;
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x02
+             *
+             * Umbral de comando para considerar
+             * que existe una orden de movimiento.
+             *
+             * [0] = 'K'
+             * [1] = 0x02
+             * [2] = threshold MSB
+             * [3] = threshold LSB
+             *
+             * Total: 4 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x02)
+            {
+                if (n != 4)
+                {
+                    break;
+                }
+
+                uint16_t threshold =
+                    static_cast<uint16_t>(
+                        (static_cast<uint16_t>(
+                            payload[2]
+                        ) << 8) |
+                        static_cast<uint16_t>(
+                            payload[3]
+                        )
+                    );
+
+                if (threshold == 0 ||
+                    threshold > 1000)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .move_command_threshold =
+                    static_cast<int16_t>(
+                        threshold
+                    );
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x03
+             *
+             * Movimiento mínimo esperado.
+             *
+             * Se transmite en centésimas de mm.
+             *
+             * Ejemplo:
+             * 2.00 mm -> 200
+             * 2.50 mm -> 250
+             *
+             * [0] = 'K'
+             * [1] = 0x03
+             * [2] = valor MSB
+             * [3] = valor LSB
+             *
+             * Total: 4 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x03)
+            {
+                if (n != 4)
+                {
+                    break;
+                }
+
+                uint16_t rawMovement =
+                    static_cast<uint16_t>(
+                        (static_cast<uint16_t>(
+                            payload[2]
+                        ) << 8) |
+                        static_cast<uint16_t>(
+                            payload[3]
+                        )
+                    );
+
+                if (rawMovement == 0)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .min_body_movement_mm =
+                    static_cast<float>(
+                        rawMovement
+                    ) / 100.0f;
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x04
+             *
+             * Timeout NO_MOVEMENT en milisegundos.
+             *
+             * uint32_t MSB primero.
+             *
+             * [0] = 'K'
+             * [1] = 0x04
+             * [2..5] = timeout_ms
+             *
+             * Total: 6 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x04)
+            {
+                if (n != 6)
+                {
+                    break;
+                }
+
+                uint32_t timeoutMs =
+                    (static_cast<uint32_t>(
+                        payload[2]
+                    ) << 24) |
+                    (static_cast<uint32_t>(
+                        payload[3]
+                    ) << 16) |
+                    (static_cast<uint32_t>(
+                        payload[4]
+                    ) << 8) |
+                    static_cast<uint32_t>(
+                        payload[5]
+                    );
+
+                /*
+                 * Evitar configuraciones absurdas.
+                 * Permitimos 100 ms ... 60 segundos.
+                 */
+                if (timeoutMs < 100 ||
+                    timeoutMs > 60000)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .no_movement_timeout_ms =
+                    timeoutMs;
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x05
+             *
+             * Timeout de consigna AUTO en ms.
+             *
+             * [0] = 'K'
+             * [1] = 0x05
+             * [2..5] = timeout_ms
+             *
+             * Total: 6 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x05)
+            {
+                if (n != 6)
+                {
+                    break;
+                }
+
+                uint32_t timeoutMs =
+                    (static_cast<uint32_t>(
+                        payload[2]
+                    ) << 24) |
+                    (static_cast<uint32_t>(
+                        payload[3]
+                    ) << 16) |
+                    (static_cast<uint32_t>(
+                        payload[4]
+                    ) << 8) |
+                    static_cast<uint32_t>(
+                        payload[5]
+                    );
+
+                if (timeoutMs < 100 ||
+                    timeoutMs > 60000)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .target_timeout_ms =
+                    timeoutMs;
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x06
+             *
+             * Sentido del encoder.
+             *
+             * [0] = 'K'
+             * [1] = 0x06
+             * [2] = body
+             * [3] = dirección
+             *
+             * 0 = Normal
+             * 1 = Invertido
+             *
+             * Internamente guardamos:
+             * +1 = normal
+             * -1 = invertido
+             *
+             * Total: 4 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x06)
+            {
+                if (n != 4)
+                {
+                    break;
+                }
+
+                uint8_t body =
+                    payload[2];
+
+                uint8_t direction =
+                    payload[3];
+
+                if (body >= BODY_COUNT)
+                {
+                    break;
+                }
+
+                if (direction > 1)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .encoder_direction[body] =
+                    (direction == 0)
+                        ? 1
+                        : -1;
+
+                break;
+            }
+
+
+            /*
+             * ----------------------------------------------------
+             * K 0x07
+             *
+             * Escala encoder en mm/pulso.
+             *
+             * Se transmite multiplicada por 100000.
+             *
+             * Ejemplo:
+             *
+             * 0.12500 mm/pulso
+             *       ↓
+             * 12500
+             *
+             * [0] = 'K'
+             * [1] = 0x07
+             * [2] = body
+             * [3..6] = escala x100000
+             *
+             * Total: 7 bytes
+             * ----------------------------------------------------
+             */
+            if (subcommand == 0x07)
+            {
+                if (n != 7)
+                {
+                    break;
+                }
+
+                uint8_t body =
+                    payload[2];
+
+                if (body >= BODY_COUNT)
+                {
+                    break;
+                }
+
+                uint32_t rawScale =
+                    (static_cast<uint32_t>(
+                        payload[3]
+                    ) << 24) |
+                    (static_cast<uint32_t>(
+                        payload[4]
+                    ) << 16) |
+                    (static_cast<uint32_t>(
+                        payload[5]
+                    ) << 8) |
+                    static_cast<uint32_t>(
+                        payload[6]
+                    );
+
+                if (rawScale == 0)
+                {
+                    break;
+                }
+
+                body_control_config
+                    .encoder_scale_mm_per_pulse[body] =
+                    static_cast<float>(
+                        rawScale
+                    ) / 100000.0f;
+
+                break;
+            }
+
+
+            /*
+             * Subcomando K desconocido.
+             */
             break;
         }
 

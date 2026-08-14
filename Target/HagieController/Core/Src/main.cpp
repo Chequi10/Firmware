@@ -34,6 +34,7 @@
 #include "jetson_tx.h"
 #include "fault_types.h"
 #include "imu_can.h"
+#include "control_config.h"
 
 
 
@@ -574,127 +575,167 @@ void Task_body_fault_monitor(void *taskParmPtr)
 
     while (1)
     {
-        TickType_t now = xTaskGetTickCount();
-
+        TickType_t now =
+            xTaskGetTickCount();
 
 
         for (uint8_t body = 0;
              body < BODY_COUNT;
              body++)
         {
-        	/*
-        	 * Timeout individual de consigna AUTO.
-        	 *
-        	 * Si este cuerpo está en AUTO y dejó de recibir
-        	 * una consigna 'D' durante demasiado tiempo,
-        	 * detener solamente este cuerpo.
-        	 */
-        	if (body_control_mode[body] == BODY_CONTROL_AUTO)
-        	{
-        	    TickType_t targetElapsed =
-        	        now - target_last_update_tick[body];
+            /*
+             * Timeout individual de consigna AUTO.
+             *
+             * Todavía usamos TARGET_TIMEOUT fijo.
+             * Lo cambiaremos en el próximo paso.
+             */
+            if (body_control_mode[body] ==
+                BODY_CONTROL_AUTO)
+            {
+                TickType_t targetElapsed =
+                    now -
+                    target_last_update_tick[body];
 
-        	    if (targetElapsed >= TARGET_TIMEOUT)
-        	    {
-        	        body_faults[body] |=
-        	            BODY_FAULT_TARGET_TIMEOUT;
+                if (targetElapsed >=
+                    pdMS_TO_TICKS(
+                        body_control_config.target_timeout_ms
+                    ))
+                {
+                    body_faults[body] |=
+                        BODY_FAULT_TARGET_TIMEOUT;
 
-        	        /*
-        	         * Salir de AUTO y detener el cuerpo.
-        	         */
-        	        body_control_mode[body] =
-        	            BODY_CONTROL_MANUAL;
+                    body_control_mode[body] =
+                        BODY_CONTROL_MANUAL;
 
-        	        setBodyValveCommand(body, 0);
+                    setBodyValveCommand(
+                        body,
+                        0
+                    );
 
-        	        /*
-        	         * No evaluar NO_MOVEMENT en este ciclo.
-        	         */
-        	        monitoring[body] = false;
-        	        previousDirection[body] = 0;
+                    monitoring[body] =
+                        false;
 
-        	        continue;
-        	    }
-        	}
+                    previousDirection[body] =
+                        0;
+
+                    continue;
+                }
+            }
 
 
-        	int16_t command =
+            int16_t command =
                 valve_command[body].command;
+
 
             /*
              * Determinar si realmente estamos
              * ordenando movimiento.
+             *
+             * AHORA usa configuración runtime.
              */
             bool movementRequested =
-                (command >= MOVE_COMMAND_THRESHOLD) ||
-                (command <= -MOVE_COMMAND_THRESHOLD);
+                (command >=
+                    body_control_config
+                        .move_command_threshold)
+                ||
+                (command <=
+                    -body_control_config
+                        .move_command_threshold);
+
 
             if (!movementRequested)
             {
                 /*
                  * Si la válvula está quieta,
-                 * NO es una falla que el cuerpo
+                 * NO es falla que el cuerpo
                  * tampoco se mueva.
                  */
-                monitoring[body] = false;
-                previousDirection[body] = 0;
+                monitoring[body] =
+                    false;
+
+                previousDirection[body] =
+                    0;
 
                 continue;
             }
 
+
             int8_t commandDirection =
-                (command > 0) ? 1 : -1;
+                (command > 0)
+                    ? 1
+                    : -1;
+
 
             /*
              * Comenzó una nueva orden de movimiento
              * o cambió el sentido.
              */
             if (!monitoring[body] ||
-                commandDirection != previousDirection[body])
+                commandDirection !=
+                    previousDirection[body])
             {
                 referenceHeight[body] =
                     encoder_height_mm[body];
 
-                movementStartTick[body] = now;
+                movementStartTick[body] =
+                    now;
 
                 previousDirection[body] =
                     commandDirection;
 
-                monitoring[body] = true;
+                monitoring[body] =
+                    true;
 
                 continue;
             }
 
+
+            /*
+             * Calcular cuánto se movió
+             * desde la última referencia.
+             */
             float movement =
                 encoder_height_mm[body] -
                 referenceHeight[body];
 
             if (movement < 0.0f)
             {
-                movement = -movement;
+                movement =
+                    -movement;
             }
+
 
             /*
              * Hubo movimiento suficiente.
              *
-             * Reiniciamos la ventana de vigilancia.
+             * AHORA usa configuración runtime.
              */
-            if (movement >= MIN_BODY_MOVEMENT_MM)
+            if (movement >=
+                body_control_config
+                    .min_body_movement_mm)
             {
                 referenceHeight[body] =
                     encoder_height_mm[body];
 
-                movementStartTick[body] = now;
+                movementStartTick[body] =
+                    now;
 
                 continue;
             }
 
+
             /*
-             * Hay una orden significativa de movimiento
+             * Hay una orden significativa de movimiento,
              * pero el encoder sigue prácticamente quieto.
+             *
+             * AHORA usa timeout configurable.
              */
-            if ((now - movementStartTick[body]) >=
-                NO_MOVEMENT_TIMEOUT)
+            if ((now -
+                 movementStartTick[body]) >=
+                pdMS_TO_TICKS(
+                    body_control_config
+                        .no_movement_timeout_ms
+                ))
             {
                 body_faults[body] |=
                     BODY_FAULT_NO_MOVEMENT;
@@ -703,17 +744,26 @@ void Task_body_fault_monitor(void *taskParmPtr)
                  * Seguridad:
                  * detener solamente el cuerpo afectado.
                  */
-                setBodyValveCommand(body, 0);
+                setBodyValveCommand(
+                    body,
+                    0
+                );
 
-                monitoring[body] = false;
-                previousDirection[body] = 0;
+                monitoring[body] =
+                    false;
+
+                previousDirection[body] =
+                    0;
             }
         }
+
 
         /*
          * Supervisión a 50 Hz.
          */
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(
+            pdMS_TO_TICKS(20)
+        );
     }
 }
 
@@ -1411,6 +1461,8 @@ int main(void) {
 
 
 	/* USER CODE BEGIN 2 */
+
+	BodyControlConfig_InitDefaults();
 	//  imprime.vPrintString("Protocolo de Comuncacion CAN activo:\n\rCAN 1: PB8=Rx PB9=Tx\n\rCAN 2: PB5=Rx PB6=Tx \n\r");
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.StdId = 111111111;
