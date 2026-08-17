@@ -80,6 +80,19 @@ public:
         uint8_t n
     ) override;
 
+    /*
+     * Enviar ACK de configuración hacia Jetson.
+     *
+     * OPCODE 'L'
+     */
+    void send_config_ack(
+        uint8_t subcommand,
+        uint8_t body,
+        uint8_t status,
+        uint32_t value1,
+        uint32_t value2
+    );
+
 
 };
 

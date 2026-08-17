@@ -33,6 +33,14 @@ extern volatile uint32_t system_faults;
 extern volatile uint32_t body_faults[6];
 extern volatile uint32_t jetson_clear_fault_count;
 extern volatile TickType_t target_last_update_tick[6];
+enum ConfigAckStatus : uint8_t
+{
+    CONFIG_ACK_OK = 0,
+    CONFIG_ACK_INVALID_LENGTH = 1,
+    CONFIG_ACK_INVALID_BODY = 2,
+    CONFIG_ACK_INVALID_VALUE = 3,
+    CONFIG_ACK_UNKNOWN_SUBCOMMAND = 4
+};
 
 
 interface::interface()
@@ -350,8 +358,20 @@ void interface::handle_packet(
          */
         case 'K':
         {
+            /*
+             * Si ni siquiera llegó el subcomando,
+             * no podemos identificar qué K responder.
+             */
             if (n < 2)
             {
+                send_config_ack(
+                    0x00,
+                    0xFF,
+                    CONFIG_ACK_INVALID_LENGTH,
+                    0,
+                    0
+                );
+
                 break;
             }
 
@@ -360,26 +380,23 @@ void interface::handle_packet(
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x01
-             *
-             * Límites de altura de un cuerpo.
-             *
-             * [0] = 'K'
-             * [1] = 0x01
-             * [2] = body
-             * [3] = min MSB
-             * [4] = min LSB
-             * [5] = max MSB
-             * [6] = max LSB
-             *
-             * Total: 7 bytes
-             * ----------------------------------------------------
+             * Límites mínimo / máximo de un cuerpo
+             * ========================================================
              */
             if (subcommand == 0x01)
             {
                 if (n != 7)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -388,6 +405,14 @@ void interface::handle_packet(
 
                 if (body >= BODY_COUNT)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_BODY,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -411,54 +436,60 @@ void interface::handle_packet(
                         )
                     );
 
-                /*
-                 * Validación básica.
-                 */
-                if (minHeight >= maxHeight)
+                if (minHeight >= maxHeight ||
+                    maxHeight > 2000)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_VALUE,
+                        minHeight,
+                        maxHeight
+                    );
+
                     break;
                 }
 
-                /*
-                 * Mismo rango que permitimos
-                 * actualmente desde la GUI.
-                 */
-                if (maxHeight > 2000)
-                {
-                    break;
-                }
-
-                body_control_config
-                    .min_height_mm[body] =
+                body_control_config.min_height_mm[body] =
                     minHeight;
 
-                body_control_config
-                    .max_height_mm[body] =
+                body_control_config.max_height_mm[body] =
                     maxHeight;
+
+                /*
+                 * Devolver exactamente los valores
+                 * que quedaron aplicados.
+                 */
+                send_config_ack(
+                    subcommand,
+                    body,
+                    CONFIG_ACK_OK,
+                    body_control_config.min_height_mm[body],
+                    body_control_config.max_height_mm[body]
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x02
-             *
-             * Umbral de comando para considerar
-             * que existe una orden de movimiento.
-             *
-             * [0] = 'K'
-             * [1] = 0x02
-             * [2] = threshold MSB
-             * [3] = threshold LSB
-             *
-             * Total: 4 bytes
-             * ----------------------------------------------------
+             * Umbral de comando de movimiento
+             * ========================================================
              */
             if (subcommand == 0x02)
             {
                 if (n != 4)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -475,43 +506,56 @@ void interface::handle_packet(
                 if (threshold == 0 ||
                     threshold > 1000)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        threshold,
+                        0
+                    );
+
                     break;
                 }
 
-                body_control_config
-                    .move_command_threshold =
+                body_control_config.move_command_threshold =
                     static_cast<int16_t>(
                         threshold
                     );
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    static_cast<uint32_t>(
+                        body_control_config.move_command_threshold
+                    ),
+                    0
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x03
+             * Movimiento mínimo
              *
-             * Movimiento mínimo esperado.
-             *
-             * Se transmite en centésimas de mm.
-             *
-             * Ejemplo:
-             * 2.00 mm -> 200
-             * 2.50 mm -> 250
-             *
-             * [0] = 'K'
-             * [1] = 0x03
-             * [2] = valor MSB
-             * [3] = valor LSB
-             *
-             * Total: 4 bytes
-             * ----------------------------------------------------
+             * value1 del ACK queda expresado x100.
+             * ========================================================
              */
             if (subcommand == 0x03)
             {
                 if (n != 4)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -527,38 +571,56 @@ void interface::handle_packet(
 
                 if (rawMovement == 0)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        rawMovement,
+                        0
+                    );
+
                     break;
                 }
 
-                body_control_config
-                    .min_body_movement_mm =
+                body_control_config.min_body_movement_mm =
                     static_cast<float>(
                         rawMovement
                     ) / 100.0f;
+
+                /*
+                 * Devolvemos el valor entero original x100
+                 * para evitar diferencias de float.
+                 */
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    rawMovement,
+                    0
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x04
-             *
-             * Timeout NO_MOVEMENT en milisegundos.
-             *
-             * uint32_t MSB primero.
-             *
-             * [0] = 'K'
-             * [1] = 0x04
-             * [2..5] = timeout_ms
-             *
-             * Total: 6 bytes
-             * ----------------------------------------------------
+             * Timeout NO_MOVEMENT
+             * ========================================================
              */
             if (subcommand == 0x04)
             {
                 if (n != 6)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -576,41 +638,53 @@ void interface::handle_packet(
                         payload[5]
                     );
 
-                /*
-                 * Evitar configuraciones absurdas.
-                 * Permitimos 100 ms ... 60 segundos.
-                 */
                 if (timeoutMs < 100 ||
                     timeoutMs > 60000)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        timeoutMs,
+                        0
+                    );
+
                     break;
                 }
 
-                body_control_config
-                    .no_movement_timeout_ms =
+                body_control_config.no_movement_timeout_ms =
                     timeoutMs;
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    body_control_config.no_movement_timeout_ms,
+                    0
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x05
-             *
-             * Timeout de consigna AUTO en ms.
-             *
-             * [0] = 'K'
-             * [1] = 0x05
-             * [2..5] = timeout_ms
-             *
-             * Total: 6 bytes
-             * ----------------------------------------------------
+             * Timeout consigna AUTO
+             * ========================================================
              */
             if (subcommand == 0x05)
             {
                 if (n != 6)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -631,42 +705,50 @@ void interface::handle_packet(
                 if (timeoutMs < 100 ||
                     timeoutMs > 60000)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        timeoutMs,
+                        0
+                    );
+
                     break;
                 }
 
-                body_control_config
-                    .target_timeout_ms =
+                body_control_config.target_timeout_ms =
                     timeoutMs;
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    body_control_config.target_timeout_ms,
+                    0
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x06
-             *
-             * Sentido del encoder.
-             *
-             * [0] = 'K'
-             * [1] = 0x06
-             * [2] = body
-             * [3] = dirección
-             *
-             * 0 = Normal
-             * 1 = Invertido
-             *
-             * Internamente guardamos:
-             * +1 = normal
-             * -1 = invertido
-             *
-             * Total: 4 bytes
-             * ----------------------------------------------------
+             * Sentido encoder
+             * ========================================================
              */
             if (subcommand == 0x06)
             {
                 if (n != 4)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -678,50 +760,75 @@ void interface::handle_packet(
 
                 if (body >= BODY_COUNT)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_BODY,
+                        direction,
+                        0
+                    );
+
                     break;
                 }
 
                 if (direction > 1)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_VALUE,
+                        direction,
+                        0
+                    );
+
                     break;
                 }
 
-                body_control_config
-                    .encoder_direction[body] =
+                body_control_config.encoder_direction[body] =
                     (direction == 0)
                         ? 1
                         : -1;
+
+                /*
+                 * En el protocolo:
+                 * 0 = normal
+                 * 1 = invertido
+                 *
+                 * Por eso devolvemos direction,
+                 * no el +1 / -1 interno.
+                 */
+                send_config_ack(
+                    subcommand,
+                    body,
+                    CONFIG_ACK_OK,
+                    direction,
+                    0
+                );
 
                 break;
             }
 
 
             /*
-             * ----------------------------------------------------
+             * ========================================================
              * K 0x07
+             * Escala encoder
              *
-             * Escala encoder en mm/pulso.
-             *
-             * Se transmite multiplicada por 100000.
-             *
-             * Ejemplo:
-             *
-             * 0.12500 mm/pulso
-             *       ↓
-             * 12500
-             *
-             * [0] = 'K'
-             * [1] = 0x07
-             * [2] = body
-             * [3..6] = escala x100000
-             *
-             * Total: 7 bytes
-             * ----------------------------------------------------
+             * value1 del ACK queda expresado x100000.
+             * ========================================================
              */
             if (subcommand == 0x07)
             {
                 if (n != 7)
                 {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -730,6 +837,14 @@ void interface::handle_packet(
 
                 if (body >= BODY_COUNT)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_BODY,
+                        0,
+                        0
+                    );
+
                     break;
                 }
 
@@ -749,6 +864,14 @@ void interface::handle_packet(
 
                 if (rawScale == 0)
                 {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_VALUE,
+                        rawScale,
+                        0
+                    );
+
                     break;
                 }
 
@@ -758,13 +881,31 @@ void interface::handle_packet(
                         rawScale
                     ) / 100000.0f;
 
+                send_config_ack(
+                    subcommand,
+                    body,
+                    CONFIG_ACK_OK,
+                    rawScale,
+                    0
+                );
+
                 break;
             }
 
 
             /*
-             * Subcomando K desconocido.
+             * ========================================================
+             * Subcomando desconocido
+             * ========================================================
              */
+            send_config_ack(
+                subcommand,
+                0xFF,
+                CONFIG_ACK_UNKNOWN_SUBCOMMAND,
+                0,
+                0
+            );
+
             break;
         }
 
@@ -775,6 +916,80 @@ void interface::handle_packet(
         }
     }
 }
+
+void interface::send_config_ack(
+    uint8_t subcommand,
+    uint8_t body,
+    uint8_t status,
+    uint32_t value1,
+    uint32_t value2)
+{
+    uint8_t *payload =
+        get_payload_buffer();
+
+    /*
+     * OPCODE 'L'
+     *
+     * [0]     = 'L'
+     * [1]     = subcomando K original
+     * [2]     = body
+     *           0..5  = cuerpo
+     *           0xFF  = parámetro global
+     *
+     * [3]     = status
+     *
+     * [4..7]  = value1 uint32_t MSB primero
+     * [8..11] = value2 uint32_t MSB primero
+     */
+
+    payload[0] = 'L';
+    payload[1] = subcommand;
+    payload[2] = body;
+    payload[3] = status;
+
+    payload[4] =
+        static_cast<uint8_t>(
+            (value1 >> 24) & 0xFF
+        );
+
+    payload[5] =
+        static_cast<uint8_t>(
+            (value1 >> 16) & 0xFF
+        );
+
+    payload[6] =
+        static_cast<uint8_t>(
+            (value1 >> 8) & 0xFF
+        );
+
+    payload[7] =
+        static_cast<uint8_t>(
+            value1 & 0xFF
+        );
+
+    payload[8] =
+        static_cast<uint8_t>(
+            (value2 >> 24) & 0xFF
+        );
+
+    payload[9] =
+        static_cast<uint8_t>(
+            (value2 >> 16) & 0xFF
+        );
+
+    payload[10] =
+        static_cast<uint8_t>(
+            (value2 >> 8) & 0xFF
+        );
+
+    payload[11] =
+        static_cast<uint8_t>(
+            value2 & 0xFF
+        );
+
+    send(12);
+}
+
 void interface::send_encoder_state()
 {
     /*
