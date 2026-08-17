@@ -56,7 +56,7 @@
  * 1 = simular encoders y movimiento de los cuerpos.
  * 0 = utilizar hardware real.
  */
-#define SIMULATE_HEIGHT_CONTROL 0
+#define SIMULATE_HEIGHT_CONTROL 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
