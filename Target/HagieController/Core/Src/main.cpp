@@ -48,6 +48,15 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define LED_RATE_MS 50
+/*
+ * ============================================================
+ * MODO SIMULACIÓN DE ALTURA
+ * ============================================================
+ *
+ * 1 = simular encoders y movimiento de los cuerpos.
+ * 0 = utilizar hardware real.
+ */
+#define SIMULATE_HEIGHT_CONTROL 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -169,7 +178,15 @@ uint8_t ant;
 volatile int64_t encoder_position[ENCODER_COUNT] = {0};
 volatile int32_t encoder_delta[ENCODER_COUNT] = {0};
 volatile int8_t encoder_direction[ENCODER_COUNT] = {0};
-volatile float encoder_height_mm[ENCODER_COUNT] = {0.0f};
+volatile float encoder_height_mm[ENCODER_COUNT] =
+{
+    400.0f,
+    300.0f,
+    200.0f,
+    470.0f,
+    800.0f,
+    300.0f
+};
 volatile uint16_t target_height_mm[ENCODER_COUNT] = {0};
 volatile uint32_t jetson_telemetry_tx_count = 0;
 volatile uint32_t jetson_valve_tx_count = 0;
@@ -397,16 +414,28 @@ void Task_encoder(void *taskParmPtr)
      * Marca de tiempo utilizada para hacer titilar
      * el LED sin bloquear la lectura de encoders.
      */
-    TickType_t lastLedToggle = xTaskGetTickCount();
+    TickType_t lastLedToggle =
+        xTaskGetTickCount();
+
+
+    /*
+     * ========================================================
+     * MODO HARDWARE REAL
+     * ========================================================
+     */
+#if SIMULATE_HEIGHT_CONTROL == 0
 
     /*
      * Iniciar los seis timers configurados
      * en modo encoder.
      */
-    for (uint8_t i = 0; i < ENCODER_COUNT; i++)
+    for (uint8_t i = 0;
+         i < ENCODER_COUNT;
+         i++)
     {
         encoders[i]->start();
     }
+
 
     /*
      * Calibraciones provisorias.
@@ -417,19 +446,64 @@ void Task_encoder(void *taskParmPtr)
      * 3) altura mínima en milímetros
      * 4) altura máxima en milímetros
      */
-    encoder1.setCalibration(0, 20000, 400.0f, 1100.0f);
-    encoder2.setCalibration(0, 20000, 300.0f, 1100.0f);
-    encoder3.setCalibration(0, 20000, 200.0f, 1100.0f);
-    encoder4.setCalibration(0, 20000, 470.0f, 1100.0f);
-    encoder5.setCalibration(0, 20000, 800.0f, 1100.0f);
-    encoder6.setCalibration(0, 20000, 300.0f, 1100.0f);
+    encoder1.setCalibration(
+        0,
+        20000,
+        400.0f,
+        1100.0f
+    );
+
+    encoder2.setCalibration(
+        0,
+        20000,
+        300.0f,
+        1100.0f
+    );
+
+    encoder3.setCalibration(
+        0,
+        20000,
+        200.0f,
+        1100.0f
+    );
+
+    encoder4.setCalibration(
+        0,
+        20000,
+        470.0f,
+        1100.0f
+    );
+
+    encoder5.setCalibration(
+        0,
+        20000,
+        800.0f,
+        1100.0f
+    );
+
+    encoder6.setCalibration(
+        0,
+        20000,
+        300.0f,
+        1100.0f
+    );
+
+#endif
+
 
     while (1)
     {
+
         /*
-         * Leer y procesar los seis encoders.
+         * ========================================================
+         * HARDWARE REAL
+         * ========================================================
          */
-        for (uint8_t i = 0; i < ENCODER_COUNT; i++)
+#if SIMULATE_HEIGHT_CONTROL == 0
+
+        for (uint8_t i = 0;
+             i < ENCODER_COUNT;
+             i++)
         {
             encoders[i]->update();
 
@@ -446,25 +520,165 @@ void Task_encoder(void *taskParmPtr)
                 encoders[i]->getHeightMm();
         }
 
-        /*
-         * Heartbeat de la tarea:
-         * cambia el estado del LED azul cada 500 ms.
-         *
-         * Si el LED deja de titilar, significa que
-         * esta tarea dejó de ejecutarse.
-         */
-        TickType_t currentTick = xTaskGetTickCount();
 
-        if ((currentTick - lastLedToggle) >= pdMS_TO_TICKS(500))
+        /*
+         * ========================================================
+         * SIMULACIÓN
+         * ========================================================
+         */
+#else
+
+        /*
+         * Velocidad máxima simulada.
+         *
+         * command = +/-1000
+         * equivale a aproximadamente 200 mm/s.
+         */
+        constexpr float SIM_MAX_SPEED_MM_S =
+            200.0f;
+
+        /*
+         * Task_encoder corre cada 10 ms.
+         */
+        constexpr float SIM_DT_S =
+            0.010f;
+
+
+        for (uint8_t body = 0;
+             body < ENCODER_COUNT;
+             body++)
         {
-            HAL_GPIO_TogglePin(Azul_GPIO_Port, Azul_Pin);
-            lastLedToggle = currentTick;
+            /*
+             * Leer el comando que está generando
+             * el controlador de válvulas.
+             */
+            int16_t command =
+                valve_command[body].command;
+
+
+            /*
+             * Normalizar comando:
+             *
+             * +1000 -> +1.0
+             *  +500 -> +0.5
+             *     0 ->  0.0
+             *  -500 -> -0.5
+             * -1000 -> -1.0
+             */
+            float normalizedCommand =
+                static_cast<float>(
+                    command
+                ) / 1000.0f;
+
+
+            /*
+             * Movimiento simulado durante
+             * este ciclo de 10 ms.
+             */
+            float deltaMm =
+                normalizedCommand *
+                SIM_MAX_SPEED_MM_S *
+                SIM_DT_S;
+
+
+            /*
+             * Actualizar altura simulada.
+             */
+            encoder_height_mm[body] +=
+                deltaMm;
+
+
+            /*
+             * ====================================================
+             * Límites del cuerpo
+             * ====================================================
+             */
+            if (encoder_height_mm[body] <
+                body_control_config
+                    .min_height_mm[body])
+            {
+                encoder_height_mm[body] =
+                    static_cast<float>(
+                        body_control_config
+                            .min_height_mm[body]
+                    );
+            }
+
+            if (encoder_height_mm[body] >
+                body_control_config
+                    .max_height_mm[body])
+            {
+                encoder_height_mm[body] =
+                    static_cast<float>(
+                        body_control_config
+                            .max_height_mm[body]
+                    );
+            }
+
+
+            /*
+             * ====================================================
+             * Dirección simulada
+             * ====================================================
+             */
+            if (deltaMm > 0.0f)
+            {
+                encoder_direction[body] = 1;
+            }
+            else if (deltaMm < 0.0f)
+            {
+                encoder_direction[body] = -1;
+            }
+            else
+            {
+                encoder_direction[body] = 0;
+            }
+
+
+            /*
+             * Delta para diagnóstico.
+             *
+             * Ojo: como el movimiento por ciclo puede
+             * ser menor a 1 mm, este valor puede quedar
+             * en cero. La altura float sí se actualiza.
+             */
+            encoder_delta[body] =
+                static_cast<int32_t>(
+                    deltaMm
+                );
         }
 
+#endif
+
+
         /*
-         * Actualización de los encoders cada 10 ms.
+         * ========================================================
+         * HEARTBEAT DE LA TAREA
+         * ========================================================
          */
-        vTaskDelay(pdMS_TO_TICKS(10));
+        TickType_t currentTick =
+            xTaskGetTickCount();
+
+        if ((currentTick -
+             lastLedToggle) >=
+            pdMS_TO_TICKS(500))
+        {
+            HAL_GPIO_TogglePin(
+                Azul_GPIO_Port,
+                Azul_Pin
+            );
+
+            lastLedToggle =
+                currentTick;
+        }
+
+
+        /*
+         * Actualización cada 10 ms.
+         */
+        vTaskDelay(
+            pdMS_TO_TICKS(10)
+        );
     }
 }
 
@@ -767,19 +981,20 @@ void Task_body_fault_monitor(void *taskParmPtr)
     }
 }
 
-void setBodyValveCommand(uint8_t body, int16_t command)
+void setBodyValveCommand(
+    uint8_t body,
+    int16_t command)
 {
     /*
      * body:
      * 0 = cuerpo 1
-     * 1 = cuerpo 2
      * ...
      * 5 = cuerpo 6
      *
      * command:
-     * -1000 = bajar al máximo
+     * -1000 = bajar máximo
      *     0 = detener
-     * +1000 = subir al máximo
+     * +1000 = subir máximo
      */
 
     if (body >= VALVE_COUNT)
@@ -789,14 +1004,6 @@ void setBodyValveCommand(uint8_t body, int16_t command)
 
     /*
      * Fallas críticas que bloquean movimiento.
-     *
-     * NO_MOVEMENT:
-     * hay orden de movimiento pero el cuerpo
-     * no responde.
-     *
-     * TARGET_TIMEOUT:
-     * se perdió la actualización de consigna
-     * automática para este cuerpo.
      *
      * command = 0 siempre se permite para
      * poder detener el cuerpo.
@@ -812,7 +1019,7 @@ void setBodyValveCommand(uint8_t body, int16_t command)
     }
 
     /*
-     * Limitar la orden al rango válido.
+     * Limitar al rango válido.
      */
     if (command > 1000)
     {
@@ -823,62 +1030,119 @@ void setBodyValveCommand(uint8_t body, int16_t command)
         command = -1000;
     }
 
+
+    /*
+     * ========================================================
+     * Guardar siempre el comando.
+     * ========================================================
+     *
+     * Esto se usa tanto en hardware real como
+     * en simulación.
+     *
+     * Task_encoder utiliza este valor para
+     * simular el movimiento.
+     */
+    valve_command[body].command =
+        command;
+
+    valve_command[body].enabled =
+        (command != 0);
+
+
+    /*
+     * ========================================================
+     * MODO SIMULACIÓN
+     * ========================================================
+     *
+     * No tocar físicamente las salidas CAN/Axiomatic.
+     */
+#if SIMULATE_HEIGHT_CONTROL == 1
+
+    return;
+
+#else
+
+    /*
+     * ========================================================
+     * HARDWARE REAL
+     * ========================================================
+     */
+
     /*
      * Cada cuerpo usa dos salidas:
      *
-     * cuerpo 0 → salidas globales 0 y 1
-     * cuerpo 1 → salidas globales 2 y 3
-     * cuerpo 2 → salidas globales 4 y 5
+     * cuerpo 0 -> salidas globales 0 y 1
+     * cuerpo 1 -> salidas globales 2 y 3
+     * cuerpo 2 -> salidas globales 4 y 5
      * ...
      */
-    uint8_t globalOutputUp   = body * 2;
-    uint8_t globalOutputDown = globalOutputUp + 1;
+    uint8_t globalOutputUp =
+        body * 2;
+
+    uint8_t globalOutputDown =
+        globalOutputUp + 1;
+
 
     /*
-     * Determinar en qué módulo está cada salida.
+     * Determinar módulo y salida.
      */
-    uint8_t moduleUp   = globalOutputUp / 4;
-    uint8_t outputUp   = globalOutputUp % 4;
+    uint8_t moduleUp =
+        globalOutputUp / 4;
 
-    uint8_t moduleDown = globalOutputDown / 4;
-    uint8_t outputDown = globalOutputDown % 4;
+    uint8_t outputUp =
+        globalOutputUp % 4;
+
+    uint8_t moduleDown =
+        globalOutputDown / 4;
+
+    uint8_t outputDown =
+        globalOutputDown % 4;
+
 
     /*
      * Seguridad:
      * primero apagar ambas bobinas.
      */
-    valveModules[moduleUp]->setOutput(outputUp, 0);
-    valveModules[moduleDown]->setOutput(outputDown, 0);
+    valveModules[moduleUp]->setOutput(
+        outputUp,
+        0
+    );
+
+    valveModules[moduleDown]->setOutput(
+        outputDown,
+        0
+    );
+
 
     /*
-     * Aplicar solamente una dirección.
+     * Aplicar una única dirección.
      */
     if (command > 0)
     {
         /*
-         * Subir.
+         * SUBIR
          */
         valveModules[moduleUp]->setOutput(
             outputUp,
-            static_cast<uint16_t>(command)
+            static_cast<uint16_t>(
+                command
+            )
         );
     }
     else if (command < 0)
     {
         /*
-         * Bajar.
+         * BAJAR
          */
         valveModules[moduleDown]->setOutput(
             outputDown,
-            static_cast<uint16_t>(-command)
+            static_cast<uint16_t>(
+                -command
+            )
         );
     }
 
-    /*
-     * Guardar el comando para diagnóstico.
-     */
-    valve_command[body].command = command;
-    valve_command[body].enabled = (command != 0);
+#endif
 }
 
 int16_t getBodyValveCommand(uint8_t body)
@@ -968,24 +1232,23 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
          * Transmitir por CAN1 las órdenes actuales
          * hacia los tres módulos Axiomatic.
          */
-        for (uint8_t i = 0;
-             i < VALVE_MODULE_COUNT;
-             i++)
-        {
-            HAL_StatusTypeDef status =
-                valveModules[i]->send();
+		#if SIMULATE_HEIGHT_CONTROL == 0
 
-            if (status != HAL_OK)
-            {
-                /*
-                 * No se pudo colocar la trama
-                 * en el periférico CAN.
-                 *
-                 * Registrar la falla global CAN.
-                 */
-                system_faults |= SYSTEM_FAULT_CAN;
-            }
-        }
+		for (uint8_t i = 0;
+			 i < VALVE_MODULE_COUNT;
+			 i++)
+		{
+			HAL_StatusTypeDef status =
+				valveModules[i]->send();
+
+			if (status != HAL_OK)
+			{
+				system_faults |=
+					SYSTEM_FAULT_CAN;
+			}
+		}
+
+		#endif
         /*
          * Heartbeat de la tarea CAN1.
          *
