@@ -33,6 +33,9 @@ extern volatile uint32_t system_faults;
 extern volatile uint32_t body_faults[6];
 extern volatile uint32_t jetson_clear_fault_count;
 extern volatile TickType_t target_last_update_tick[6];
+
+volatile uint32_t jetson_target_rx_count[BODY_COUNT] = {0};
+volatile uint32_t jetson_target_valid_count[BODY_COUNT] = {0};
 enum ConfigAckStatus : uint8_t
 {
     CONFIG_ACK_OK = 0,
@@ -230,6 +233,11 @@ void interface::handle_packet(
             {
                 break;
             }
+            /*
+             * El paquete D llegó correctamente hasta
+             * el parser para este cuerpo.
+             */
+            jetson_target_rx_count[body]++;
 
             uint16_t heightMm =
                 static_cast<uint16_t>(
@@ -267,6 +275,11 @@ void interface::handle_packet(
 
                 break;
             }
+
+            /*
+             * El paquete D además pasó la validación.
+             */
+            jetson_target_valid_count[body]++;
 
             /*
              * Consigna válida.

@@ -209,6 +209,8 @@ volatile uint16_t jetson_dma_last_size = 0;
 volatile uint32_t jetson_tx_queue_dropped = 0;
 volatile uint32_t jetson_tx_dma_errors = 0;
 
+volatile TickType_t target_timeout_elapsed_debug[6] = {0};
+
 volatile TickType_t target_last_update_tick[BODY_COUNT] =
 {
     0, 0, 0, 0, 0, 0
@@ -806,16 +808,25 @@ void Task_body_fault_monitor(void *taskParmPtr)
             if (body_control_mode[body] ==
                 BODY_CONTROL_AUTO)
             {
-                TickType_t targetElapsed =
-                    now -
-                    target_last_update_tick[body];
+            	TickType_t lastTargetTick =
+            	    target_last_update_tick[body];
+
+            	TickType_t targetNow =
+            	    xTaskGetTickCount();
+
+            	TickType_t targetElapsed =
+            	    targetNow -
+            	    lastTargetTick;
 
                 if (targetElapsed >=
                     pdMS_TO_TICKS(
                         body_control_config.target_timeout_ms
                     ))
                 {
-                    body_faults[body] |=
+                	target_timeout_elapsed_debug[body] =
+                	    targetElapsed;
+
+                	body_faults[body] |=
                         BODY_FAULT_TARGET_TIMEOUT;
 
                     body_control_mode[body] =
