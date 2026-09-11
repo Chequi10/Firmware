@@ -695,36 +695,72 @@ void Task_height_control(void *taskParmPtr)
     const float KP = 5.0f;
     const float DEADBAND_MM = 10.0f;
 
+    /*
+     * Comando solicitado por cada cuerpo antes
+     * de aplicar gestión hidráulica.
+     */
+    int16_t requestedCommand[BODY_COUNT] =
+    {
+        0, 0, 0, 0, 0, 0
+    };
+
+    float absoluteError[BODY_COUNT] =
+    {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+    };
+
     while (1)
     {
-        for (uint8_t body = 0; body < BODY_COUNT; body++)
+        /*
+         * ====================================================
+         * ETAPA 1
+         * Calcular comando solicitado de los 6 cuerpos.
+         * ====================================================
+         */
+        for (uint8_t body = 0;
+             body < BODY_COUNT;
+             body++)
         {
+            requestedCommand[body] = 0;
+
+            absoluteError[body] = 0.0f;
+
             /*
              * Solamente controlar automáticamente
              * los cuerpos que estén en AUTO.
              */
-        	if ((body_control_mode[body] == BODY_CONTROL_AUTO) &&
-        	    jetson_connection_ok &&
-        	    ((body_faults[body] & BODY_FAULT_NO_MOVEMENT) == 0))
-        	{
+            if ((body_control_mode[body] ==
+                    BODY_CONTROL_AUTO) &&
+                jetson_connection_ok &&
+                ((body_faults[body] &
+                    BODY_FAULT_NO_MOVEMENT) == 0))
+            {
                 float target =
-                    static_cast<float>(target_height_mm[body]);
+                    static_cast<float>(
+                        target_height_mm[body]
+                    );
 
                 float actual =
                     encoder_height_mm[body];
 
-                float error = target - actual;
+                float error =
+                    target - actual;
+
+                absoluteError[body] =
+                    (error >= 0.0f)
+                        ? error
+                        : -error;
 
                 int16_t command = 0;
 
                 /*
-                 * Zona muerta:
-                 * si estamos suficientemente cerca
-                 * de la altura objetivo, detener.
+                 * Zona muerta.
                  */
                 if (error > DEADBAND_MM)
                 {
-                    float output = KP * error;
+                    float output =
+                        KP * error;
 
                     if (output > 1000.0f)
                     {
@@ -732,11 +768,14 @@ void Task_height_control(void *taskParmPtr)
                     }
 
                     command =
-                        static_cast<int16_t>(output);
+                        static_cast<int16_t>(
+                            output
+                        );
                 }
                 else if (error < -DEADBAND_MM)
                 {
-                    float output = KP * error;
+                    float output =
+                        KP * error;
 
                     if (output < -1000.0f)
                     {
@@ -744,21 +783,308 @@ void Task_height_control(void *taskParmPtr)
                     }
 
                     command =
-                        static_cast<int16_t>(output);
+                        static_cast<int16_t>(
+                            output
+                        );
                 }
                 else
                 {
                     command = 0;
                 }
 
-                setBodyValveCommand(body, command);
+                requestedCommand[body] =
+                    command;
             }
         }
+
+
+        /*
+         * ====================================================
+         * ETAPA 2
+         * Aplicar comandos.
+         * ====================================================
+         *
+         * Modo NORMAL:
+         *
+         * No existe ningún tipo de limitación,
+         * prioridad ni reparto hidráulico.
+         *
+         * El comando calculado se envía tal como está.
+         */
+        if (body_control_config
+                .hydraulic_management_mode == 0)
+        {
+            for (uint8_t body = 0;
+                 body < BODY_COUNT;
+                 body++)
+            {
+                if (body_control_mode[body] ==
+                    BODY_CONTROL_AUTO)
+                {
+                    setBodyValveCommand(
+                        body,
+                        requestedCommand[body]
+                    );
+                }
+            }
+        }
+
+
+        /*
+         * ====================================================
+         * Modo BÁSICO
+         * ====================================================
+         *
+         * Todavía no implementado.
+         *
+         * Mientras tanto se comporta igual que NORMAL.
+         */
+        else
+        {
+            /*
+             * ====================================================
+             * MODO BÁSICO
+             * ====================================================
+             *
+             * Las demandas fuertes con mayor error tienen
+             * prioridad.
+             */
+
+            bool highDemandAllowed[BODY_COUNT] =
+            {
+                false, false, false,
+                false, false, false
+            };
+
+            uint8_t highDemandCount = 0;
+
+            for (uint8_t body = 0;
+                 body < BODY_COUNT;
+                 body++)
+            {
+                if (body_control_mode[body] !=
+                    BODY_CONTROL_AUTO)
+                {
+                    continue;
+                }
+
+                int16_t command =
+                    requestedCommand[body];
+
+                int16_t absCommand =
+                    (command >= 0)
+                        ? command
+                        : -command;
+
+                if ((command > 0) &&
+                    (command >=
+                        body_control_config
+                            .hydraulic_high_command_threshold))
+                {
+                    highDemandCount++;
+                }
+            }
+
+
+            /*
+             * Porcentaje dinámico para cuerpos secundarios.
+             *
+             * Cuantos más cuerpos demanden hidráulica,
+             * mayor será la reducción.
+             */
+            uint8_t secondaryPercent = 100;
+
+            uint8_t maxHighDemand =
+                body_control_config
+                    .hydraulic_max_high_demand_bodies;
+
+            if (highDemandCount > maxHighDemand)
+            {
+                uint8_t excessBodies =
+                    highDemandCount -
+                    maxHighDemand;
+
+                uint8_t possibleExcess =
+                    BODY_COUNT -
+                    maxHighDemand;
+
+                uint8_t minimumPercent =
+                    body_control_config
+                        .hydraulic_secondary_percent;
+
+                if (possibleExcess > 0)
+                {
+                    uint16_t reductionRange =
+                        100 -
+                        minimumPercent;
+
+                    uint16_t reduction =
+                        reductionRange *
+                        excessBodies;
+
+                    reduction /=
+                        possibleExcess;
+
+                    secondaryPercent =
+                        static_cast<uint8_t>(
+                            100 - reduction
+                        );
+
+                    if (secondaryPercent <
+                        minimumPercent)
+                    {
+                        secondaryPercent =
+                            minimumPercent;
+                    }
+                }
+            }
+
+
+            /*
+             * Seleccionar los cuerpos de mayor prioridad.
+             */
+            for (uint8_t slot = 0;
+                 slot <
+                     body_control_config
+                         .hydraulic_max_high_demand_bodies;
+                 slot++)
+            {
+                int8_t bestBody = -1;
+
+                float bestError = -1.0f;
+
+
+                for (uint8_t body = 0;
+                     body < BODY_COUNT;
+                     body++)
+                {
+                    if (highDemandAllowed[body])
+                    {
+                        continue;
+                    }
+
+
+                    int16_t command =
+                        requestedCommand[body];
+
+                    int16_t absCommand =
+                        (command >= 0)
+                            ? command
+                            : -command;
+
+
+                    /*
+                     * Solamente consideramos demandas fuertes.
+                     */
+                    if ((command <= 0) ||
+                        (command <
+                            body_control_config
+                                .hydraulic_high_command_threshold))
+                    {
+                        continue;
+                    }
+
+
+                    /*
+                     * Prioridad:
+                     * mayor error de altura.
+                     */
+                    if (absoluteError[body] >
+                        bestError)
+                    {
+                        bestError =
+                            absoluteError[body];
+
+                        bestBody =
+                            static_cast<int8_t>(
+                                body
+                            );
+                    }
+                }
+
+
+                /*
+                 * No quedan más demandas fuertes.
+                 */
+                if (bestBody < 0)
+                {
+                    break;
+                }
+
+
+                highDemandAllowed[
+                    static_cast<uint8_t>(
+                        bestBody
+                    )
+                ] = true;
+            }
+
+
+            /*
+             * Aplicar comandos finales.
+             */
+            for (uint8_t body = 0;
+                 body < BODY_COUNT;
+                 body++)
+            {
+                if (body_control_mode[body] !=
+                    BODY_CONTROL_AUTO)
+                {
+                    continue;
+                }
+
+
+                int16_t command =
+                    requestedCommand[body];
+
+                int16_t absCommand =
+                    (command >= 0)
+                        ? command
+                        : -command;
+
+
+                /*
+                 * Si es una demanda fuerte y no quedó
+                 * entre las prioritarias, reducirla.
+                 */
+                if ((command > 0) &&
+                    (command >=
+                        body_control_config
+                            .hydraulic_high_command_threshold) &&
+                    !highDemandAllowed[body])
+                {
+                    int32_t reducedCommand =
+                        static_cast<int32_t>(
+                            command
+                        ) *
+                        static_cast<int32_t>(
+                        		secondaryPercent
+                        );
+
+                    reducedCommand /= 100;
+
+
+                    command =
+                        static_cast<int16_t>(
+                            reducedCommand
+                        );
+                }
+
+
+                setBodyValveCommand(
+                    body,
+                    command
+                );
+            }
+        }
+
 
         /*
          * Control a 100 Hz.
          */
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(
+            pdMS_TO_TICKS(10)
+        );
     }
 }
 

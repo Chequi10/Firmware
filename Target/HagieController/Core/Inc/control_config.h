@@ -47,6 +47,55 @@ typedef struct
     uint32_t target_timeout_ms;
 
     /*
+     * ========================================================
+     * Gestión de demanda hidráulica
+     * ========================================================
+     *
+     * hydraulic_management_mode:
+     *
+     * 0 = NORMAL
+     *     Comportamiento original.
+     *     No se modifica ningún comando de válvula.
+     *
+     * 1 = BÁSICO
+     *     Limita la cantidad de cuerpos que pueden
+     *     realizar simultáneamente una demanda fuerte.
+     */
+    uint8_t hydraulic_management_mode;
+
+
+    /*
+     * A partir de este valor absoluto de comando
+     * consideramos que existe una demanda hidráulica fuerte.
+     *
+     * Rango del comando:
+     *
+     * 0 ... 1000
+     */
+    int16_t hydraulic_high_command_threshold;
+
+
+    /*
+     * Cantidad máxima de cuerpos que pueden mantener
+     * simultáneamente una demanda fuerte sin reducción.
+     */
+    uint8_t hydraulic_max_high_demand_bodies;
+
+
+    /*
+     * Factor aplicado a las demandas fuertes secundarias.
+     *
+     * Se almacena como porcentaje entero para evitar
+     * problemas de representación en el protocolo.
+     *
+     * Ejemplo:
+     *
+     * 40 = 40 %
+     * 100 = sin reducción
+     */
+    uint8_t hydraulic_secondary_percent;
+
+    /*
      * Preparados para la configuración futura
      * del encoder mediante opcode K.
      */

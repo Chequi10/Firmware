@@ -35,4 +35,26 @@ void BodyControlConfig_InitDefaults(void)
 
     body_control_config.target_timeout_ms =
         1000;
+
+    /*
+     * ========================================================
+     * Gestión hidráulica
+     * ========================================================
+     *
+     * Por seguridad arrancamos en NORMAL.
+     *
+     * Esto conserva exactamente el comportamiento
+     * original del control.
+     */
+    body_control_config.hydraulic_management_mode =
+        0;
+
+    body_control_config.hydraulic_high_command_threshold =
+        700;
+
+    body_control_config.hydraulic_max_high_demand_bodies =
+        2;
+
+    body_control_config.hydraulic_secondary_percent =
+        40;
 }

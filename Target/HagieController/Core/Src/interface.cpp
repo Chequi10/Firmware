@@ -905,7 +905,233 @@ void interface::handle_packet(
                 break;
             }
 
+            /*
+             * ========================================================
+             * K 0x10
+             * Modo de gestión hidráulica
+             *
+             * 0 = NORMAL
+             * 1 = BÁSICO
+             * ========================================================
+             */
+            if (subcommand == 0x10)
+            {
+                if (n != 3)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
 
+                    break;
+                }
+
+                uint8_t mode =
+                    payload[2];
+
+                if (mode > 1)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        mode,
+                        0
+                    );
+
+                    break;
+                }
+
+                body_control_config
+                    .hydraulic_management_mode =
+                    mode;
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    body_control_config
+                        .hydraulic_management_mode,
+                    0
+                );
+
+                break;
+            }
+
+
+            /*
+             * ========================================================
+             * K 0x11
+             * Umbral de demanda hidráulica fuerte
+             * ========================================================
+             */
+            if (subcommand == 0x11)
+            {
+                if (n != 4)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                uint16_t threshold =
+                    static_cast<uint16_t>(
+                        (static_cast<uint16_t>(
+                            payload[2]
+                        ) << 8) |
+                        static_cast<uint16_t>(
+                            payload[3]
+                        )
+                    );
+
+                if (threshold == 0 ||
+                    threshold > 1000)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        threshold,
+                        0
+                    );
+
+                    break;
+                }
+
+                body_control_config
+                    .hydraulic_high_command_threshold =
+                    static_cast<int16_t>(
+                        threshold
+                    );
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    threshold,
+                    0
+                );
+
+                break;
+            }
+
+
+            /*
+             * ========================================================
+             * K 0x12
+             * Máximo de cuerpos con demanda fuerte
+             * ========================================================
+             */
+            if (subcommand == 0x12)
+            {
+                if (n != 3)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                uint8_t maxBodies =
+                    payload[2];
+
+                if (maxBodies == 0 ||
+                    maxBodies > BODY_COUNT)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        maxBodies,
+                        0
+                    );
+
+                    break;
+                }
+
+                body_control_config
+                    .hydraulic_max_high_demand_bodies =
+                    maxBodies;
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    body_control_config
+                        .hydraulic_max_high_demand_bodies,
+                    0
+                );
+
+                break;
+            }
+
+
+            /*
+             * ========================================================
+             * K 0x13
+             * Porcentaje de comando secundario
+             * ========================================================
+             */
+            if (subcommand == 0x13)
+            {
+                if (n != 3)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                uint8_t percent =
+                    payload[2];
+
+                if (percent > 100)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_VALUE,
+                        percent,
+                        0
+                    );
+
+                    break;
+                }
+
+                body_control_config
+                    .hydraulic_secondary_percent =
+                    percent;
+
+                send_config_ack(
+                    subcommand,
+                    0xFF,
+                    CONFIG_ACK_OK,
+                    body_control_config
+                        .hydraulic_secondary_percent,
+                    0
+                );
+
+                break;
+            }
             /*
              * ========================================================
              * Subcomando desconocido
