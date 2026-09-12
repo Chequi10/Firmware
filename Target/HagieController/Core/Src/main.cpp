@@ -56,7 +56,7 @@
  * 1 = simular encoders y movimiento de los cuerpos.
  * 0 = utilizar hardware real.
  */
-#define SIMULATE_HEIGHT_CONTROL 0
+#define SIMULATE_HEIGHT_CONTROL 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -689,12 +689,10 @@ void Task_height_control(void *taskParmPtr)
     (void)taskParmPtr;
 
     /*
-     * Parámetros iniciales del controlador.
-     * Después se ajustarán con la hidráulica real.
+     * Período del lazo de control.
+     * Task_height_control se ejecuta cada 10 ms.
      */
-    const float KP = 5.0f;
-    const float DEADBAND_MM = 10.0f;
-
+    const float CONTROL_DT_S = 0.010f;
     /*
      * Comando solicitado por cada cuerpo antes
      * de aplicar gestión hidráulica.
@@ -708,6 +706,30 @@ void Task_height_control(void *taskParmPtr)
     {
         0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f
+    };
+
+    /*
+     * ========================================================
+     * Estado interno PID por cuerpo
+     * ========================================================
+     */
+
+    float integralError[BODY_COUNT] =
+    {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+    };
+
+    float previousError[BODY_COUNT] =
+    {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+    };
+
+    bool pidInitialized[BODY_COUNT] =
+    {
+        false, false, false,
+        false, false, false
     };
 
     while (1)
@@ -755,45 +777,166 @@ void Task_height_control(void *taskParmPtr)
                 int16_t command = 0;
 
                 /*
-                 * Zona muerta.
+                 * Valores de sintonía configurados
+                 * desde Jetson.
                  */
-                if (error > DEADBAND_MM)
-                {
-                    float output =
-                        KP * error;
+                float kp =
+                    body_control_config
+                        .height_control_kp;
 
+                float ki =
+                    body_control_config
+                        .height_control_ki;
+
+                float kd =
+                    body_control_config
+                        .height_control_kd;
+
+                float deadband =
+                    body_control_config
+                        .height_control_deadband_mm;
+
+
+                /*
+                 * ========================================================
+                 * Banda muerta
+                 * ========================================================
+                 *
+                 * Dentro de la banda muerta:
+                 *
+                 * - válvula en cero
+                 * - integral reiniciada
+                 * - derivativa reiniciada
+                 *
+                 * Evita que el controlador siga acumulando error
+                 * cuando ya llegó al objetivo.
+                 */
+                if ((error <= deadband) &&
+                    (error >= -deadband))
+                {
+                    command = 0;
+
+                    integralError[body] =
+                        0.0f;
+
+                    previousError[body] =
+                        error;
+
+                    pidInitialized[body] =
+                        false;
+                }
+                else
+                {
+                    /*
+                     * ====================================================
+                     * Derivada
+                     * ====================================================
+                     */
+                    float derivative = 0.0f;
+
+                    if (pidInitialized[body])
+                    {
+                        derivative =
+                            (error -
+                             previousError[body]) /
+                            CONTROL_DT_S;
+                    }
+
+
+                    /*
+                     * ====================================================
+                     * Integral candidata
+                     * ====================================================
+                     */
+                    float candidateIntegral =
+                        integralError[body] +
+                        error * CONTROL_DT_S;
+
+
+                    /*
+                     * Calcular salida candidata.
+                     */
+                    float candidateOutput =
+                        kp * error +
+                        ki * candidateIntegral +
+                        kd * derivative;
+
+
+                    /*
+                     * ====================================================
+                     * Anti-windup
+                     * ====================================================
+                     *
+                     * Si la salida ya está saturada y el error
+                     * pretende saturarla todavía más, no seguimos
+                     * acumulando integral.
+                     */
+                    bool saturatingPositive =
+                        (candidateOutput > 1000.0f) &&
+                        (error > 0.0f);
+
+                    bool saturatingNegative =
+                        (candidateOutput < -1000.0f) &&
+                        (error < 0.0f);
+
+                    if (!saturatingPositive &&
+                        !saturatingNegative)
+                    {
+                        integralError[body] =
+                            candidateIntegral;
+                    }
+
+
+                    /*
+                     * Salida PID definitiva.
+                     */
+                    float output =
+                        kp * error +
+                        ki * integralError[body] +
+                        kd * derivative;
+
+
+                    /*
+                     * Saturación del comando de válvula.
+                     */
                     if (output > 1000.0f)
                     {
                         output = 1000.0f;
                     }
-
-                    command =
-                        static_cast<int16_t>(
-                            output
-                        );
-                }
-                else if (error < -DEADBAND_MM)
-                {
-                    float output =
-                        KP * error;
-
-                    if (output < -1000.0f)
+                    else if (output < -1000.0f)
                     {
                         output = -1000.0f;
                     }
 
+
                     command =
                         static_cast<int16_t>(
                             output
                         );
+
+
+                    previousError[body] =
+                        error;
+
+                    pidInitialized[body] =
+                        true;
                 }
-                else
-                {
-                    command = 0;
-                }
+
 
                 requestedCommand[body] =
                     command;
+
+            }
+            else
+            {
+                integralError[body] =
+                    0.0f;
+
+                previousError[body] =
+                    0.0f;
+
+                pidInitialized[body] =
+                    false;
             }
         }
 

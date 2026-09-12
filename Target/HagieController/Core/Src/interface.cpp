@@ -1131,7 +1131,254 @@ void interface::handle_packet(
                 );
 
                 break;
-            }
+
+                }
+
+                /*
+                 * ========================================================
+                 * K 0x14
+                 * Ganancia proporcional Kp
+                 *
+                 * Valor recibido x100.
+                 * Ejemplo: 5.00 -> 500
+                 * ========================================================
+                 */
+                if (subcommand == 0x14)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint16_t rawValue =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(
+                                payload[2]
+                            ) << 8) |
+                            static_cast<uint16_t>(
+                                payload[3]
+                            )
+                        );
+
+                    if (rawValue > 10000)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_VALUE,
+                            rawValue,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config.height_control_kp =
+                        static_cast<float>(rawValue) / 100.0f;
+
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_OK,
+                        rawValue,
+                        0
+                    );
+
+                    break;
+                }
+
+
+                /*
+                 * ========================================================
+                 * K 0x15
+                 * Ganancia integral Ki
+                 *
+                 * Valor recibido x100.
+                 * ========================================================
+                 */
+                if (subcommand == 0x15)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint16_t rawValue =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(
+                                payload[2]
+                            ) << 8) |
+                            static_cast<uint16_t>(
+                                payload[3]
+                            )
+                        );
+
+                    if (rawValue > 10000)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_VALUE,
+                            rawValue,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config.height_control_ki =
+                        static_cast<float>(rawValue) / 100.0f;
+
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_OK,
+                        rawValue,
+                        0
+                    );
+
+                    break;
+                }
+
+
+                /*
+                 * ========================================================
+                 * K 0x16
+                 * Ganancia derivativa Kd
+                 *
+                 * Valor recibido x100.
+                 * ========================================================
+                 */
+                if (subcommand == 0x16)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint16_t rawValue =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(
+                                payload[2]
+                            ) << 8) |
+                            static_cast<uint16_t>(
+                                payload[3]
+                            )
+                        );
+
+                    if (rawValue > 10000)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_VALUE,
+                            rawValue,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config.height_control_kd =
+                        static_cast<float>(rawValue) / 100.0f;
+
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_OK,
+                        rawValue,
+                        0
+                    );
+
+                    break;
+                }
+
+
+                /*
+                 * ========================================================
+                 * K 0x17
+                 * Banda muerta del control de altura
+                 *
+                 * Valor recibido x100 mm.
+                 * Ejemplo: 10.00 mm -> 1000
+                 * ========================================================
+                 */
+                if (subcommand == 0x17)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint16_t rawValue =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(
+                                payload[2]
+                            ) << 8) |
+                            static_cast<uint16_t>(
+                                payload[3]
+                            )
+                        );
+
+                    if (rawValue > 50000)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_VALUE,
+                            rawValue,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config.height_control_deadband_mm =
+                        static_cast<float>(rawValue) / 100.0f;
+
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_OK,
+                        rawValue,
+                        0
+                    );
+
+                    break;
+                }
+
             /*
              * ========================================================
              * Subcomando desconocido

@@ -57,4 +57,21 @@ void BodyControlConfig_InitDefaults(void)
 
     body_control_config.hydraulic_secondary_percent =
         40;
+
+    /*
+     * ========================================================
+     * Sintonía control de altura
+     * ========================================================
+     */
+    body_control_config.height_control_kp =
+        5.0f;
+
+    body_control_config.height_control_ki =
+        0.0f;
+
+    body_control_config.height_control_kd =
+        0.0f;
+
+    body_control_config.height_control_deadband_mm =
+        10.0f;
 }

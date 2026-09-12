@@ -96,6 +96,30 @@ typedef struct
     uint8_t hydraulic_secondary_percent;
 
     /*
+     * ========================================================
+     * Sintonía control de altura
+     * ========================================================
+     *
+     * Kp, Ki y Kd del controlador.
+     *
+     * Inicialmente:
+     * Kp = 5.0
+     * Ki = 0.0
+     * Kd = 0.0
+     *
+     * Con Ki y Kd en cero, el comportamiento sigue siendo
+     * proporcional como hasta ahora.
+     */
+    float height_control_kp;
+    float height_control_ki;
+    float height_control_kd;
+
+    /*
+     * Banda muerta alrededor del objetivo.
+     */
+    float height_control_deadband_mm;
+
+    /*
      * Preparados para la configuración futura
      * del encoder mediante opcode K.
      */
