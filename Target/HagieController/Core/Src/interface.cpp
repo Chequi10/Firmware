@@ -1379,6 +1379,171 @@ void interface::handle_packet(
                     break;
                 }
 
+                /*
+                 * ========================================================
+                 * K 0x18
+                 * Compensación hidráulica individual de SUBIDA
+                 *
+                 * payload:
+                 * [0] = 'K'
+                 * [1] = 0x18
+                 * [2] = cuerpo 0..5
+                 * [3] = porcentaje con signo int8_t
+                 *
+                 * Rango permitido: -20 .. +20 %
+                 * ========================================================
+                 */
+                if (subcommand == 0x18)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint8_t body =
+                        payload[2];
+
+                    if (body >= BODY_COUNT)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_BODY,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    int8_t percent =
+                        static_cast<int8_t>(
+                            payload[3]
+                        );
+
+                    if (percent < -20 ||
+                        percent > 20)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_VALUE,
+                            static_cast<uint8_t>(percent),
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config
+                        .height_up_compensation_percent[body] =
+                        percent;
+
+                    /*
+                     * El ACK devuelve el mismo byte crudo.
+                     * Ejemplo:
+                     *  +10 -> 10
+                     *  -10 -> 246
+                     */
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_OK,
+                        static_cast<uint8_t>(percent),
+                        0
+                    );
+
+                    break;
+                }
+
+
+                /*
+                 * ========================================================
+                 * K 0x19
+                 * Compensación hidráulica individual de BAJADA
+                 *
+                 * payload:
+                 * [0] = 'K'
+                 * [1] = 0x19
+                 * [2] = cuerpo 0..5
+                 * [3] = porcentaje con signo int8_t
+                 *
+                 * Rango permitido: -20 .. +20 %
+                 * ========================================================
+                 */
+                if (subcommand == 0x19)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint8_t body =
+                        payload[2];
+
+                    if (body >= BODY_COUNT)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_BODY,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    int8_t percent =
+                        static_cast<int8_t>(
+                            payload[3]
+                        );
+
+                    if (percent < -20 ||
+                        percent > 20)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_VALUE,
+                            static_cast<uint8_t>(percent),
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config
+                        .height_down_compensation_percent[body] =
+                        percent;
+
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_OK,
+                        static_cast<uint8_t>(percent),
+                        0
+                    );
+
+                    break;
+                }
+
             /*
              * ========================================================
              * Subcomando desconocido

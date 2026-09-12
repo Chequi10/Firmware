@@ -120,6 +120,24 @@ typedef struct
     float height_control_deadband_mm;
 
     /*
+     * ========================================================
+     * Compensación hidráulica individual por cuerpo
+     * ========================================================
+     *
+     * Porcentaje aplicado al comando PID final.
+     *
+     * Ejemplo:
+     *   0   = sin compensación
+     *  +10  = aumenta 10 %
+     *  -10  = reduce 10 %
+     *
+     * Se separa subida y bajada porque el comportamiento
+     * hidráulico puede ser distinto en cada sentido.
+     */
+    int8_t height_up_compensation_percent[BODY_COUNT];
+    int8_t height_down_compensation_percent[BODY_COUNT];
+
+    /*
      * Preparados para la configuración futura
      * del encoder mediante opcode K.
      */

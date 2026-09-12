@@ -923,6 +923,65 @@ void Task_height_control(void *taskParmPtr)
                 }
 
 
+
+
+                /*
+                 * ====================================================
+                 * Compensación hidráulica individual por cuerpo
+                 * ====================================================
+                 *
+                 * Se aplica después del PID y antes de la
+                 * gestión hidráulica compartida.
+                 *
+                 * command > 0 : subida
+                 * command < 0 : bajada
+                 */
+                if (command > 0)
+                {
+                    int32_t compensatedCommand =
+                        static_cast<int32_t>(command) *
+                        static_cast<int32_t>(
+                            100 +
+                            body_control_config
+                                .height_up_compensation_percent[body]
+                        );
+
+                    compensatedCommand /= 100;
+
+                    if (compensatedCommand > 1000)
+                    {
+                        compensatedCommand = 1000;
+                    }
+
+                    command =
+                        static_cast<int16_t>(
+                            compensatedCommand
+                        );
+                }
+                else if (command < 0)
+                {
+                    int32_t compensatedCommand =
+                        static_cast<int32_t>(command) *
+                        static_cast<int32_t>(
+                            100 +
+                            body_control_config
+                                .height_down_compensation_percent[body]
+                        );
+
+                    compensatedCommand /= 100;
+
+                    if (compensatedCommand < -1000)
+                    {
+                        compensatedCommand = -1000;
+                    }
+
+                    command =
+                        static_cast<int16_t>(
+                            compensatedCommand
+                        );
+                }
+
+
                 requestedCommand[body] =
                     command;
 

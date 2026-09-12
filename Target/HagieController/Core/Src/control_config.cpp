@@ -74,4 +74,23 @@ void BodyControlConfig_InitDefaults(void)
 
     body_control_config.height_control_deadband_mm =
         10.0f;
+
+    /*
+     * Compensación individual por cuerpo.
+     *
+     * Inicialmente todos en 0 % para mantener
+     * exactamente el comportamiento actual.
+     */
+    for (uint8_t body = 0;
+         body < BODY_COUNT;
+         body++)
+    {
+        body_control_config
+            .height_up_compensation_percent[body] =
+            0;
+
+        body_control_config
+            .height_down_compensation_percent[body] =
+            0;
+    }
 }
