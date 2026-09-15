@@ -363,6 +363,13 @@ void Task_jetson_telemetry_tx(void *taskParmPtr)
         jetson_telemetry_tx_count++;
 
         /*
+         * OPCODE 'M':
+         * posición bruta acumulada de los
+         * 6 encoders, en pulsos.
+         */
+        stm32_interface.send_encoder_raw_state();
+
+        /*
          * OPCODE 'F':
          * comandos actuales de los 6 cuerpos.
          */

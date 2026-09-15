@@ -22,6 +22,7 @@ extern volatile uint32_t jetson_heartbeat_count;
 extern void setBodyValveCommand(uint8_t body, int16_t command);
 extern volatile uint16_t target_height_mm[6];
 extern volatile float encoder_height_mm[6];
+extern volatile int64_t encoder_position[6];
 extern int16_t getBodyValveCommand(uint8_t body);
 extern volatile uint32_t axiomatic_rx_dropped;
 extern volatile bool jetson_connection_ok;
@@ -1703,6 +1704,52 @@ void interface::send_encoder_state()
      * PKT!, LEN, CRC16 y '\n'
      */
     send(13);
+}
+
+void interface::send_encoder_raw_state()
+{
+    /*
+     * OPCODE 'M'
+     *
+     * Posición bruta acumulada de los 6 encoders.
+     *
+     * [0]     = 'M'
+     * [1..8]  = encoder 1, int64_t
+     * [9..16] = encoder 2, int64_t
+     * ...
+     * [41..48]= encoder 6, int64_t
+     *
+     * MSB primero.
+     */
+
+    uint8_t *payload = get_payload_buffer();
+
+    payload[0] = 'M';
+
+    for (uint8_t body = 0; body < 6; body++)
+    {
+        const uint64_t value =
+            static_cast<uint64_t>(
+                encoder_position[body]
+            );
+
+        const uint8_t index =
+            1 + (body * 8);
+
+        for (uint8_t byte = 0; byte < 8; byte++)
+        {
+            payload[index + byte] =
+                static_cast<uint8_t>(
+                    (value >> (56 - (byte * 8))) & 0xFF
+                );
+        }
+    }
+
+    /*
+     * 1 byte opcode +
+     * 6 x 8 bytes = 49 bytes.
+     */
+    send(49);
 }
 
 void interface::send_valve_state()

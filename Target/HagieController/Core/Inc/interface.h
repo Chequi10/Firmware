@@ -41,6 +41,12 @@ public:
     void send_encoder_state();
 
     /*
+     * Envía la posición bruta acumulada de los
+     * 6 encoders como int64_t.
+     */
+    void send_encoder_raw_state();
+
+    /*
      * Enviar a la Jetson el estado actual
      * de comando de los seis cuerpos.
      *
