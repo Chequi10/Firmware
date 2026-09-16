@@ -2766,6 +2766,7 @@ static void MX_GPIO_Init(void) {
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB, Amarillo_Pin | Rojo_Pin | Azul_Pin,
@@ -2777,6 +2778,22 @@ static void MX_GPIO_Init(void) {
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+	/* Configure limit sensor inputs: PE2, PE3, PE4, PE5, PE6, PE7,
+	   PE8, PE10, PE12, PE13, PE14, PE15 */
+	GPIO_InitStruct.Pin =
+	        LIMIT_INF_1_Pin | LIMIT_SUP_1_Pin |
+	        LIMIT_INF_2_Pin | LIMIT_SUP_2_Pin |
+	        LIMIT_INF_3_Pin | LIMIT_SUP_3_Pin |
+	        LIMIT_INF_4_Pin | LIMIT_SUP_4_Pin |
+	        LIMIT_INF_5_Pin | LIMIT_SUP_5_Pin |
+	        LIMIT_INF_6_Pin | LIMIT_SUP_6_Pin;
+
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 }
 
