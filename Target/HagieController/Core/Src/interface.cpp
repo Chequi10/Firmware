@@ -23,6 +23,8 @@ extern void setBodyValveCommand(uint8_t body, int16_t command);
 extern volatile uint16_t target_height_mm[6];
 extern volatile float encoder_height_mm[6];
 extern volatile int64_t encoder_position[6];
+extern volatile bool lower_limit_active[6];
+extern volatile bool upper_limit_active[6];
 extern int16_t getBodyValveCommand(uint8_t body);
 extern volatile uint32_t axiomatic_rx_dropped;
 extern volatile bool jetson_connection_ok;
@@ -1750,6 +1752,67 @@ void interface::send_encoder_raw_state()
      * 6 x 8 bytes = 49 bytes.
      */
     send(49);
+}
+
+void interface::send_limit_sensor_state()
+{
+    /*
+     * OPCODE 'N'
+     *
+     * Estado de los 12 sensores de límite.
+     *
+     * [0] = 'N'
+     * [1] = límites inferiores
+     * [2] = límites superiores
+     *
+     * En [1] y [2]:
+     *
+     * bit 0 = cuerpo 1
+     * bit 1 = cuerpo 2
+     * bit 2 = cuerpo 3
+     * bit 3 = cuerpo 4
+     * bit 4 = cuerpo 5
+     * bit 5 = cuerpo 6
+     *
+     * 1 = sensor activo
+     * 0 = sensor libre
+     */
+
+    uint8_t *payload = get_payload_buffer();
+
+    payload[0] = 'N';
+
+    uint8_t lowerMask = 0;
+    uint8_t upperMask = 0;
+
+    for (uint8_t body = 0; body < 6; body++)
+    {
+        if (lower_limit_active[body])
+        {
+            lowerMask |=
+                static_cast<uint8_t>(
+                    1U << body
+                );
+        }
+
+        if (upper_limit_active[body])
+        {
+            upperMask |=
+                static_cast<uint8_t>(
+                    1U << body
+                );
+        }
+    }
+
+    payload[1] = lowerMask;
+    payload[2] = upperMask;
+
+    /*
+     * 1 byte opcode +
+     * 1 byte límites inferiores +
+     * 1 byte límites superiores.
+     */
+    send(3);
 }
 
 void interface::send_valve_state()

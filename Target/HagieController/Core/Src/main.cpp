@@ -178,6 +178,26 @@ uint8_t ant;
 volatile int64_t encoder_position[ENCODER_COUNT] = {0};
 volatile int32_t encoder_delta[ENCODER_COUNT] = {0};
 volatile int8_t encoder_direction[ENCODER_COUNT] = {0};
+
+/*
+ * Sensores inductivos de límite de recorrido.
+ *
+ * Índice 0..5 = cuerpos 1..6.
+ *
+ * false = sensor libre
+ * true  = sensor activo
+ */
+volatile bool lower_limit_active[ENCODER_COUNT] =
+{
+    false, false, false,
+    false, false, false
+};
+
+volatile bool upper_limit_active[ENCODER_COUNT] =
+{
+    false, false, false,
+    false, false, false
+};
 volatile float encoder_height_mm[ENCODER_COUNT] =
 {
     400.0f,
@@ -370,6 +390,14 @@ void Task_jetson_telemetry_tx(void *taskParmPtr)
         stm32_interface.send_encoder_raw_state();
 
         /*
+         * OPCODE 'N':
+         * estado de los 12 sensores de límite.
+         *
+         * 6 inferiores + 6 superiores.
+         */
+        stm32_interface.send_limit_sensor_state();
+
+        /*
          * OPCODE 'F':
          * comandos actuales de los 6 cuerpos.
          */
@@ -528,6 +556,103 @@ void Task_encoder(void *taskParmPtr)
             encoder_height_mm[i] =
                 encoders[i]->getHeightMm();
         }
+
+        /*
+         * ========================================================
+         * SENSORES DE LÍMITE DE RECORRIDO
+         * ========================================================
+         *
+         * La placa de interfaz entrega una señal digital
+         * segura de 3.3 V a la STM32.
+         *
+         * Por ahora:
+         * GPIO_SET   = sensor activo
+         * GPIO_RESET = sensor libre
+         *
+         * Si la interfaz definitiva trabaja con lógica
+         * invertida, se cambia aquí en un solo lugar.
+         */
+
+        constexpr GPIO_PinState LIMIT_ACTIVE_STATE =
+            GPIO_PIN_SET;
+
+
+        lower_limit_active[0] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_1_GPIO_Port,
+                LIMIT_INF_1_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[0] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_1_GPIO_Port,
+                LIMIT_SUP_1_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+
+        lower_limit_active[1] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_2_GPIO_Port,
+                LIMIT_INF_2_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[1] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_2_GPIO_Port,
+                LIMIT_SUP_2_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+
+        lower_limit_active[2] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_3_GPIO_Port,
+                LIMIT_INF_3_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[2] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_3_GPIO_Port,
+                LIMIT_SUP_3_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+
+        lower_limit_active[3] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_4_GPIO_Port,
+                LIMIT_INF_4_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[3] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_4_GPIO_Port,
+                LIMIT_SUP_4_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+
+        lower_limit_active[4] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_5_GPIO_Port,
+                LIMIT_INF_5_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[4] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_5_GPIO_Port,
+                LIMIT_SUP_5_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+
+        lower_limit_active[5] =
+            HAL_GPIO_ReadPin(
+                LIMIT_INF_6_GPIO_Port,
+                LIMIT_INF_6_Pin
+            ) == LIMIT_ACTIVE_STATE;
+
+        upper_limit_active[5] =
+            HAL_GPIO_ReadPin(
+                LIMIT_SUP_6_GPIO_Port,
+                LIMIT_SUP_6_Pin
+            ) == LIMIT_ACTIVE_STATE;
 
 
         /*

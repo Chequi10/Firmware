@@ -649,14 +649,31 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, Amarillo_Pin|Rojo_Pin|Azul_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : LIMIT_INF_1_Pin LIMIT_SUP_1_Pin */
+  GPIO_InitStruct.Pin = LIMIT_INF_1_Pin|LIMIT_SUP_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LIMIT_INF_2_Pin LIMIT_SUP_2_Pin LIMIT_INF_3_Pin LIMIT_SUP_3_Pin
+                           LIMIT_INF_4_Pin LIMIT_SUP_4_Pin LIMIT_INF_5_Pin LIMIT_SUP_5_Pin
+                           LIMIT_INF_6_Pin LIMIT_SUP_6_Pin */
+  GPIO_InitStruct.Pin = LIMIT_INF_2_Pin|LIMIT_SUP_2_Pin|LIMIT_INF_3_Pin|LIMIT_SUP_3_Pin
+                          |LIMIT_INF_4_Pin|LIMIT_SUP_4_Pin|LIMIT_INF_5_Pin|LIMIT_SUP_5_Pin
+                          |LIMIT_INF_6_Pin|LIMIT_SUP_6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Amarillo_Pin Rojo_Pin Azul_Pin */
   GPIO_InitStruct.Pin = Amarillo_Pin|Rojo_Pin|Azul_Pin;

@@ -47,6 +47,21 @@ public:
     void send_encoder_raw_state();
 
     /*
+     * Envía el estado de los 12 sensores
+     * de límite de recorrido.
+     *
+     * OPCODE 'N'
+     *
+     * payload[1]:
+     * bits 0..5 = límites inferiores cuerpos 1..6
+     *
+     * payload[2]:
+     * bits 0..5 = límites superiores cuerpos 1..6
+     */
+    void send_limit_sensor_state();
+
+
+    /*
      * Enviar a la Jetson el estado actual
      * de comando de los seis cuerpos.
      *
