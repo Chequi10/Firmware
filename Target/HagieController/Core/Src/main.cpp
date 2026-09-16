@@ -1690,6 +1690,37 @@ void setBodyValveCommand(
     }
 
     /*
+     * ========================================================
+     * PROTECCIÓN POR SENSORES DE LÍMITE
+     * ========================================================
+     *
+     * Sensor superior activo:
+     *     bloquea SUBIR, pero permite BAJAR.
+     *
+     * Sensor inferior activo:
+     *     bloquea BAJAR, pero permite SUBIR.
+     *
+     * De esta forma el cuerpo siempre puede alejarse
+     * del final de carrera que se encuentra activo.
+     */
+
+#if SIMULATE_HEIGHT_CONTROL == 0
+
+    if (upper_limit_active[body] &&
+        command > 0)
+    {
+        command = 0;
+    }
+
+    if (lower_limit_active[body] &&
+        command < 0)
+    {
+        command = 0;
+    }
+
+#endif
+
+    /*
      * Limitar al rango válido.
      */
     if (command > 1000)
