@@ -193,11 +193,18 @@ volatile bool lower_limit_active[ENCODER_COUNT] =
     false, false, false
 };
 
+volatile bool upper_limit_active[ENCODER_COUNT] =
+{
     false, false, false,
     false, false, false
 };
+
 volatile float encoder_height_mm[ENCODER_COUNT] =
+{
+    400.0f,
     300.0f,
+    200.0f,
+    470.0f,
     800.0f,
     300.0f
 };
