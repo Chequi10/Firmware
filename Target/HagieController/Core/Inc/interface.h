@@ -47,6 +47,17 @@ public:
     void send_encoder_raw_state();
 
     /*
+     * Envía la posición relativa de los 6 encoders
+     * respecto del HOMING actual.
+     *
+     * OPCODE 'O'
+     *
+     * posición relativa =
+     * posición bruta - offset de referencia
+     */
+    void send_encoder_relative_state();
+
+    /*
      * Envía el estado de los 12 sensores
      * de límite de recorrido.
      *

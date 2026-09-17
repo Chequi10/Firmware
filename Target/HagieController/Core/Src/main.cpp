@@ -199,6 +199,21 @@ volatile bool upper_limit_active[ENCODER_COUNT] =
     false, false, false
 };
 
+volatile bool encoder_referenced[ENCODER_COUNT] =
+{
+    false, false, false,
+    false, false, false
+};
+
+/*
+ * Conteo bruto del encoder en el momento de encontrar
+ * el sensor inferior. Es el origen de la posición relativa.
+ */
+volatile int64_t encoder_reference_offset[ENCODER_COUNT] =
+{
+    0, 0, 0, 0, 0, 0
+};
+
 volatile float encoder_height_mm[ENCODER_COUNT] =
 {
     400.0f,
@@ -389,6 +404,13 @@ void Task_jetson_telemetry_tx(void *taskParmPtr)
          * 6 encoders, en pulsos.
          */
         stm32_interface.send_encoder_raw_state();
+
+        /*
+         * OPCODE 'O':
+         * posición relativa de los 6 encoders
+         * respecto del HOMING actual.
+         */
+        stm32_interface.send_encoder_relative_state();
 
         /*
          * OPCODE 'N':
@@ -655,7 +677,20 @@ void Task_encoder(void *taskParmPtr)
                 LIMIT_SUP_6_Pin
             ) == LIMIT_ACTIVE_STATE;
 
-
+        /*
+         * Referenciación automática.
+         *
+         * Cuando un cuerpo alcanza su sensor inferior,
+         * conocemos una posición física de referencia.
+         */
+        for (uint8_t i = 0; i < ENCODER_COUNT; ++i)
+        {
+            if (lower_limit_active[i] && !encoder_referenced[i])
+            {
+                encoder_reference_offset[i] = encoder_position[i];
+                encoder_referenced[i] = true;
+            }
+        }
         /*
          * ========================================================
          * SIMULACIÓN

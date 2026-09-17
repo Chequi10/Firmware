@@ -36,6 +36,8 @@ extern volatile uint32_t system_faults;
 extern volatile uint32_t body_faults[6];
 extern volatile uint32_t jetson_clear_fault_count;
 extern volatile TickType_t target_last_update_tick[6];
+extern volatile bool encoder_referenced[6];
+extern volatile int64_t encoder_reference_offset[6];
 
 volatile uint32_t jetson_target_rx_count[BODY_COUNT] = {0};
 volatile uint32_t jetson_target_valid_count[BODY_COUNT] = {0};
@@ -1753,19 +1755,78 @@ void interface::send_encoder_raw_state()
      */
     send(49);
 }
+void interface::send_encoder_relative_state()
+{
+    /*
+     * OPCODE 'O'
+     *
+     * Posición relativa de los 6 encoders
+     * respecto del HOMING actual.
+     *
+     * relative =
+     * encoder_position - encoder_reference_offset
+     *
+     * [0]     = 'O'
+     * [1..8]  = cuerpo 1, int64_t
+     * [9..16] = cuerpo 2, int64_t
+     * ...
+     * [41..48]= cuerpo 6, int64_t
+     *
+     * MSB primero.
+     */
+
+    uint8_t *payload = get_payload_buffer();
+
+    payload[0] = 'O';
+
+    for (uint8_t body = 0; body < 6; body++)
+    {
+        int64_t relativePosition = 0;
+
+        if (encoder_referenced[body])
+        {
+            relativePosition =
+                encoder_position[body] -
+                encoder_reference_offset[body];
+        }
+
+        const uint64_t value =
+            static_cast<uint64_t>(
+                relativePosition
+            );
+
+        const uint8_t index =
+            1 + (body * 8);
+
+        for (uint8_t byte = 0; byte < 8; byte++)
+        {
+            payload[index + byte] =
+                static_cast<uint8_t>(
+                    (value >> (56 - (byte * 8))) & 0xFF
+                );
+        }
+    }
+
+    /*
+     * 1 byte opcode +
+     * 6 x 8 bytes = 49 bytes.
+     */
+    send(49);
+}
 
 void interface::send_limit_sensor_state()
 {
     /*
      * OPCODE 'N'
      *
-     * Estado de los 12 sensores de límite.
+     * Estado de límites y referencia de los 6 cuerpos.
      *
      * [0] = 'N'
      * [1] = límites inferiores
      * [2] = límites superiores
+     * [3] = cuerpos referenciados
      *
-     * En [1] y [2]:
+     * En [1], [2] y [3]:
      *
      * bit 0 = cuerpo 1
      * bit 1 = cuerpo 2
@@ -1774,8 +1835,13 @@ void interface::send_limit_sensor_state()
      * bit 4 = cuerpo 5
      * bit 5 = cuerpo 6
      *
+     * En [1] y [2]:
      * 1 = sensor activo
      * 0 = sensor libre
+     *
+     * En [3]:
+     * 1 = cuerpo referenciado
+     * 0 = cuerpo no referenciado
      */
 
     uint8_t *payload = get_payload_buffer();
@@ -1784,6 +1850,7 @@ void interface::send_limit_sensor_state()
 
     uint8_t lowerMask = 0;
     uint8_t upperMask = 0;
+    uint8_t referencedMask = 0;
 
     for (uint8_t body = 0; body < 6; body++)
     {
@@ -1802,17 +1869,27 @@ void interface::send_limit_sensor_state()
                     1U << body
                 );
         }
+
+        if (encoder_referenced[body])
+        {
+            referencedMask |=
+                static_cast<uint8_t>(
+                    1U << body
+                );
+        }
     }
 
     payload[1] = lowerMask;
     payload[2] = upperMask;
+    payload[3] = referencedMask;
 
     /*
      * 1 byte opcode +
      * 1 byte límites inferiores +
-     * 1 byte límites superiores.
+     * 1 byte límites superiores +
+     * 1 byte cuerpos referenciados.
      */
-    send(3);
+    send(4);
 }
 
 void interface::send_valve_state()
