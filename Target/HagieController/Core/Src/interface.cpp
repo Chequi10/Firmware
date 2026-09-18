@@ -1786,8 +1786,11 @@ void interface::send_encoder_relative_state()
         if (encoder_referenced[body])
         {
             relativePosition =
-                encoder_position[body] -
-                encoder_reference_offset[body];
+                (
+                    encoder_position[body] -
+                    encoder_reference_offset[body]
+                ) *
+                body_control_config.encoder_direction[body];
         }
 
         const uint64_t value =
