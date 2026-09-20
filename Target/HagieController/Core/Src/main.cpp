@@ -57,6 +57,7 @@
  * 0 = utilizar hardware real.
  */
 #define SIMULATE_HEIGHT_CONTROL 0
+#define ENABLE_CAN1 0  // 0: prueba de encoder sin CAN; 1: CAN1 activo
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -1970,7 +1971,7 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
          * Transmitir por CAN1 las órdenes actuales
          * hacia los tres módulos Axiomatic.
          */
-		#if SIMULATE_HEIGHT_CONTROL == 0
+#if SIMULATE_HEIGHT_CONTROL == 0 && ENABLE_CAN1
 
 		for (uint8_t i = 0;
 			 i < VALVE_MODULE_COUNT;
@@ -2447,7 +2448,9 @@ int main(void) {
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_DMA_Init();
-	MX_CAN1_Init();
+#if ENABLE_CAN1
+MX_CAN1_Init();
+#endif
 
 
 
