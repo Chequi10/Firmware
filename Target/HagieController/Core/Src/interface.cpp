@@ -38,6 +38,8 @@ extern volatile uint32_t jetson_clear_fault_count;
 extern volatile TickType_t target_last_update_tick[6];
 extern volatile bool encoder_referenced[6];
 extern volatile int64_t encoder_reference_offset[6];
+extern volatile uint32_t encoder_maximum_count[6];
+extern volatile bool encoder_maximum_valid[6];
 
 volatile uint32_t jetson_target_rx_count[BODY_COUNT] = {0};
 volatile uint32_t jetson_target_valid_count[BODY_COUNT] = {0};
@@ -904,6 +906,249 @@ void interface::handle_packet(
                     body,
                     CONFIG_ACK_OK,
                     rawScale,
+                    0
+                );
+
+                break;
+            }
+
+            /*
+             * ========================================================
+             * K 0x08
+             * Máximo de recorrido relativo del encoder
+             *
+             * payload[0] = 'K'
+             * payload[1] = 0x08
+             * payload[2] = cuerpo 0..5
+             * payload[3..6] = máximo uint32_t, big-endian
+             *
+             * máximo = 0 deshabilita la protección por encoder.
+             * ========================================================
+             */
+            if (subcommand == 0x08)
+            {
+                if (n != 7)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                uint8_t body =
+                    payload[2];
+
+                if (body >= BODY_COUNT)
+                {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_BODY,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                uint32_t maximum =
+                    (static_cast<uint32_t>(payload[3]) << 24) |
+                    (static_cast<uint32_t>(payload[4]) << 16) |
+                    (static_cast<uint32_t>(payload[5]) << 8) |
+                    static_cast<uint32_t>(payload[6]);
+
+                encoder_maximum_count[body] =
+                    maximum;
+
+                encoder_maximum_valid[body] =
+                    maximum > 0;
+
+                send_config_ack(
+                    subcommand,
+                    body,
+                    CONFIG_ACK_OK,
+                    encoder_maximum_count[body],
+                    encoder_maximum_valid[body] ? 1U : 0U
+                );
+
+                break;
+            }
+
+            /*
+             * ========================================================
+             * K 0x09
+             * Tabla de calibración del encoder
+             *
+             * payload[0] = 'K'
+             * payload[1] = 0x09
+             * payload[2] = cuerpo 0..5
+             * payload[3] = cantidad de puntos 0..15
+             *
+             * Por cada punto:
+             *   posición relativa int32_t = 4 bytes
+             *   altura real uint16_t      = 2 bytes
+             *
+             * Cantidad 0 borra la tabla del cuerpo.
+             * ========================================================
+             */
+            if (subcommand == 0x09)
+            {
+                if (n < 4)
+                {
+                    send_config_ack(
+                        subcommand,
+                        0xFF,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        0,
+                        0
+                    );
+
+                    break;
+                }
+
+                const uint8_t body =
+                    payload[2];
+
+                const uint8_t pointCount =
+                    payload[3];
+
+                if (body >= BODY_COUNT)
+                {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_BODY,
+                        pointCount,
+                        0
+                    );
+
+                    break;
+                }
+
+                if (pointCount >
+                    MAX_ENCODER_CALIBRATION_POINTS)
+                {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_VALUE,
+                        pointCount,
+                        MAX_ENCODER_CALIBRATION_POINTS
+                    );
+
+                    break;
+                }
+
+                const size_t expectedLength =
+                    4U +
+                    static_cast<size_t>(
+                        pointCount
+                    ) * 6U;
+
+                if (n != expectedLength)
+                {
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_INVALID_LENGTH,
+                        static_cast<uint32_t>(n),
+                        static_cast<uint32_t>(
+                            expectedLength
+                        )
+                    );
+
+                    break;
+                }
+
+                /*
+                 * Invalidar temporalmente la tabla mientras
+                 * se reemplazan todos sus puntos.
+                 */
+                body_control_config
+                    .encoder_calibration_count[body] =
+                    0;
+
+                for (uint8_t point = 0;
+                     point < pointCount;
+                     ++point)
+                {
+                    const size_t index =
+                        4U +
+                        static_cast<size_t>(
+                            point
+                        ) * 6U;
+
+                    const uint32_t rawPosition =
+                        (static_cast<uint32_t>(
+                            payload[index]
+                        ) << 24) |
+                        (static_cast<uint32_t>(
+                            payload[index + 1]
+                        ) << 16) |
+                        (static_cast<uint32_t>(
+                            payload[index + 2]
+                        ) << 8) |
+                        static_cast<uint32_t>(
+                            payload[index + 3]
+                        );
+
+                    const uint16_t heightMm =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(
+                                payload[index + 4]
+                            ) << 8) |
+                            static_cast<uint16_t>(
+                                payload[index + 5]
+                            )
+                        );
+
+                    body_control_config
+                        .encoder_calibration_position
+                            [body][point] =
+                        static_cast<int32_t>(
+                            rawPosition
+                        );
+
+                    body_control_config
+                        .encoder_calibration_height_mm
+                            [body][point] =
+                        heightMm;
+                }
+
+                /*
+                 * Limpiar posiciones que pertenecían a una
+                 * tabla anterior más larga.
+                 */
+                for (uint8_t point = pointCount;
+                     point <
+                        MAX_ENCODER_CALIBRATION_POINTS;
+                     ++point)
+                {
+                    body_control_config
+                        .encoder_calibration_position
+                            [body][point] =
+                        0;
+
+                    body_control_config
+                        .encoder_calibration_height_mm
+                            [body][point] =
+                        0;
+                }
+
+                body_control_config
+                    .encoder_calibration_count[body] =
+                    pointCount;
+
+                send_config_ack(
+                    subcommand,
+                    body,
+                    CONFIG_ACK_OK,
+                    pointCount,
                     0
                 );
 

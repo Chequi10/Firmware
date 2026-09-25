@@ -21,6 +21,21 @@ void BodyControlConfig_InitDefaults(void)
 
         body_control_config.encoder_scale_mm_per_pulse[body] =
             1.0f;
+        body_control_config.encoder_calibration_count[body] =
+            0;
+
+        for (uint8_t point = 0;
+             point < MAX_ENCODER_CALIBRATION_POINTS;
+             ++point)
+        {
+            body_control_config
+                .encoder_calibration_position[body][point] =
+                0;
+
+            body_control_config
+                .encoder_calibration_height_mm[body][point] =
+                0;
+        }
     }
 
 

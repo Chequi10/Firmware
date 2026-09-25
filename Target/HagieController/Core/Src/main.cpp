@@ -156,6 +156,12 @@ QueueHandle_t AxiomaticRxQueueHandle;
 QueueHandle_t JetsonRxQueueHandle;
 QueueHandle_t JetsonTxQueueHandle;
 void setBodyValveCommand(uint8_t body, int16_t command);
+int16_t getBodyValveCommand(uint8_t body);
+static bool interpolateEncoderHeight(
+    uint8_t body,
+    int64_t encoderPosition,
+    float &heightMm
+);
 
 
 #define JETSON_DMA_RX_BUFFER_SIZE 256
@@ -213,6 +219,23 @@ volatile bool encoder_referenced[ENCODER_COUNT] =
 volatile int64_t encoder_reference_offset[ENCODER_COUNT] =
 {
     0, 0, 0, 0, 0, 0
+};
+
+/*
+ * Máximo de recorrido relativo configurado desde la GUI.
+ *
+ * Un valor válido bloquea solamente la SUBIDA cuando
+ * el encoder alcanza el recorrido máximo calibrado.
+ */
+volatile uint32_t encoder_maximum_count[ENCODER_COUNT] =
+{
+    0, 0, 0, 0, 0, 0
+};
+
+volatile bool encoder_maximum_valid[ENCODER_COUNT] =
+{
+    false, false, false,
+    false, false, false
 };
 
 volatile float encoder_height_mm[ENCODER_COUNT] =
@@ -465,7 +488,125 @@ void Task_jetson_serial_rx(void *taskParmPtr)
     }
 }
 
+static bool interpolateEncoderHeight(
+    uint8_t body,
+    int64_t encoderPosition,
+    float &heightMm)
+{
+    if (body >= BODY_COUNT)
+    {
+        return false;
+    }
 
+    const uint8_t pointCount =
+        body_control_config
+            .encoder_calibration_count[body];
+
+    if (pointCount < 2 ||
+        pointCount >
+            MAX_ENCODER_CALIBRATION_POINTS)
+    {
+        return false;
+    }
+
+    int8_t lowerIndex =
+        -1;
+
+    int8_t upperIndex =
+        -1;
+
+    for (uint8_t point = 0;
+         point < pointCount;
+         ++point)
+    {
+        const int64_t position =
+            body_control_config
+                .encoder_calibration_position
+                    [body][point];
+
+        if (position <= encoderPosition)
+        {
+            if (
+                lowerIndex < 0 ||
+                position >
+                    body_control_config
+                        .encoder_calibration_position
+                            [body][lowerIndex]
+            )
+            {
+                lowerIndex =
+                    static_cast<int8_t>(point);
+            }
+        }
+
+        if (position >= encoderPosition)
+        {
+            if (
+                upperIndex < 0 ||
+                position <
+                    body_control_config
+                        .encoder_calibration_position
+                            [body][upperIndex]
+            )
+            {
+                upperIndex =
+                    static_cast<int8_t>(point);
+            }
+        }
+    }
+
+    if (lowerIndex < 0 ||
+        upperIndex < 0)
+    {
+        return false;
+    }
+
+    const int64_t x0 =
+        body_control_config
+            .encoder_calibration_position
+                [body][lowerIndex];
+
+    const int64_t x1 =
+        body_control_config
+            .encoder_calibration_position
+                [body][upperIndex];
+
+    const float y0 =
+        static_cast<float>(
+            body_control_config
+                .encoder_calibration_height_mm
+                    [body][lowerIndex]
+        );
+
+    const float y1 =
+        static_cast<float>(
+            body_control_config
+                .encoder_calibration_height_mm
+                    [body][upperIndex]
+        );
+
+    if (x0 == x1)
+    {
+        heightMm =
+            y0;
+
+        return true;
+    }
+
+    heightMm =
+        y0 +
+        (
+            static_cast<float>(
+                encoderPosition - x0
+            ) /
+            static_cast<float>(
+                x1 - x0
+            )
+        ) *
+        (y1 - y0);
+
+    return true;
+}
 
 void Task_encoder(void *taskParmPtr)
 {
@@ -577,8 +718,7 @@ void Task_encoder(void *taskParmPtr)
             encoder_direction[i] =
                 encoders[i]->getDirection();
 
-            encoder_height_mm[i] =
-                encoders[i]->getHeightMm();
+
         }
 
         /*
@@ -690,6 +830,113 @@ void Task_encoder(void *taskParmPtr)
             {
                 encoder_reference_offset[i] = encoder_position[i];
                 encoder_referenced[i] = true;
+            }
+        }
+
+        /*
+         * ========================================================
+         * ALTURA REAL INTERPOLADA
+         * ========================================================
+         *
+         * La posición utilizada es relativa al homing y respeta
+         * el sentido configurado para cada encoder.
+         */
+        for (uint8_t i = 0;
+             i < ENCODER_COUNT;
+             ++i)
+        {
+            float calibratedHeightMm =
+                0.0f;
+
+            if (encoder_referenced[i])
+            {
+                const int64_t relativePosition =
+                    (
+                        encoder_position[i] -
+                        encoder_reference_offset[i]
+                    ) *
+                    body_control_config.encoder_direction[i];
+
+                if (interpolateEncoderHeight(
+                        i,
+                        relativePosition,
+                        calibratedHeightMm))
+                {
+                    encoder_height_mm[i] =
+                        calibratedHeightMm;
+                }
+                else
+                {
+                    /*
+                     * Sin dos puntos válidos o fuera del rango
+                     * calibrado no informamos una altura ficticia.
+                     */
+                    encoder_height_mm[i] =
+                        0.0f;
+                }
+            }
+            else
+            {
+                encoder_height_mm[i] =
+                    0.0f;
+            }
+        }
+        /*
+         * ========================================================
+         * SUPERVISIÓN CONTINUA DE LOS LÍMITES
+         * ========================================================
+         *
+         * Detiene una orden que ya estaba activa cuando el cuerpo
+         * alcanza un sensor físico o un límite del encoder.
+         *
+         * El movimiento contrario permanece habilitado para poder
+         * alejar el cuerpo del límite alcanzado.
+         */
+        for (uint8_t i = 0; i < ENCODER_COUNT; ++i)
+        {
+            const int16_t command =
+                getBodyValveCommand(i);
+
+            int64_t relativePosition =
+                0;
+
+            if (encoder_referenced[i])
+            {
+                relativePosition =
+                    (
+                        encoder_position[i] -
+                        encoder_reference_offset[i]
+                    ) *
+                    body_control_config.encoder_direction[i];
+            }
+
+            const bool blockUp =
+                upper_limit_active[i] ||
+                (
+                    encoder_referenced[i] &&
+                    encoder_maximum_valid[i] &&
+                    relativePosition >=
+                        static_cast<int64_t>(
+                            encoder_maximum_count[i]
+                        )
+                );
+
+            const bool blockDown =
+                lower_limit_active[i] ||
+                (
+                    encoder_referenced[i] &&
+                    relativePosition <= 0
+                );
+
+            if (
+                (command > 0 && blockUp) ||
+                (command < 0 && blockDown)
+            )
+            {
+                setBodyValveCommand(
+                    i,
+                    0
+                );
             }
         }
         /*
@@ -1743,6 +1990,9 @@ void setBodyValveCommand(
 
 #if SIMULATE_HEIGHT_CONTROL == 0
 
+    /*
+     * Protección mediante los sensores físicos.
+     */
     if (upper_limit_active[body] &&
         command > 0)
     {
@@ -1753,6 +2003,46 @@ void setBodyValveCommand(
         command < 0)
     {
         command = 0;
+    }
+
+    /*
+     * Protección redundante mediante el encoder.
+     *
+     * Solo se aplica después de completar el homing,
+     * porque recién entonces existe una referencia válida.
+     */
+    if (encoder_referenced[body])
+    {
+        const int64_t relativePosition =
+            (
+                encoder_position[body] -
+                encoder_reference_offset[body]
+            ) *
+            body_control_config.encoder_direction[body];
+
+        /*
+         * Cero del encoder:
+         * impide continuar bajando.
+         */
+        if (relativePosition <= 0 &&
+            command < 0)
+        {
+            command = 0;
+        }
+
+        /*
+         * Máximo calibrado:
+         * impide continuar subiendo.
+         */
+        if (encoder_maximum_valid[body] &&
+            relativePosition >=
+                static_cast<int64_t>(
+                    encoder_maximum_count[body]
+                ) &&
+            command > 0)
+        {
+            command = 0;
+        }
     }
 
 #endif

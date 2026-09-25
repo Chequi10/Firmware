@@ -17,6 +17,8 @@
  * están fijos en el firmware.
  */
 
+#define MAX_ENCODER_CALIBRATION_POINTS 15
+
 typedef struct
 {
     /*
@@ -147,6 +149,19 @@ typedef struct
      * Escala en mm/pulso.
      */
     float encoder_scale_mm_per_pulse[BODY_COUNT];
+    /*
+     * Tabla de calibración:
+     * posición relativa del encoder -> altura real.
+     */
+    uint8_t encoder_calibration_count[BODY_COUNT];
+
+    int32_t encoder_calibration_position
+        [BODY_COUNT]
+        [MAX_ENCODER_CALIBRATION_POINTS];
+
+    uint16_t encoder_calibration_height_mm
+        [BODY_COUNT]
+        [MAX_ENCODER_CALIBRATION_POINTS];
 
 } BodyControlConfig;
 
