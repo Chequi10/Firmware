@@ -773,7 +773,7 @@ void Task_encoder(void *taskParmPtr)
          */
 
         constexpr GPIO_PinState LIMIT_ACTIVE_STATE =
-            GPIO_PIN_SET;
+            GPIO_PIN_RESET;
 
 
         lower_limit_active[0] =
@@ -852,7 +852,55 @@ void Task_encoder(void *taskParmPtr)
                 LIMIT_SUP_6_GPIO_Port,
                 LIMIT_SUP_6_Pin
             ) == LIMIT_ACTIVE_STATE;
+        // Tres lecturas de 10 ms: aproximadamente 20 ms
+        // desde la primera hasta la tercera lectura.
+        static uint8_t lowerOnSamples[ENCODER_COUNT] = {};
+        static uint8_t lowerOffSamples[ENCODER_COUNT] = {};
+        static uint8_t upperOffSamples[ENCODER_COUNT] = {};
+        static bool lowerBlocked[ENCODER_COUNT] = {};
+        static bool upperBlocked[ENCODER_COUNT] = {};
 
+        for (uint8_t i = 0; i < ENCODER_COUNT; ++i)
+        {
+            const bool lowerRaw = lower_limit_active[i];
+            const bool upperRaw = upper_limit_active[i];
+
+            if (lowerRaw)
+            {
+                if (lowerOnSamples[i] < 3)
+                    ++lowerOnSamples[i];
+
+                lowerOffSamples[i] = 0;
+                lowerBlocked[i] = true;  // Detención inmediata
+            }
+            else
+            {
+                lowerOnSamples[i] = 0;
+
+                if (lowerOffSamples[i] < 3)
+                    ++lowerOffSamples[i];
+
+                if (lowerOffSamples[i] >= 3)
+                    lowerBlocked[i] = false;
+            }
+
+            if (upperRaw)
+            {
+                upperOffSamples[i] = 0;
+                upperBlocked[i] = true;  // Detención inmediata
+            }
+            else
+            {
+                if (upperOffSamples[i] < 3)
+                    ++upperOffSamples[i];
+
+                if (upperOffSamples[i] >= 3)
+                    upperBlocked[i] = false;
+            }
+
+            lower_limit_active[i] = lowerBlocked[i];
+            upper_limit_active[i] = upperBlocked[i];
+        }
         /*
          * Referenciación automática.
          *
@@ -861,12 +909,14 @@ void Task_encoder(void *taskParmPtr)
          */
         for (uint8_t i = 0; i < ENCODER_COUNT; ++i)
         {
-            if (lower_limit_active[i] && !encoder_referenced[i])
+            if (lowerOnSamples[i] >= 3 && !encoder_referenced[i])
             {
                 encoder_reference_offset[i] = encoder_position[i];
                 encoder_referenced[i] = true;
             }
         }
+
+
 
         /*
          * ========================================================
@@ -3154,7 +3204,7 @@ static void MX_GPIO_Init(void) {
 	        LIMIT_INF_6_Pin | LIMIT_SUP_6_Pin;
 
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
 
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
