@@ -555,6 +555,41 @@ static bool interpolateEncoderHeight(
         }
     }
 
+    /*
+     * Saturación fuera del intervalo calibrado.
+     *
+     * Por debajo del primer punto:
+     * conservar la altura del primer punto.
+     *
+     * Por encima del último punto:
+     * conservar la altura del último punto.
+     */
+    if (lowerIndex < 0 &&
+        upperIndex >= 0)
+    {
+        heightMm =
+            static_cast<float>(
+                body_control_config
+                    .encoder_calibration_height_mm
+                        [body][upperIndex]
+            );
+
+        return true;
+    }
+
+    if (upperIndex < 0 &&
+        lowerIndex >= 0)
+    {
+        heightMm =
+            static_cast<float>(
+                body_control_config
+                    .encoder_calibration_height_mm
+                        [body][lowerIndex]
+            );
+
+        return true;
+    }
+
     if (lowerIndex < 0 ||
         upperIndex < 0)
     {
