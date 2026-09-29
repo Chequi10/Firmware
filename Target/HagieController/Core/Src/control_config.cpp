@@ -17,7 +17,7 @@ void BodyControlConfig_InitDefaults(void)
             700;
 
         body_control_config.encoder_direction[body] =
-            1;
+            -1;
 
         body_control_config.encoder_scale_mm_per_pulse[body] =
             1.0f;
