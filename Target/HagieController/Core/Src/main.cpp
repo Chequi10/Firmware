@@ -1256,6 +1256,12 @@ void Task_height_control(void *taskParmPtr)
             if ((body_control_mode[body] ==
                     BODY_CONTROL_AUTO) &&
                 jetson_connection_ok &&
+                encoder_referenced[body] &&
+                (body_control_config
+                    .encoder_calibration_count[body] >= 2) &&
+                (body_control_config
+                    .encoder_calibration_count[body] <=
+                        MAX_ENCODER_CALIBRATION_POINTS) &&
                 ((body_faults[body] &
                     BODY_FAULT_NO_MOVEMENT) == 0))
             {
