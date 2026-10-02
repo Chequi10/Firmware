@@ -457,7 +457,7 @@ void interface::handle_packet(
                     );
 
                 if (minHeight >= maxHeight ||
-                    maxHeight > 2000)
+                    maxHeight > 3000)
                 {
                     send_config_ack(
                         subcommand,
