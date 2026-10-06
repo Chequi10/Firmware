@@ -93,17 +93,13 @@ Encoder encoder4(&htim4, 16);
 Encoder encoder5(&htim8, 16);
 Encoder encoder6(&htim1, 16);
 
-constexpr uint8_t VALVE_MODULE_COUNT = 3;
+constexpr uint8_t VALVE_MODULE_COUNT = 1;
 
 ValveController valveModule1(&hcan1, 0x21);
-ValveController valveModule2(&hcan1, 0x22);
-ValveController valveModule3(&hcan1, 0x23);
 
 ValveController* valveModules[VALVE_MODULE_COUNT] =
 {
-    &valveModule1,
-    &valveModule2,
-    &valveModule3
+    &valveModule1
 };
 
 constexpr uint8_t ENCODER_COUNT = 6;
@@ -2049,6 +2045,23 @@ void setBodyValveCommand(
     }
 
     /*
+     * ========================================================
+     * HABILITACIÓN INDIVIDUAL DEL CUERPO
+     * ========================================================
+     *
+     * Un cuerpo deshabilitado nunca puede recibir una orden
+     * distinta de cero.
+     *
+     * La orden 0 siempre se permite porque representa
+     * una condición segura de parada.
+     */
+    if (!body_control_config.body_enabled[body] &&
+        command != 0)
+    {
+        command = 0;
+    }
+
+    /*
      * Fallas críticas que bloquean movimiento.
      *
      * command = 0 siempre se permite para
@@ -2204,19 +2217,27 @@ void setBodyValveCommand(
 
 
     /*
-     * Determinar módulo y salida.
+     * AX020800:
+     *
+     * Un único módulo de 8 salidas.
+     *
+     * cuerpo 0 -> OUT1 / OUT2
+     * cuerpo 1 -> OUT3 / OUT4
+     * cuerpo 2 -> OUT5 / OUT6
+     *
+     * OUT7 / OUT8 quedan disponibles.
      */
     uint8_t moduleUp =
-        globalOutputUp / 4;
+        0;
 
     uint8_t outputUp =
-        globalOutputUp % 4;
+        globalOutputUp;
 
     uint8_t moduleDown =
-        globalOutputDown / 4;
+        0;
 
     uint8_t outputDown =
-        globalOutputDown % 4;
+        globalOutputDown;
 
 
     /*

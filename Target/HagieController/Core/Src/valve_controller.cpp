@@ -5,7 +5,7 @@ ValveController::ValveController(
     uint8_t moduleAddress)
     : hcan(canHandle),
       address(moduleAddress),
-      outputs{0, 0, 0, 0},
+      outputs{0, 0, 0, 0, 0, 0, 0, 0},
       txHeader{},
       txMailbox(0)
 {
@@ -93,7 +93,17 @@ HAL_StatusTypeDef ValveController::send()
      *
      * Formato provisional little-endian.
      */
-    for (uint8_t i = 0; i < OUTPUT_COUNT; i++)
+    /*
+     * CAN clásico permite 8 bytes por trama.
+     *
+     * Por ahora esta trama transmite únicamente
+     * OUT1..OUT4.
+     *
+     * OUT5..OUT8 se incorporarán mediante una
+     * segunda trama CAN cuando definamos los
+     * mensajes en el AX020800.
+     */
+    for (uint8_t i = 0; i < 4; i++)
     {
         data[i * 2] =
             static_cast<uint8_t>(outputs[i] & 0xFF);

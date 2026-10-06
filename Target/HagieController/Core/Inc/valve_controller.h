@@ -8,7 +8,7 @@
 class ValveController
 {
 public:
-    static constexpr uint8_t OUTPUT_COUNT = 4;
+    static constexpr uint8_t OUTPUT_COUNT = 8;
 
     ValveController(
         CAN_HandleTypeDef *canHandle,

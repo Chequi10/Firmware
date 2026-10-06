@@ -28,6 +28,17 @@ typedef struct
     uint16_t max_height_mm[BODY_COUNT];
 
     /*
+     * Habilitación individual de cuerpos.
+     *
+     * false = cuerpo bloqueado
+     * true  = cuerpo habilitado
+     *
+     * Un cuerpo deshabilitado nunca puede recibir
+     * una orden de movimiento.
+     */
+    bool body_enabled[BODY_COUNT];
+
+    /*
      * Umbral de comando a partir del cual consideramos
      * que se está solicitando movimiento.
      */

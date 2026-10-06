@@ -16,6 +16,15 @@ void BodyControlConfig_InitDefaults(void)
         body_control_config.max_height_mm[body] =
             700;
 
+        /*
+         * Configuración inicial:
+         *
+         * cuerpos 1..3 habilitados
+         * cuerpos 4..6 deshabilitados
+         */
+        body_control_config.body_enabled[body] =
+            (body < 3);
+
         body_control_config.encoder_direction[body] =
             -1;
 

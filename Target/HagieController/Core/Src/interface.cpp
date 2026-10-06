@@ -1794,6 +1794,100 @@ void interface::handle_packet(
                     break;
                 }
 
+                /*
+                 * ========================================================
+                 * K 0x1A
+                 * Habilitación individual de cuerpo
+                 *
+                 * payload:
+                 * [0] = 'K'
+                 * [1] = 0x1A
+                 * [2] = cuerpo 0..5
+                 * [3] = 0 deshabilitado / 1 habilitado
+                 *
+                 * Al deshabilitar un cuerpo se envía inmediatamente
+                 * comando 0 para dejarlo en condición segura.
+                 * ========================================================
+                 */
+                if (subcommand == 0x1A)
+                {
+                    if (n != 4)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint8_t body =
+                        payload[2];
+
+                    if (body >= BODY_COUNT)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_BODY,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    uint8_t enabled =
+                        payload[3];
+
+                    if (enabled > 1)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_VALUE,
+                            enabled,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config
+                        .body_enabled[body] =
+                        (enabled != 0);
+
+                    /*
+                     * Si se deshabilita el cuerpo,
+                     * detenerlo inmediatamente.
+                     */
+                    if (!body_control_config
+                            .body_enabled[body])
+                    {
+                        setBodyValveCommand(
+                            body,
+                            0
+                        );
+                    }
+
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_OK,
+                        body_control_config
+                            .body_enabled[body]
+                            ? 1
+                            : 0,
+                        0
+                    );
+
+                    break;
+                }
+
+
             /*
              * ========================================================
              * Subcomando desconocido
