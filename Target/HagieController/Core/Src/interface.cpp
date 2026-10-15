@@ -15,6 +15,7 @@
 #include "jetson_tx.h"
 #include "fault_types.h"
 #include "control_config.h"
+#include "speed_sensor.h"
 
 extern volatile ImuState_t imu_state;
 extern UART_HandleTypeDef huart3;
@@ -2526,3 +2527,13 @@ void interface::send_impl(
 
 
 
+
+
+void interface::send_speed_pulse_state()
+{
+    static SpeedPulseEstimator estimator;
+    const SpeedPulseSnapshot speed = SpeedSensorSnapshot();
+    const uint32_t frequency_millihz = estimator.update(speed);
+    SpeedPulseEncode(get_payload_buffer(), speed, frequency_millihz);
+    send(18);
+}

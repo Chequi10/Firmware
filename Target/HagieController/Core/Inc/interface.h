@@ -23,6 +23,7 @@ public:
     uint8_t cadena[12];
 
     void send_imu_state();
+    void send_speed_pulse_state();
 
     void serial_feed_byte(uint8_t byte);
 

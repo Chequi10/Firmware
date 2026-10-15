@@ -88,6 +88,8 @@ void Error_Handler(void);
 #define Azul_Pin GPIO_PIN_7
 #define Azul_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+#define SPEED_SENSOR_Pin GPIO_PIN_2
+#define SPEED_SENSOR_GPIO_Port GPIOD
 
 /* USER CODE END Private defines */
 

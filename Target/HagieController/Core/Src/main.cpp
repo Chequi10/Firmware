@@ -35,6 +35,7 @@
 #include "fault_types.h"
 #include "imu_can.h"
 #include "control_config.h"
+#include "speed_sensor.h"
 
 
 
@@ -405,6 +406,49 @@ t_key_data keys_data;
 
 char sync_counter;
 
+// PD2 / EXTI2. One rising edge is one pulse.
+// ISR does no UART transfer, floating point, or RTOS calls.
+static volatile uint64_t speed_total_pulses = 0;
+static volatile uint32_t speed_last_pulse_ms = 0;
+static volatile uint32_t speed_period_ms = 0;
+static volatile bool speed_seen_pulse = false;
+static volatile bool speed_period_valid = false;
+
+extern "C" void HAL_GPIO_EXTI_Callback(uint16_t pin)
+{
+    if (pin != SPEED_SENSOR_Pin) return;
+    const uint32_t now = HAL_GetTick();
+    if (speed_seen_pulse)
+    {
+        const uint32_t elapsed = now - speed_last_pulse_ms;
+        if (elapsed >= SpeedPulseEstimator::STOP_TIMEOUT_MS)
+            speed_period_valid = false;
+        else if (elapsed != 0)
+        {
+            speed_period_ms = elapsed;
+            speed_period_valid = true;
+        }
+    }
+    speed_last_pulse_ms = now;
+    speed_seen_pulse = true;
+    ++speed_total_pulses;
+}
+
+SpeedPulseSnapshot SpeedSensorSnapshot()
+{
+    SpeedPulseSnapshot s;
+    const uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    s.total_pulses = speed_total_pulses;
+    s.last_pulse_ms = speed_last_pulse_ms;
+    s.period_ms = speed_period_ms;
+    s.seen_pulse = speed_seen_pulse;
+    s.period_valid = speed_period_valid;
+    s.uptime_ms = HAL_GetTick();
+    __set_PRIMASK(primask);
+    return s;
+}
+
 void Task_jetson_telemetry_tx(void *taskParmPtr)
 {
     (void)taskParmPtr;
@@ -458,6 +502,7 @@ void Task_jetson_telemetry_tx(void *taskParmPtr)
         jetson_stm32_state_tx_count++;
 
         stm32_interface.send_imu_state();
+        stm32_interface.send_speed_pulse_state();
 
         /*
          * Telemetría a 10 Hz.
@@ -3235,6 +3280,14 @@ static void MX_GPIO_Init(void) {
 
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+    // Adapted 0..3.3 V sensor signal, no internal pull resistor.
+    GPIO_InitStruct.Pin = SPEED_SENSOR_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(SPEED_SENSOR_GPIO_Port, &GPIO_InitStruct);
+    __HAL_GPIO_EXTI_CLEAR_IT(SPEED_SENSOR_Pin);
+    HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
+    HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

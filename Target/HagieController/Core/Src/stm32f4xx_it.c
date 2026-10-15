@@ -235,4 +235,10 @@ void CAN2_RX0_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
+void EXTI2_IRQHandler(void)
+{
+    HAL_GPIO_EXTI_IRQHandler(SPEED_SENSOR_Pin);
+}
+
+
 /* USER CODE END 1 */
