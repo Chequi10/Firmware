@@ -58,7 +58,8 @@
  * 0 = utilizar hardware real.
  */
 #define SIMULATE_HEIGHT_CONTROL 0
-#define ENABLE_CAN1 0  // 0: prueba de encoder sin CAN; 1: CAN1 activo
+#define ENABLE_CAN1 1  // CAN1 activo
+#define ENABLE_VALVE_CAN_TX 0  // 0: no transmitir a válvulas
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -340,6 +341,125 @@ volatile uint32_t jetson_heartbeat_count = 0;
 
 constexpr uint8_t VALVE_COUNT = 6;
 volatile uint32_t axiomatic_rx_dropped = 0;
+
+/* Diagnóstico CAN1 */
+volatile uint32_t can_rx_count = 0;
+volatile uint32_t can_rx_f013 = 0;
+volatile uint32_t can_rx_f029 = 0;
+volatile uint32_t can_last_id = 0;
+volatile uint32_t can_last_pgn = 0;
+
+volatile uint32_t can_address_claim_count = 0;
+volatile uint32_t can_address_claim_id = 0;
+volatile uint64_t can_address_claim_name = 0;
+
+/*
+ * Registro automático de módulos Axiomatic J1939.
+ * Fabricante identificado en AX060900: 162.
+ */
+constexpr uint8_t AXIOMATIC_MAX_MODULES = 16;
+constexpr uint16_t AXIOMATIC_MANUFACTURER = 162;
+constexpr TickType_t AXIOMATIC_TIMEOUT = pdMS_TO_TICKS(3000);
+
+struct AxiomaticDevice
+{
+    uint64_t name;
+    uint8_t sourceAddress;
+    TickType_t lastSeen;
+    bool identified;
+};
+
+static AxiomaticDevice axiomaticDevices[AXIOMATIC_MAX_MODULES] = {};
+
+volatile uint8_t axiomatic_modules_detected = 0;
+
+static void updateAxiomaticCount(TickType_t now)
+{
+    uint8_t count = 0;
+
+    for (auto &device : axiomaticDevices)
+    {
+        if (device.identified &&
+            (now - device.lastSeen) < AXIOMATIC_TIMEOUT)
+        {
+            count++;
+        }
+    }
+
+    axiomatic_modules_detected = count;
+}
+
+static void registerAxiomaticFrame(
+    uint32_t pgn,
+    uint8_t sourceAddress,
+    const uint8_t *data,
+    uint8_t dlc)
+{
+    TickType_t now = xTaskGetTickCount();
+
+    if (pgn == 0xEE00 && dlc == 8)
+    {
+        uint64_t name = 0;
+
+        for (uint8_t i = 0; i < 8; i++)
+            name |= uint64_t(data[i]) << (8 * i);
+
+        uint16_t manufacturer =
+            (name >> 21) & 0x7FF;
+
+        if (manufacturer == AXIOMATIC_MANUFACTURER)
+        {
+            AxiomaticDevice *slot = nullptr;
+
+            for (auto &device : axiomaticDevices)
+            {
+                if (device.identified &&
+                    device.name == name)
+                {
+                    slot = &device;
+                    break;
+                }
+            }
+
+            if (!slot)
+            {
+                for (auto &device : axiomaticDevices)
+                {
+                    if (!device.identified ||
+                        (now - device.lastSeen) >= AXIOMATIC_TIMEOUT)
+                    {
+                        slot = &device;
+                        break;
+                    }
+                }
+            }
+
+            if (slot)
+            {
+                slot->name = name;
+                slot->sourceAddress = sourceAddress;
+                slot->lastSeen = now;
+                slot->identified = true;
+            }
+        }
+    }
+    else
+    {
+        for (auto &device : axiomaticDevices)
+        {
+            if (device.identified &&
+                device.sourceAddress == sourceAddress)
+            {
+                device.lastSeen = now;
+                break;
+            }
+        }
+    }
+
+    updateAxiomaticCount(now);
+}
+
+
 /*
  * Watchdog de comunicación con la Jetson.
  */
@@ -2341,6 +2461,49 @@ int16_t getBodyValveCommand(uint8_t body)
     return valve_command[body].command;
 }
 
+
+/*
+ * Solicitud global J1939 Address Claimed.
+ *
+ * PGN Request: 0xEA00
+ * PGN solicitado: 0xEE00
+ * Dirección de origen: 0xFE (NULL)
+ * Destino: 0xFF (global)
+ *
+ * Solo para descubrimiento de dispositivos.
+ */
+static HAL_StatusTypeDef requestJ1939AddressClaim()
+{
+    CAN_TxHeaderTypeDef header = {};
+
+    header.ExtId = 0x18EAFFFEUL;
+    header.IDE = CAN_ID_EXT;
+    header.RTR = CAN_RTR_DATA;
+    header.DLC = 3;
+    header.TransmitGlobalTime = DISABLE;
+
+    uint8_t data[3] =
+    {
+        0x00,
+        0xEE,
+        0x00
+    };
+
+    uint32_t mailbox = 0;
+
+    if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+    {
+        return HAL_BUSY;
+    }
+
+    return HAL_CAN_AddTxMessage(
+        &hcan1,
+        &header,
+        data,
+        &mailbox
+    );
+}
+
 void Task_can1_axiomatic_tx(void *taskParmPtr)
 {
     (void)taskParmPtr;
@@ -2360,9 +2523,28 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
     }
 
     TickType_t lastLedToggle = xTaskGetTickCount();
+
+    TickType_t lastAddressClaimRequest =
+        xTaskGetTickCount() - pdMS_TO_TICKS(2000);
+
     while (1)
     {
         TickType_t currentTick = xTaskGetTickCount();
+        updateAxiomaticCount(currentTick);
+
+        /*
+         * Solicitar identificación J1939 cada 2 segundos
+         * mientras no haya módulos detectados.
+         */
+        if (axiomatic_modules_detected == 0 &&
+            (currentTick - lastAddressClaimRequest) >=
+                pdMS_TO_TICKS(2000))
+        {
+            if (requestJ1939AddressClaim() == HAL_OK)
+            {
+                lastAddressClaimRequest = currentTick;
+            }
+        }
 
         /*
          * Watchdog de comunicación con la Jetson.
@@ -2418,7 +2600,7 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
          * Transmitir por CAN1 las órdenes actuales
          * hacia los tres módulos Axiomatic.
          */
-#if SIMULATE_HEIGHT_CONTROL == 0 && ENABLE_CAN1
+#if SIMULATE_HEIGHT_CONTROL == 0 && ENABLE_CAN1 && ENABLE_VALVE_CAN_TX
 
 		for (uint8_t i = 0;
 			 i < VALVE_MODULE_COUNT;
@@ -2477,6 +2659,50 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
         	 */
         	if (frame.header.IDE == CAN_ID_EXT)
         	{
+                can_rx_count++;
+                can_last_id = frame.header.ExtId;
+
+                uint32_t id = frame.header.ExtId;
+                uint32_t pf = (id >> 16) & 0xFF;
+                uint32_t ps = (id >> 8) & 0xFF;
+                uint32_t dp = (id >> 24) & 0x01;
+
+                can_last_pgn = (dp << 16) | (pf << 8);
+
+                if (pf >= 240)
+                    can_last_pgn |= ps;
+
+                if (can_last_pgn == 0xEE00 &&
+                    frame.header.DLC == 8)
+                {
+                    can_address_claim_count++;
+                    can_address_claim_id = frame.header.ExtId;
+
+                    uint64_t name = 0;
+
+                    for (uint8_t i = 0; i < 8; i++)
+                    {
+                        name |=
+                            static_cast<uint64_t>(frame.data[i])
+                            << (8 * i);
+                    }
+
+                    can_address_claim_name = name;
+                }
+
+                registerAxiomaticFrame(
+                    can_last_pgn,
+                    static_cast<uint8_t>(id & 0xFF),
+                    frame.data,
+                    frame.header.DLC
+                );
+
+                if (can_last_pgn == 0xF013)
+                    can_rx_f013++;
+
+                if (can_last_pgn == 0xF029)
+                    can_rx_f029++;
+
         	    imuCan.processMessage(
         	        frame.header.ExtId,
         	        frame.data,
@@ -3087,11 +3313,11 @@ static void MX_CAN1_Init(void) {
 
 	/* USER CODE END CAN1_Init 1 */
 	hcan1.Instance = CAN1;
-	hcan1.Init.Prescaler = 16;
+	hcan1.Init.Prescaler = 4;
 	hcan1.Init.Mode = CAN_MODE_NORMAL;
 	hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
 	hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
-	hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+	hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
 	hcan1.Init.TimeTriggeredMode = DISABLE;
 	hcan1.Init.AutoBusOff = DISABLE;
 	hcan1.Init.AutoWakeUp = DISABLE;
