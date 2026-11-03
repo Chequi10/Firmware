@@ -28,6 +28,7 @@ extern volatile bool lower_limit_active[6];
 extern volatile bool upper_limit_active[6];
 extern int16_t getBodyValveCommand(uint8_t body);
 extern volatile uint32_t axiomatic_rx_dropped;
+extern volatile uint8_t axiomatic_modules_detected;
 extern volatile bool jetson_connection_ok;
 extern volatile uint32_t jetson_uart_error_count;
 extern volatile BodyControlMode_t body_control_mode[6];
@@ -2346,7 +2347,7 @@ void interface::send_stm32_state()
 
     payload[6] = 6;  // encoders
     payload[7] = 6;  // cuerpos
-    payload[8] = 3;  // módulos Axiomatic
+    payload[8] = axiomatic_modules_detected;
 
     send(9);
 }
@@ -2395,7 +2396,7 @@ void interface::send_diagnostic_state()
     /*
      * Tenemos preparados 3 módulos Axiomatic.
      */
-    payload[6] = 3;
+    payload[6] = axiomatic_modules_detected;
 
     uint32_t uartErrors = jetson_uart_error_count;
 

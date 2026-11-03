@@ -1,3 +1,5 @@
+#include "FreeRTOS.h"
+#include "task.h"
 #include "imu_can.h"
 
 
@@ -65,40 +67,46 @@ void ImuCan::processMessage(
 {
     if (imuState == nullptr ||
         data == nullptr ||
-        dlc == 0)
+        dlc < 4)
     {
         return;
     }
 
-    uint32_t pgn =
-        extractJ1939Pgn(canId);
+    uint32_t pgn = extractJ1939Pgn(canId);
 
-    if (pgn != 61459U)
+    /*
+     * AX060900
+     * PGN 0xF013: Pitch y Roll
+     */
+    if (pgn != 0xF013U)
     {
         return;
     }
 
     /*
-     * Dirección de origen J1939.
-     * Es el byte menos significativo
-     * del identificador extendido.
+     * Valores de 16 bits sin signo.
+     * Orden little-endian.
      */
-    uint8_t sourceAddress =
-        static_cast<uint8_t>(
-            canId & 0xFF
-        );
+    uint16_t rawPitch =
+        static_cast<uint16_t>(data[0]) |
+        (static_cast<uint16_t>(data[1]) << 8);
+
+    uint16_t rawRoll =
+        static_cast<uint16_t>(data[2]) |
+        (static_cast<uint16_t>(data[3]) << 8);
 
     /*
-     * Por ahora solo la extraemos.
-     * Más adelante la podemos guardar
-     * para diagnóstico o filtrar una IMU
-     * específica por dirección.
+     * Resolución: 0.002 grados/bit
+     * Offset: -64 grados
      */
-    (void)sourceAddress;
+    imuState->pitch_deg =
+        static_cast<float>(rawPitch) * 0.002f - 64.0f;
 
-    /*
-     * Próximo paso:
-     * decodificar el payload del AX060900
-     * cuando tengamos la tabla exacta.
-     */
+    imuState->roll_deg =
+        static_cast<float>(rawRoll) * 0.002f - 64.0f;
+
+    imuState->timestamp_ms =
+        xTaskGetTickCount();
+
+    imuState->valid = true;
 }
