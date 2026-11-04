@@ -373,6 +373,44 @@ static AxiomaticDevice axiomaticDevices[AXIOMATIC_MAX_MODULES] = {};
 
 volatile uint8_t axiomatic_modules_detected = 0;
 
+/*
+ * ========================================================
+ * J1939 - Dirección propia de la STM32
+ * ========================================================
+ *
+ * Dirección preferida: 0x21.
+ *
+ * La transmisión operativa permanece bloqueada hasta
+ * completar el procedimiento Address Claim.
+ *
+ * El NAME J1939 se definirá antes de habilitar
+ * el anuncio de dirección.
+ */
+constexpr uint8_t STM32_J1939_PREFERRED_ADDRESS = 0x21;
+
+enum class J1939AddressState : uint8_t
+{
+    NO_ADDRESS,
+    CLAIMING,
+    CLAIMED,
+    CONFLICT
+};
+
+static volatile J1939AddressState stm32J1939AddressState =
+    J1939AddressState::NO_ADDRESS;
+
+static uint64_t stm32J1939Name = 0;
+
+static TickType_t stm32J1939ClaimTick = 0;
+
+static bool stm32J1939CanTransmit()
+{
+    return stm32J1939AddressState ==
+        J1939AddressState::CLAIMED;
+}
+
+
+
 static void updateAxiomaticCount(TickType_t now)
 {
     uint8_t count = 0;
@@ -457,6 +495,112 @@ static void registerAxiomaticFrame(
     }
 
     updateAxiomaticCount(now);
+}
+
+/*
+ * Detectar si otro equipo reclama la dirección
+ * reservada para la STM32.
+ *
+ * Esta comprobación es pasiva: no transmite CAN.
+ */
+/*
+ * Diagnóstico de solicitudes J1939 Address Claim.
+ */
+static volatile uint32_t stm32J1939ClaimRequestCount = 0;
+
+static void monitorJ1939AddressRequest(
+    uint32_t pgn,
+    uint8_t sourceAddress,
+    uint8_t destinationAddress,
+    const uint8_t *data,
+    uint8_t dlc)
+{
+    (void)sourceAddress;
+
+    if (pgn != 0xEA00 || dlc != 3)
+    {
+        return;
+    }
+
+    /*
+     * PGN solicitado: 0x00EE00.
+     */
+    if (data[0] != 0x00 ||
+        data[1] != 0xEE ||
+        data[2] != 0x00)
+    {
+        return;
+    }
+
+    /*
+     * Solicitud global o dirigida a 0x21.
+     */
+    if (destinationAddress == 0xFF ||
+        destinationAddress ==
+            STM32_J1939_PREFERRED_ADDRESS)
+    {
+        stm32J1939ClaimRequestCount++;
+    }
+}
+
+static volatile uint32_t stm32J1939AddressConflictCount = 0;
+static volatile uint64_t stm32J1939ConflictingName = 0;
+
+static volatile bool stm32J1939AddressOccupied = false;
+
+static void monitorJ1939AddressClaim(
+    uint32_t pgn,
+    uint8_t sourceAddress,
+    const uint8_t *data,
+    uint8_t dlc)
+{
+    if (pgn != 0xEE00 ||
+        dlc != 8 ||
+        sourceAddress != STM32_J1939_PREFERRED_ADDRESS)
+    {
+        return;
+    }
+
+    uint64_t receivedName = 0;
+
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        receivedName |= uint64_t(data[i]) << (8 * i);
+    }
+
+    stm32J1939ConflictingName = receivedName;
+    stm32J1939AddressConflictCount++;
+
+    /*
+     * La STM32 todavía no reclamó 0x21.
+     * Registramos que otro equipo la utiliza.
+     */
+    if (stm32J1939AddressState ==
+        J1939AddressState::NO_ADDRESS)
+    {
+        stm32J1939AddressOccupied = true;
+        return;
+    }
+
+    /*
+     * NAME menor = mayor prioridad J1939.
+     *
+     * Ante igualdad también bloqueamos
+     * por seguridad.
+     */
+    if (receivedName <= stm32J1939Name)
+    {
+        stm32J1939AddressOccupied = true;
+
+        stm32J1939AddressState =
+            J1939AddressState::CONFLICT;
+    }
+
+    /*
+     * Si nuestro NAME tiene mayor prioridad,
+     * habrá que responder con Address Claimed.
+     * Esa respuesta todavía no está habilitada.
+     */
 }
 
 
@@ -2472,6 +2616,134 @@ int16_t getBodyValveCommand(uint8_t body)
  *
  * Solo para descubrimiento de dispositivos.
  */
+/*
+ * ========================================================
+ * J1939 - Address Claimed de la STM32
+ * PGN 0xEE00 - Dirección preferida 0x21
+ * ========================================================
+ *
+ * Función preparada, todavía sin llamadas.
+ * El NAME debe configurarse antes de utilizarla.
+ */
+/*
+ * ========================================================
+ * J1939 - NAME de desarrollo para Hagie
+ * ========================================================
+ *
+ * Identidad provisional.
+ * NO utilizar para reclamar direcciones en producción
+ * sin definir un código de fabricante apropiado.
+ */
+static uint64_t buildSTM32J1939Name()
+{
+    const uint32_t uid0 = HAL_GetUIDw0();
+    const uint32_t uid1 = HAL_GetUIDw1();
+    const uint32_t uid2 = HAL_GetUIDw2();
+
+    /*
+     * Mezclar las tres palabras del UID.
+     * El resultado se limita a los 21 bits
+     * disponibles para Identity Number.
+     */
+    const uint32_t identity =
+        (uid0 ^ uid1 ^ uid2) & 0x1FFFFFUL;
+
+    /*
+     * NAME provisional de laboratorio.
+     * Manufacturer Code = 0 (marcador provisional).
+     *
+     * No constituye una identidad J1939
+     * registrada ni garantiza unicidad global.
+     */
+    constexpr uint64_t manufacturer = 0;
+    constexpr uint64_t ecuInstance = 0;
+    constexpr uint64_t functionInstance = 0;
+    constexpr uint64_t function = 0;
+    constexpr uint64_t vehicleSystem = 0;
+    constexpr uint64_t vehicleSystemInstance = 0;
+    constexpr uint64_t industryGroup = 2;
+
+    uint64_t name = 0;
+
+    name |= uint64_t(identity);
+    name |= manufacturer << 21;
+    name |= ecuInstance << 32;
+    name |= functionInstance << 35;
+    name |= function << 40;
+    name |= vehicleSystem << 49;
+    name |= vehicleSystemInstance << 56;
+    name |= industryGroup << 60;
+
+    /*
+     * Arbitrary Address Capable = 0.
+     * Hagie utiliza únicamente 0x21.
+     */
+    return name;
+}
+
+/*
+ * Actualización del estado J1939 de la STM32.
+ *
+ * La transición a CLAIMED solamente es posible
+ * después de iniciar correctamente CLAIMING.
+ */
+static void updateSTM32J1939AddressState(
+    TickType_t currentTick)
+{
+    if (stm32J1939AddressState !=
+        J1939AddressState::CLAIMING)
+    {
+        return;
+    }
+
+    if ((currentTick - stm32J1939ClaimTick) >=
+        pdMS_TO_TICKS(250))
+    {
+        stm32J1939AddressState =
+            J1939AddressState::CLAIMED;
+    }
+}
+
+static HAL_StatusTypeDef sendSTM32J1939AddressClaim()
+{
+    if (stm32J1939Name == 0)
+    {
+        return HAL_ERROR;
+    }
+
+    CAN_TxHeaderTypeDef header = {};
+
+    header.ExtId =
+        0x18EEFF00UL |
+        STM32_J1939_PREFERRED_ADDRESS;
+
+    header.IDE = CAN_ID_EXT;
+    header.RTR = CAN_RTR_DATA;
+    header.DLC = 8;
+    header.TransmitGlobalTime = DISABLE;
+
+    uint8_t data[8] = {};
+
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        data[i] = static_cast<uint8_t>(
+            (stm32J1939Name >> (8 * i)) & 0xFF);
+    }
+
+    if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+    {
+        return HAL_BUSY;
+    }
+
+    uint32_t mailbox = 0;
+
+    return HAL_CAN_AddTxMessage(
+        &hcan1,
+        &header,
+        data,
+        &mailbox);
+}
+
 static HAL_StatusTypeDef requestJ1939AddressClaim()
 {
     CAN_TxHeaderTypeDef header = {};
@@ -2533,11 +2805,16 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
         updateAxiomaticCount(currentTick);
 
         /*
+         * Actualizar el estado de la dirección
+         * J1939 de la STM32.
+         */
+        updateSTM32J1939AddressState(currentTick);
+
+        /*
          * Solicitar identificación J1939 cada 2 segundos
          * mientras no haya módulos detectados.
          */
-        if (axiomatic_modules_detected == 0 &&
-            (currentTick - lastAddressClaimRequest) >=
+        if ((currentTick - lastAddressClaimRequest) >=
                 pdMS_TO_TICKS(2000))
         {
             if (requestJ1939AddressClaim() == HAL_OK)
@@ -2606,6 +2883,16 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
 			 i < VALVE_MODULE_COUNT;
 			 i++)
 		{
+			/*
+			 * Seguridad J1939:
+			 * no transmitir órdenes operativas
+			 * sin dirección CAN confirmada.
+			 */
+			if (!stm32J1939CanTransmit())
+			{
+				continue;
+			}
+
 			HAL_StatusTypeDef status =
 				valveModules[i]->send();
 
@@ -2696,6 +2983,24 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
                     frame.data,
                     frame.header.DLC
                 );
+
+            /*
+             * Detectar solicitudes de Address Claim.
+             */
+            monitorJ1939AddressRequest(
+                can_last_pgn,
+                static_cast<uint8_t>(id & 0xFF),
+                static_cast<uint8_t>((id >> 8) & 0xFF),
+                frame.data,
+                frame.header.DLC);
+
+
+            monitorJ1939AddressClaim(
+                can_last_pgn,
+                static_cast<uint8_t>(id & 0xFF),
+                frame.data,
+                frame.header.DLC);
+
 
                 if (can_last_pgn == 0xF013)
                     can_rx_f013++;
