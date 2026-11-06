@@ -81,47 +81,55 @@ uint8_t ValveController::getModuleAddress() const
 
 HAL_StatusTypeDef ValveController::send()
 {
-    uint8_t data[8];
+    /*
+     * Formato propuesto para AX020800:
+     *
+     * Byte 0 -> OUT1
+     * Byte 1 -> OUT2
+     * Byte 2 -> OUT3
+     * Byte 3 -> OUT4
+     * Byte 4 -> OUT5
+     * Byte 5 -> OUT6
+     * Byte 6 -> OUT7
+     * Byte 7 -> OUT8
+     *
+     * Escala:
+     * 0..1000 (GUI) -> 0..100 (CAN)
+     *
+     * IMPORTANTE:
+     * El mapeo debe verificarse en
+     * Axiomatic Electronic Assistant.
+     */
 
-    /*
-     * Dos bytes por salida:
-     *
-     * Bytes 0-1 → salida 1
-     * Bytes 2-3 → salida 2
-     * Bytes 4-5 → salida 3
-     * Bytes 6-7 → salida 4
-     *
-     * Formato provisional little-endian.
-     */
-    /*
-     * CAN clásico permite 8 bytes por trama.
-     *
-     * Por ahora esta trama transmite únicamente
-     * OUT1..OUT4.
-     *
-     * OUT5..OUT8 se incorporarán mediante una
-     * segunda trama CAN cuando definamos los
-     * mensajes en el AX020800.
-     */
-    for (uint8_t i = 0; i < 4; i++)
+    uint8_t data[8] = {};
+
+    for (uint8_t i = 0; i < OUTPUT_COUNT; i++)
     {
-        data[i * 2] =
-            static_cast<uint8_t>(outputs[i] & 0xFF);
+        uint16_t command = outputs[i];
 
-        data[i * 2 + 1] =
-            static_cast<uint8_t>((outputs[i] >> 8) & 0xFF);
+        if (command > 1000)
+        {
+            command = 1000;
+        }
+
+        data[i] =
+            static_cast<uint8_t>((command + 5) / 10);
     }
 
     /*
-     * Identificador CAN provisional.
+     * PGN 0xFF00.
+     * SA 0x21: dirección prevista para STM32.
      *
-     * No debe usarse con las válvulas hasta
-     * reemplazarlo por el PGN J1939 real.
+     * El formato todavía no está validado
+     * con el AX020800.
      */
-    txHeader.ExtId =
-        0x18FF0000UL |
-        static_cast<uint32_t>(address);
+    txHeader.ExtId = 0x18FF0021UL;
 
+    /*
+     * Seguridad: no transmitir comandos
+     * hasta validar configuración y
+     * habilitación del AX020800.
+     */
     return HAL_CAN_AddTxMessage(
         hcan,
         &txHeader,

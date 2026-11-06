@@ -59,7 +59,7 @@
  */
 #define SIMULATE_HEIGHT_CONTROL 0
 #define ENABLE_CAN1 1  // CAN1 activo
-#define ENABLE_VALVE_CAN_TX 0  // 0: no transmitir a válvulas
+#define ENABLE_VALVE_CAN_TX 1  // 0: no transmitir a válvulas
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -344,6 +344,20 @@ volatile uint32_t axiomatic_rx_dropped = 0;
 
 /* Diagnóstico CAN1 */
 volatile uint32_t can_rx_count = 0;
+
+/* Diagnóstico AX020800 */
+volatile uint32_t ax020800_rx_count = 0;
+volatile uint32_t ax020800_tx_count = 0;
+volatile uint32_t ax020800_tx_errors = 0;
+volatile uint32_t ax020800_last_rx_tick = 0;
+
+/* Corrientes AX020800 - PGN 0xFF01 */
+volatile uint16_t ax020800_current_1_raw = 0;
+volatile uint16_t ax020800_current_2_raw = 0;
+volatile uint32_t ax020800_current_rx_count = 0;
+volatile uint32_t ax020800_current_last_tick = 0;
+
+
 volatile uint32_t can_rx_f013 = 0;
 volatile uint32_t can_rx_f029 = 0;
 volatile uint32_t can_last_id = 0;
@@ -399,7 +413,11 @@ enum class J1939AddressState : uint8_t
 static volatile J1939AddressState stm32J1939AddressState =
     J1939AddressState::NO_ADDRESS;
 
-static uint64_t stm32J1939Name = 0;
+/*
+ * NAME J1939 provisional para STM32 Hagie.
+ * Dirección preferida: 0x21.
+ */
+static uint64_t stm32J1939Name = 0x8000000000000021ULL;
 
 static TickType_t stm32J1939ClaimTick = 0;
 
@@ -572,35 +590,14 @@ static void monitorJ1939AddressClaim(
     stm32J1939AddressConflictCount++;
 
     /*
-     * La STM32 todavía no reclamó 0x21.
-     * Registramos que otro equipo la utiliza.
+     * Modo conservador:
+     * si otro equipo anuncia 0x21,
+     * no utilizamos esa dirección.
      */
-    if (stm32J1939AddressState ==
-        J1939AddressState::NO_ADDRESS)
-    {
-        stm32J1939AddressOccupied = true;
-        return;
-    }
+    stm32J1939AddressOccupied = true;
 
-    /*
-     * NAME menor = mayor prioridad J1939.
-     *
-     * Ante igualdad también bloqueamos
-     * por seguridad.
-     */
-    if (receivedName <= stm32J1939Name)
-    {
-        stm32J1939AddressOccupied = true;
-
-        stm32J1939AddressState =
-            J1939AddressState::CONFLICT;
-    }
-
-    /*
-     * Si nuestro NAME tiene mayor prioridad,
-     * habrá que responder con Address Claimed.
-     * Esa respuesta todavía no está habilitada.
-     */
+    stm32J1939AddressState =
+        J1939AddressState::CONFLICT;
 }
 
 
@@ -2794,6 +2791,18 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
         setBodyValveCommand(body, 0);
     }
 
+    /*
+     * Reclamar dirección J1939 de la STM32.
+     * Mantener bloqueada la transmisión operativa
+     * hasta completar el reclamo.
+     */
+    if (sendSTM32J1939AddressClaim() == HAL_OK)
+    {
+        stm32J1939ClaimTick = xTaskGetTickCount();
+        stm32J1939AddressState =
+            J1939AddressState::CLAIMING;
+    }
+
     TickType_t lastLedToggle = xTaskGetTickCount();
 
     TickType_t lastAddressClaimRequest =
@@ -2893,14 +2902,24 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
 				continue;
 			}
 
+			/*
+			 * PRUEBA CAN: transmitir solamente ceros.
+			 * No utilizar órdenes de movimiento.
+			 */
+			valveModules[i]->disableAll();
+
 			HAL_StatusTypeDef status =
 				valveModules[i]->send();
 
-			if (status != HAL_OK)
-			{
-				system_faults |=
-					SYSTEM_FAULT_CAN;
-			}
+            if (status == HAL_OK)
+            {
+                ax020800_tx_count++;
+            }
+            else
+            {
+                ax020800_tx_errors++;
+                system_faults |= SYSTEM_FAULT_CAN;
+            }
 		}
 
 		#endif
@@ -2949,6 +2968,16 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
                 can_rx_count++;
                 can_last_id = frame.header.ExtId;
 
+                /*
+                 * Diagnóstico AX020800.
+                 * Dirección J1939: 0x80.
+                 */
+                if ((frame.header.ExtId & 0xFF) == 0x80)
+                {
+                    ax020800_rx_count++;
+                    ax020800_last_rx_tick = xTaskGetTickCount();
+                }
+
                 uint32_t id = frame.header.ExtId;
                 uint32_t pf = (id >> 16) & 0xFF;
                 uint32_t ps = (id >> 8) & 0xFF;
@@ -2975,6 +3004,29 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
                     }
 
                     can_address_claim_name = name;
+                }
+
+                /*
+                 * AX020800 - Corrientes de salidas 1 y 2.
+                 * PGN 0xFF01, SA 0x80.
+                 *
+                 * Dos señales de 16 bits.
+                 * Orden de bytes pendiente de validación.
+                 */
+                if ((id & 0xFF) == 0x80 &&
+                    can_last_pgn == 0xFF01 &&
+                    frame.header.DLC == 8)
+                {
+                    ax020800_current_1_raw =
+                        static_cast<uint16_t>(frame.data[0]) |
+                        (static_cast<uint16_t>(frame.data[1]) << 8);
+
+                    ax020800_current_2_raw =
+                        static_cast<uint16_t>(frame.data[2]) |
+                        (static_cast<uint16_t>(frame.data[3]) << 8);
+
+                    ax020800_current_rx_count++;
+                    ax020800_current_last_tick = xTaskGetTickCount();
                 }
 
                 registerAxiomaticFrame(

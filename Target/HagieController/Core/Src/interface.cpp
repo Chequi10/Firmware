@@ -28,6 +28,17 @@ extern volatile bool lower_limit_active[6];
 extern volatile bool upper_limit_active[6];
 extern int16_t getBodyValveCommand(uint8_t body);
 extern volatile uint32_t axiomatic_rx_dropped;
+
+/* Diagnóstico AX020800 */
+extern volatile uint32_t ax020800_rx_count;
+extern volatile uint32_t ax020800_tx_count;
+extern volatile uint32_t ax020800_tx_errors;
+extern volatile uint32_t ax020800_last_rx_tick;
+
+extern volatile uint16_t ax020800_current_1_raw;
+extern volatile uint16_t ax020800_current_2_raw;
+extern volatile uint32_t ax020800_current_rx_count;
+extern volatile uint32_t ax020800_current_last_tick;
 extern volatile uint8_t axiomatic_modules_detected;
 extern volatile bool jetson_connection_ok;
 extern volatile uint32_t jetson_uart_error_count;
@@ -2473,7 +2484,69 @@ void interface::send_diagnostic_state()
             static_cast<uint8_t>(faults & 0xFF);
     }
 
-    send(47);
+    /*
+     * Diagnóstico AX020800 - bytes 47 a 59.
+     */
+    uint32_t now = xTaskGetTickCount();
+    uint32_t lastRx = ax020800_last_rx_tick;
+
+    payload[47] =
+        (ax020800_rx_count > 0 &&
+         (now - lastRx) < pdMS_TO_TICKS(3000)) ? 1 : 0;
+
+    const uint32_t counters[3] =
+    {
+        ax020800_rx_count,
+        ax020800_tx_count,
+        ax020800_tx_errors
+    };
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        uint8_t index = 48 + i * 4;
+        uint32_t value = counters[i];
+
+        payload[index]     = (value >> 24) & 0xFF;
+        payload[index + 1] = (value >> 16) & 0xFF;
+        payload[index + 2] = (value >> 8) & 0xFF;
+        payload[index + 3] = value & 0xFF;
+    }
+
+    /*
+     * AX020800 - Diagnóstico de corrientes
+     *
+     * [60]    Estado de recepción
+     * [61..62] Corriente salida 1 (valor bruto)
+     * [63..64] Corriente salida 2 (valor bruto)
+     * [65..68] Cantidad de mensajes recibidos
+     *
+     * Enteros MSB primero.
+     */
+    uint32_t currentLastTick =
+        ax020800_current_last_tick;
+
+    payload[60] =
+        (ax020800_current_rx_count > 0 &&
+         (now - currentLastTick) < pdMS_TO_TICKS(500))
+            ? 1 : 0;
+
+    uint16_t current1 = ax020800_current_1_raw;
+    uint16_t current2 = ax020800_current_2_raw;
+
+    payload[61] = (current1 >> 8) & 0xFF;
+    payload[62] = current1 & 0xFF;
+
+    payload[63] = (current2 >> 8) & 0xFF;
+    payload[64] = current2 & 0xFF;
+
+    uint32_t count = ax020800_current_rx_count;
+
+    payload[65] = (count >> 24) & 0xFF;
+    payload[66] = (count >> 16) & 0xFF;
+    payload[67] = (count >> 8) & 0xFF;
+    payload[68] = count & 0xFF;
+
+    send(69);
 }
 
 void interface::serial_feed_byte(uint8_t byte)
