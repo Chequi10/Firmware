@@ -349,6 +349,8 @@ volatile uint32_t can_rx_count = 0;
 volatile uint32_t ax020800_rx_count = 0;
 volatile uint32_t ax020800_tx_count = 0;
 volatile uint32_t ax020800_tx_errors = 0;
+volatile uint16_t ax020800_out1_debug = 0;
+volatile uint16_t ax020800_out2_debug = 0;
 volatile uint32_t ax020800_last_rx_tick = 0;
 
 /* Corrientes AX020800 - PGN 0xFF01 */
@@ -2903,12 +2905,25 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
 			}
 
 			/*
-			 * PRUEBA CAN: transmitir solamente ceros.
-			 * No utilizar órdenes de movimiento.
+			 * Seguridad: sin comunicación con Jetson,
+			 * mantener todas las salidas en cero.
 			 */
-			valveModules[i]->disableAll();
+			if (!jetson_connection_ok)
+			{
+				valveModules[i]->disableAll();
+			}
 
-			HAL_StatusTypeDef status =
+
+            if (i == 0)
+            {
+                ax020800_out1_debug =
+                    valveModules[i]->getOutput(0);
+
+                ax020800_out2_debug =
+                    valveModules[i]->getOutput(1);
+            }
+
+HAL_StatusTypeDef status =
 				valveModules[i]->send();
 
             if (status == HAL_OK)
