@@ -151,6 +151,14 @@ typedef struct
     int8_t height_down_compensation_percent[BODY_COUNT];
 
     /*
+     * Corriente minima individual por cuerpo.
+     * Unidad: mA.
+     * 0 = compensacion de corriente desactivada.
+     */
+    uint16_t height_up_minimum_current_ma[BODY_COUNT];
+    uint16_t height_down_minimum_current_ma[BODY_COUNT];
+
+    /*
      * Preparados para la configuración futura
      * del encoder mediante opcode K.
      */

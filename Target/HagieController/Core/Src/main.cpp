@@ -1525,7 +1525,14 @@ void Task_height_control(void *taskParmPtr)
         0.0f, 0.0f, 0.0f
     };
 
-    float previousError[BODY_COUNT] =
+    /*
+     * Estado integral anterior a cada actualizacion.
+     */
+    float previousIntegral[BODY_COUNT] = {};
+
+    bool integralUpdated[BODY_COUNT] = {};
+
+    float previousHeight[BODY_COUNT] =
     {
         0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f
@@ -1536,6 +1543,12 @@ void Task_height_control(void *taskParmPtr)
         false, false, false,
         false, false, false
     };
+
+    TickType_t lastWakeTime =
+        xTaskGetTickCount();
+
+    const TickType_t controlPeriod =
+        pdMS_TO_TICKS(10);
 
     while (1)
     {
@@ -1550,6 +1563,8 @@ void Task_height_control(void *taskParmPtr)
              body++)
         {
             requestedCommand[body] = 0;
+
+            integralUpdated[body] = false;
 
             absoluteError[body] = 0.0f;
 
@@ -1630,8 +1645,8 @@ void Task_height_control(void *taskParmPtr)
                     integralError[body] =
                         0.0f;
 
-                    previousError[body] =
-                        error;
+                    previousHeight[body] =
+                        actual;
 
                     pidInitialized[body] =
                         false;
@@ -1648,8 +1663,8 @@ void Task_height_control(void *taskParmPtr)
                     if (pidInitialized[body])
                     {
                         derivative =
-                            (error -
-                             previousError[body]) /
+                            -(actual -
+                              previousHeight[body]) /
                             CONTROL_DT_S;
                     }
 
@@ -1659,9 +1674,23 @@ void Task_height_control(void *taskParmPtr)
                      * Integral candidata
                      * ====================================================
                      */
+                    /*
+                     * Si Ki esta deshabilitado, no acumular
+                     * error integral.
+                     */
+                    if (ki <= 0.0f)
+                    {
+                        integralError[body] = 0.0f;
+                    }
+
+                    previousIntegral[body] =
+                        integralError[body];
+
                     float candidateIntegral =
-                        integralError[body] +
-                        error * CONTROL_DT_S;
+                        (ki > 0.0f)
+                            ? integralError[body] +
+                                error * CONTROL_DT_S
+                            : 0.0f;
 
 
                     /*
@@ -1695,6 +1724,9 @@ void Task_height_control(void *taskParmPtr)
                     {
                         integralError[body] =
                             candidateIntegral;
+
+                        integralUpdated[body] =
+                            (ki > 0.0f);
                     }
 
 
@@ -1726,8 +1758,8 @@ void Task_height_control(void *taskParmPtr)
                         );
 
 
-                    previousError[body] =
-                        error;
+                    previousHeight[body] =
+                        actual;
 
                     pidInitialized[body] =
                         true;
@@ -1793,6 +1825,79 @@ void Task_height_control(void *taskParmPtr)
                 }
 
 
+                /*
+                 * ====================================================
+                 * Compensacion de corriente minima por cuerpo
+                 * ====================================================
+                 *
+                 * Se aplica despues de la compensacion porcentual
+                 * y antes de la distribucion hidraulica.
+                 *
+                 * command = 0 siempre permanece en 0.
+                 *
+                 * Escala provisional:
+                 * 1000 unidades de comando = 3000 mA.
+                 *
+                 * Habilitar solamente despues de validar el Axiomatic
+                 * y las caracteristicas electricas de las valvulas.
+                 */
+
+#if SIMULATE_HEIGHT_CONTROL == 0
+
+                constexpr bool minimumCurrentCompensationEnabled =
+                    false;
+
+                constexpr uint32_t fullScaleCurrentMa =
+                    3000U;
+
+                if (minimumCurrentCompensationEnabled &&
+                    command != 0)
+                {
+                    const uint16_t minimumCurrentMa =
+                        (command > 0)
+                            ? body_control_config
+                                .height_up_minimum_current_ma[body]
+                            : body_control_config
+                                .height_down_minimum_current_ma[body];
+
+                    if (minimumCurrentMa > 0U &&
+                        minimumCurrentMa < fullScaleCurrentMa)
+                    {
+                        const uint32_t minimumCommand =
+                            (
+                                static_cast<uint32_t>(
+                                    minimumCurrentMa
+                                ) * 1000U +
+                                fullScaleCurrentMa / 2U
+                            ) / fullScaleCurrentMa;
+
+                        const uint32_t magnitude =
+                            static_cast<uint32_t>(
+                                (command > 0)
+                                    ? command
+                                    : -command
+                            );
+
+                        const uint32_t compensatedMagnitude =
+                            minimumCommand +
+                            (
+                                (1000U - minimumCommand) *
+                                magnitude
+                            ) / 1000U;
+
+                        command =
+                            (command > 0)
+                                ? static_cast<int16_t>(
+                                    compensatedMagnitude
+                                )
+                                : -static_cast<int16_t>(
+                                    compensatedMagnitude
+                                );
+                    }
+                }
+
+#endif
+
                 requestedCommand[body] =
                     command;
 
@@ -1802,7 +1907,7 @@ void Task_height_control(void *taskParmPtr)
                 integralError[body] =
                     0.0f;
 
-                previousError[body] =
+                previousHeight[body] =
                     0.0f;
 
                 pidInitialized[body] =
@@ -1884,10 +1989,6 @@ void Task_height_control(void *taskParmPtr)
                 int16_t command =
                     requestedCommand[body];
 
-                int16_t absCommand =
-                    (command >= 0)
-                        ? command
-                        : -command;
 
                 if ((command > 0) &&
                     (command >=
@@ -1980,10 +2081,6 @@ void Task_height_control(void *taskParmPtr)
                     int16_t command =
                         requestedCommand[body];
 
-                    int16_t absCommand =
-                        (command >= 0)
-                            ? command
-                            : -command;
 
 
                     /*
@@ -2050,10 +2147,6 @@ void Task_height_control(void *taskParmPtr)
                 int16_t command =
                     requestedCommand[body];
 
-                int16_t absCommand =
-                    (command >= 0)
-                        ? command
-                        : -command;
 
 
                 /*
@@ -2093,10 +2186,55 @@ void Task_height_control(void *taskParmPtr)
 
 
         /*
+         * ====================================================
+         * ETAPA 3
+         * Anti-windup por limitaciones externas al PID.
+         * ====================================================
+         */
+        for (uint8_t body = 0;
+             body < BODY_COUNT;
+             body++)
+        {
+            if (!integralUpdated[body] ||
+                body_control_mode[body] != BODY_CONTROL_AUTO)
+            {
+                continue;
+            }
+
+            const int16_t requested =
+                requestedCommand[body];
+
+            const int16_t applied =
+                valve_command[body].command;
+
+            const float integralDelta =
+                integralError[body] -
+                previousIntegral[body];
+
+            const bool limitedPositive =
+                (requested > 0) &&
+                (applied < requested) &&
+                (integralDelta > 0.0f);
+
+            const bool limitedNegative =
+                (requested < 0) &&
+                (applied > requested) &&
+                (integralDelta < 0.0f);
+
+            if (limitedPositive || limitedNegative)
+            {
+                integralError[body] =
+                    previousIntegral[body];
+            }
+        }
+
+
+        /*
          * Control a 100 Hz.
          */
-        vTaskDelay(
-            pdMS_TO_TICKS(10)
+        vTaskDelayUntil(
+            &lastWakeTime,
+            controlPeriod
         );
     }
 }
@@ -3070,16 +3208,20 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
 
 
                 if (can_last_pgn == 0xF013)
+                {
                     can_rx_f013++;
+                }
 
                 if (can_last_pgn == 0xF029)
+                {
                     can_rx_f029++;
+                }
 
-        	    imuCan.processMessage(
-        	        frame.header.ExtId,
-        	        frame.data,
-        	        frame.header.DLC
-        	    );
+                imuCan.processMessage(
+                    frame.header.ExtId,
+                    frame.data,
+                    frame.header.DLC
+                );
         	}
         }
     }

@@ -1901,6 +1901,168 @@ void interface::handle_packet(
                 }
 
 
+
+                /*
+                 * ========================================================
+                 * K 0x1B
+                 * Corriente minima individual de SUBIDA
+                 *
+                 * payload:
+                 * [0] = 'K'
+                 * [1] = 0x1B
+                 * [2] = cuerpo 0..5
+                 * [3] = corriente mA, byte alto
+                 * [4] = corriente mA, byte bajo
+                 *
+                 * Rango permitido: 0..3000 mA
+                 * ========================================================
+                 */
+                if (subcommand == 0x1B)
+                {
+                    if (n != 5)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    const uint8_t body =
+                        payload[2];
+
+                    if (body >= BODY_COUNT)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_BODY,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    const uint16_t current_ma =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(payload[3]) << 8) |
+                            static_cast<uint16_t>(payload[4])
+                        );
+
+                    if (current_ma > 3000U)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_VALUE,
+                            current_ma,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config
+                        .height_up_minimum_current_ma[body] =
+                        current_ma;
+
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_OK,
+                        current_ma,
+                        0
+                    );
+
+                    break;
+                }
+
+
+                /*
+                 * ========================================================
+                 * K 0x1C
+                 * Corriente minima individual de BAJADA
+                 *
+                 * payload:
+                 * [0] = 'K'
+                 * [1] = 0x1C
+                 * [2] = cuerpo 0..5
+                 * [3] = corriente mA, byte alto
+                 * [4] = corriente mA, byte bajo
+                 *
+                 * Rango permitido: 0..3000 mA
+                 * ========================================================
+                 */
+                if (subcommand == 0x1C)
+                {
+                    if (n != 5)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            0xFF,
+                            CONFIG_ACK_INVALID_LENGTH,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    const uint8_t body =
+                        payload[2];
+
+                    if (body >= BODY_COUNT)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_BODY,
+                            0,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    const uint16_t current_ma =
+                        static_cast<uint16_t>(
+                            (static_cast<uint16_t>(payload[3]) << 8) |
+                            static_cast<uint16_t>(payload[4])
+                        );
+
+                    if (current_ma > 3000U)
+                    {
+                        send_config_ack(
+                            subcommand,
+                            body,
+                            CONFIG_ACK_INVALID_VALUE,
+                            current_ma,
+                            0
+                        );
+
+                        break;
+                    }
+
+                    body_control_config
+                        .height_down_minimum_current_ma[body] =
+                        current_ma;
+
+                    send_config_ack(
+                        subcommand,
+                        body,
+                        CONFIG_ACK_OK,
+                        current_ma,
+                        0
+                    );
+
+                    break;
+                }
+
             /*
              * ========================================================
              * Subcomando desconocido

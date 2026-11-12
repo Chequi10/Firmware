@@ -116,5 +116,13 @@ void BodyControlConfig_InitDefaults(void)
         body_control_config
             .height_down_compensation_percent[body] =
             0;
+
+        body_control_config
+            .height_up_minimum_current_ma[body] =
+            0;
+
+        body_control_config
+            .height_down_minimum_current_ma[body] =
+            0;
     }
 }
