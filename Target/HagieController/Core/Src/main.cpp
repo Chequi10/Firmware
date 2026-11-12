@@ -1845,7 +1845,7 @@ void Task_height_control(void *taskParmPtr)
 #if SIMULATE_HEIGHT_CONTROL == 0
 
                 constexpr bool minimumCurrentCompensationEnabled =
-                    false;
+                    true;
 
                 constexpr uint32_t fullScaleCurrentMa =
                     3000U;
