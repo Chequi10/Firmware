@@ -2491,6 +2491,15 @@ void setBodyValveCommand(
     }
 
     /*
+     * Cuerpos 1, 2 y 3 sin control hidráulico.
+     * No conservar comandos de movimiento.
+     */
+    if (body < 3)
+    {
+        command = 0;
+    }
+
+    /*
      * ========================================================
      * HABILITACIÓN INDIVIDUAL DEL CUERPO
      * ========================================================
@@ -2655,8 +2664,21 @@ void setBodyValveCommand(
      * cuerpo 2 -> salidas globales 4 y 5
      * ...
      */
+    /*
+     * Mapeo AX020800:
+     * Cuerpo 4 -> OUT1 / OUT2
+     * Cuerpo 5 -> OUT3 / OUT4
+     * Cuerpo 6 -> OUT5 / OUT6
+     *
+     * Cuerpos 1, 2 y 3 sin salidas.
+     */
+    if (body < 3)
+    {
+        return;
+    }
+
     uint8_t globalOutputUp =
-        body * 2;
+        (body - 3) * 2;
 
     uint8_t globalOutputDown =
         globalOutputUp + 1;
@@ -2999,6 +3021,13 @@ void Task_can1_axiomatic_tx(void *taskParmPtr)
                      body < VALVE_COUNT;
                      body++)
                 {
+                    /*
+                     * Cancelar AUTO ante pérdida
+                     * de comunicación con Jetson.
+                     */
+                    body_control_mode[body] =
+                        BODY_CONTROL_MANUAL;
+
                     setBodyValveCommand(body, 0);
                 }
 

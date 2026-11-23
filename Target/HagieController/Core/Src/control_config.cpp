@@ -23,7 +23,7 @@ void BodyControlConfig_InitDefaults(void)
          * cuerpos 4..6 deshabilitados
          */
         body_control_config.body_enabled[body] =
-            (body < 3);
+            false;
 
         body_control_config.encoder_direction[body] =
             -1;
