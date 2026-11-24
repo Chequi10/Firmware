@@ -37,6 +37,13 @@ extern volatile uint32_t ax020800_last_rx_tick;
 
 extern volatile uint16_t ax020800_current_1_raw;
 extern volatile uint16_t ax020800_current_2_raw;
+extern volatile uint16_t ax020800_current_3_raw;
+extern volatile uint16_t ax020800_current_4_raw;
+extern volatile uint16_t ax020800_current_5_raw;
+extern volatile uint16_t ax020800_current_6_raw;
+
+extern volatile uint32_t ax020800_current_ff02_rx_count;
+extern volatile uint32_t ax020800_current_ff02_last_tick;
 extern volatile uint32_t ax020800_current_rx_count;
 extern volatile uint32_t ax020800_current_last_tick;
 extern volatile uint8_t axiomatic_modules_detected;
@@ -2708,7 +2715,41 @@ void interface::send_diagnostic_state()
     payload[67] = (count >> 8) & 0xFF;
     payload[68] = count & 0xFF;
 
-    send(69);
+    // Verificar vigencia del segundo PGN de corrientes.
+    uint32_t ff02LastTick =
+        ax020800_current_ff02_last_tick;
+
+    bool ff02Valid =
+        ax020800_current_ff02_rx_count > 0 &&
+        (now - ff02LastTick) < pdMS_TO_TICKS(500);
+
+    if (payload[60] != 0 && ff02Valid)
+    {
+        const uint16_t extraCurrents[4] =
+        {
+            ax020800_current_3_raw,
+            ax020800_current_4_raw,
+            ax020800_current_5_raw,
+            ax020800_current_6_raw
+        };
+
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            uint8_t index = 69 + i * 2;
+
+            payload[index] =
+                (extraCurrents[i] >> 8) & 0xFF;
+
+            payload[index + 1] =
+                extraCurrents[i] & 0xFF;
+        }
+
+        send(77);
+    }
+    else
+    {
+        send(69);
+    }
 }
 
 void interface::serial_feed_byte(uint8_t byte)

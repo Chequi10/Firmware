@@ -356,6 +356,13 @@ volatile uint32_t ax020800_last_rx_tick = 0;
 /* Corrientes AX020800 - PGN 0xFF01 */
 volatile uint16_t ax020800_current_1_raw = 0;
 volatile uint16_t ax020800_current_2_raw = 0;
+volatile uint16_t ax020800_current_3_raw = 0;
+volatile uint16_t ax020800_current_4_raw = 0;
+volatile uint16_t ax020800_current_5_raw = 0;
+volatile uint16_t ax020800_current_6_raw = 0;
+
+volatile uint32_t ax020800_current_ff02_rx_count = 0;
+volatile uint32_t ax020800_current_ff02_last_tick = 0;
 volatile uint32_t ax020800_current_rx_count = 0;
 volatile uint32_t ax020800_current_last_tick = 0;
 
@@ -3207,8 +3214,35 @@ void Task_can1_axiomatic_rx(void *taskParmPtr)
                         static_cast<uint16_t>(frame.data[2]) |
                         (static_cast<uint16_t>(frame.data[3]) << 8);
 
+                    ax020800_current_3_raw =
+                        static_cast<uint16_t>(frame.data[4]) |
+                        (static_cast<uint16_t>(frame.data[5]) << 8);
+
+                    ax020800_current_4_raw =
+                        static_cast<uint16_t>(frame.data[6]) |
+                        (static_cast<uint16_t>(frame.data[7]) << 8);
+
                     ax020800_current_rx_count++;
                     ax020800_current_last_tick = xTaskGetTickCount();
+                }
+
+                // AX020800 - Corrientes OUT 5 y OUT 6.
+                // PGN 0xFF02, SA 0x80.
+                if ((id & 0xFF) == 0x80 &&
+                    can_last_pgn == 0xFF02 &&
+                    frame.header.DLC == 8)
+                {
+                    ax020800_current_5_raw =
+                        static_cast<uint16_t>(frame.data[0]) |
+                        (static_cast<uint16_t>(frame.data[1]) << 8);
+
+                    ax020800_current_6_raw =
+                        static_cast<uint16_t>(frame.data[2]) |
+                        (static_cast<uint16_t>(frame.data[3]) << 8);
+
+                    ax020800_current_ff02_rx_count++;
+                    ax020800_current_ff02_last_tick =
+                        xTaskGetTickCount();
                 }
 
                 registerAxiomaticFrame(
